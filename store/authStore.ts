@@ -227,9 +227,19 @@ export const useAuthStore = create<AuthState>()(
             return { success: true, requiresEmailConfirmation: false };
           }
         } catch (error: any) {
+          console.error('AuthStore: Full registration error:', error);
+          console.error('AuthStore: Error details:', {
+            message: error.message,
+            code: error.code,
+            status: error.status,
+            details: error.details,
+            hint: error.hint,
+            stack: error.stack
+          });
+          
           set({ 
             isLoading: false, 
-            error: error.message || '登録に失敗しました' 
+            error: `Registration failed: ${error.message || error.code || 'Unknown error'}` 
           });
           throw error;
         }

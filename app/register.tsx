@@ -35,6 +35,29 @@ export default function RegisterScreen() {
   React.useEffect(() => {
     setDebugInfo('RegisterScreen mounted successfully');
     console.log('RegisterScreen mounted');
+    
+    // Test Supabase connection
+    const testSupabase = async () => {
+      try {
+        const { supabase } = await import('@/src/lib/supabase');
+        console.log('Supabase client:', supabase);
+        
+        // Test a simple query
+        const { data, error } = await supabase.from('users').select('count').limit(1);
+        if (error) {
+          console.error('Supabase connection test failed:', error);
+          setDebugInfo(`Supabase connection failed: ${error.message}`);
+        } else {
+          console.log('Supabase connection test successful');
+          setDebugInfo('Supabase connection: OK');
+        }
+      } catch (error) {
+        console.error('Supabase import/init error:', error);
+        setDebugInfo(`Supabase init error: ${error}`);
+      }
+    };
+    
+    testSupabase();
   }, []);
   
   // Refs for TextInputs to avoid findDOMNode warnings
@@ -281,6 +304,17 @@ export default function RegisterScreen() {
                 </Text>
               </View>
             )}
+            
+            {/* Test button for debugging */}
+            <TouchableOpacity 
+              style={[styles.testButton, { backgroundColor: theme.textSecondary }]}
+              onPress={() => {
+                setDebugInfo('Test button clicked - no errors here!');
+                console.log('Test button clicked successfully');
+              }}
+            >
+              <Text style={styles.testButtonText}>Test Button (No Supabase)</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -435,5 +469,15 @@ const styles = StyleSheet.create({
   debugText: {
     fontSize: 12,
     fontFamily: 'monospace',
+  },
+  testButton: {
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  testButtonText: {
+    color: '#fff',
+    fontSize: 14,
   },
 });
