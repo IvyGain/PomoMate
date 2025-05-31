@@ -1,6 +1,30 @@
 // Fix for "Illegal invocation" errors in React Native Web
 
 if (typeof window !== 'undefined') {
+  // Fix CSSStyleDeclaration binding issues FIRST
+  if (typeof CSSStyleDeclaration !== 'undefined' && CSSStyleDeclaration.prototype) {
+    const cssProto = CSSStyleDeclaration.prototype;
+    const cssMethods = ['setProperty', 'removeProperty', 'getPropertyValue', 'getPropertyPriority', 'item'];
+    
+    cssMethods.forEach(method => {
+      const original = cssProto[method];
+      if (typeof original === 'function') {
+        Object.defineProperty(cssProto, method, {
+          value: function(...args) {
+            try {
+              return original.apply(this, args);
+            } catch (e) {
+              console.warn(`CSS method ${method} error:`, e);
+              return undefined;
+            }
+          },
+          writable: true,
+          configurable: true
+        });
+      }
+    });
+  }
+  
   // 1. Fix DOM method binding issues
   const nativeMethods = [
     'addEventListener',

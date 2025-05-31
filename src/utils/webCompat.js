@@ -21,14 +21,31 @@ if (typeof window !== 'undefined' && window.document) {
   if (typeof CSSStyleDeclaration !== 'undefined') {
     defineIndexedProperty(CSSStyleDeclaration.prototype);
     
-    // Override setProperty to catch numeric properties
+    // Override setProperty to catch numeric properties and bind context
     const originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
     CSSStyleDeclaration.prototype.setProperty = function(prop, value, priority) {
       if (typeof prop === 'number' || !isNaN(prop)) {
         console.warn('Blocked numeric property on CSSStyleDeclaration:', prop);
         return;
       }
-      return originalSetProperty.call(this, prop, value, priority);
+      try {
+        // Ensure proper binding
+        return originalSetProperty.apply(this, [prop, value, priority]);
+      } catch (e) {
+        console.warn('CSSStyleDeclaration.setProperty error:', e);
+        return;
+      }
+    };
+    
+    // Fix getPropertyValue binding
+    const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
+    CSSStyleDeclaration.prototype.getPropertyValue = function(prop) {
+      try {
+        return originalGetPropertyValue.apply(this, [prop]);
+      } catch (e) {
+        console.warn('CSSStyleDeclaration.getPropertyValue error:', e);
+        return '';
+      }
     };
   }
   
