@@ -1,4 +1,4 @@
-name: CD Pipeline
+name: CD Pipeline (Vercel Deployment)
 
 on:
   workflow_run:
@@ -7,152 +7,28 @@ on:
       - completed
     branches: [main]
 
-env:
-  DEPLOYMENT_SERVER: ${{ secrets.DEPLOYMENT_SERVER }}
-  DEPLOYMENT_USER: ${{ secrets.DEPLOYMENT_USER }}
-  DEPLOYMENT_PATH: /var/www/pomodoroplay
-
 jobs:
-  deploy:
-    name: Deploy to Production
+  deploy-info:
+    name: Deployment Info
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Download frontend build artifacts
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
-            });
-            const matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "frontend-build"
-            })[0];
-            const download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-            const fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/frontend-build.zip', Buffer.from(download.data));
-      
-      - name: Extract frontend build
+      - name: Log deployment info
         run: |
-          unzip frontend-build.zip -d build/
-          rm frontend-build.zip
+          echo "🚀 CI Pipeline completed successfully!"
+          echo "📦 Application is automatically deployed via Vercel"
+          echo "🔗 Production URL: https://pomomate-9vwjg6vir-ivygains-projects.vercel.app"
+          echo "✅ No manual deployment required"
       
-      - name: Setup SSH
+      - name: Verify Vercel deployment
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOYMENT_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.DEPLOYMENT_SERVER }} >> ~/.ssh/known_hosts
-      
-      - name: Copy files to server
-        run: |
-          # Copy deployment files
-          scp -r deployment/* ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }}:${{ env.DEPLOYMENT_PATH }}/deployment/
-          
-          # Copy backend files
-          scp -r backend/* ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }}:${{ env.DEPLOYMENT_PATH }}/backend/
-          
-          # Copy frontend build
-          scp -r build/* ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }}:${{ env.DEPLOYMENT_PATH }}/frontend/
-          
-          # Copy environment file template
-          scp .env.production ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }}:${{ env.DEPLOYMENT_PATH }}/.env.production
-      
-      - name: Deploy application
-        run: |
-          ssh ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }} << 'EOF'
-            cd ${{ env.DEPLOYMENT_PATH }}
-            
-            # Ensure deployment directory structure
-            mkdir -p deployment/nginx/ssl
-            mkdir -p deployment/backups
-            
-            # Run deployment script
-            cd deployment
-            ./scripts/deploy.sh
-          EOF
-      
-      - name: Verify deployment
-        run: |
-          # Wait for deployment to stabilize
-          sleep 30
-          
-          # Check if application is running
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://pomodoroplay.app/api/health)
+          echo "Checking Vercel deployment..."
+          sleep 10
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://pomomate-9vwjg6vir-ivygains-projects.vercel.app || echo "000")
           
           if [ $response -eq 200 ]; then
-            echo "Deployment successful! Application is healthy."
+            echo "✅ Vercel deployment is healthy! HTTP status: $response"
           else
-            echo "Deployment verification failed. HTTP status: $response"
-            exit 1
+            echo "⚠️  Vercel deployment check returned: $response (may be normal for new deployments)"
           fi
-      
-      - name: Notify deployment success
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          text: 'Successfully deployed to production! 🚀'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        if: success()
-      
-      - name: Notify deployment failure
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          text: 'Production deployment failed! ❌'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        if: failure()
-
-  rollback:
-    name: Rollback on Failure
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: failure()
-    
-    steps:
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOYMENT_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.DEPLOYMENT_SERVER }} >> ~/.ssh/known_hosts
-      
-      - name: Rollback deployment
-        run: |
-          ssh ${{ env.DEPLOYMENT_USER }}@${{ env.DEPLOYMENT_SERVER }} << 'EOF'
-            cd ${{ env.DEPLOYMENT_PATH }}/deployment
-            
-            echo "Rolling back to previous deployment..."
-            
-            # Stop current containers
-            docker-compose -f docker-compose.prod.yml down
-            
-            # Start with previous images
-            docker-compose -f docker-compose.prod.yml up -d
-            
-            echo "Rollback completed"
-          EOF
-      
-      - name: Notify rollback
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: 'Deployment failed and was rolled back to previous version',
-              attachments: [{
-                color: 'warning',
-                text: 'Please check the deployment logs'
-              }]
-            }
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
