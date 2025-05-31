@@ -49,13 +49,29 @@ export default function RootLayout() {
   useEffect(() => {
     if (!isReady) return;
 
-    const inAuthGroup = segments[0] === 'login' || segments[0] === 'register' || segments[0] === 'forgot-password';
+    console.log('🔍 Navigation Debug:', {
+      segments,
+      isAuthenticated,
+      currentPath: segments.join('/'),
+      firstSegment: segments[0]
+    });
+
+    // Segments might be undefined or empty on initial load
+    const firstSegment = segments?.[0];
+    const inAuthGroup = firstSegment === 'login' || firstSegment === 'register' || firstSegment === 'forgot-password' || firstSegment === 'test-register';
     
-    if (!isAuthenticated && !inAuthGroup) {
+    // Allow navigation to register and other auth pages
+    if (!isAuthenticated && !inAuthGroup && segments.length > 0) {
       // Not authenticated and not on auth page -> go to login
+      console.log('➡️ Redirecting to login (not authenticated)');
       router.replace('/login');
-    } else if (isAuthenticated && (inAuthGroup || segments.length === 0)) {
-      // Authenticated and on auth page or root -> go to home
+    } else if (isAuthenticated && inAuthGroup) {
+      // Authenticated and on auth page -> go to home
+      console.log('➡️ Redirecting to home (authenticated on auth page)');
+      router.replace('/(tabs)');
+    } else if (isAuthenticated && segments.length === 0) {
+      // Authenticated and on root -> go to home
+      console.log('➡️ Redirecting to home (authenticated on root)');
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, isReady, segments]);
