@@ -87,12 +87,21 @@ export default function RootLayout() {
                       currentPath.includes('/register') || 
                       currentPath.includes('/forgot-password');
 
+    console.log('Navigation debug:', {
+      currentPath,
+      isAuthPath,
+      isAuthenticated,
+      isReady
+    });
+
     if (!isAuthenticated && !isAuthPath) {
       // Redirect to login if not authenticated
+      console.log('Redirecting to login: not authenticated and not on auth path');
       setTimeout(() => router.replace('/login'), 100);
     } else if (isAuthenticated && isAuthPath) {
-      // Redirect to home if authenticated and on auth page
-      setTimeout(() => router.replace('/(tabs)'), 100);
+      // Redirect to home if authenticated and on auth page (temporarily disabled for debugging)
+      console.log('Would redirect to home: authenticated and on auth path (disabled for debugging)');
+      // setTimeout(() => router.replace('/(tabs)'), 100);
     }
   }, [isAuthenticated, isReady]);
 

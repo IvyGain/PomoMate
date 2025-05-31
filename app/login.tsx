@@ -26,6 +26,11 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
+  // Debug mount
+  React.useEffect(() => {
+    console.log('LoginScreen mounted successfully');
+  }, []);
+  
   // Refs for TextInputs to avoid findDOMNode warnings
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
