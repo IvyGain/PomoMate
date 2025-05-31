@@ -32,14 +32,14 @@ if (typeof window !== 'undefined' && window.document) {
     };
   }
   
-  // 3. Fix illegal invocation errors by binding methods properly
+  // 3. Fix illegal invocation errors by binding methods properly (but allow debugging)
   if (typeof console !== 'undefined') {
     const originalConsoleError = console.error;
     console.error = function(...args) {
       const errorString = args[0]?.toString() || '';
       if (errorString.includes('Illegal invocation') || 
           errorString.includes('Failed to set an indexed property')) {
-        console.warn('Suppressed illegal invocation error');
+        console.warn('CSS Error (suppressed):', errorString);
         return;
       }
       return originalConsoleError.apply(console, args);

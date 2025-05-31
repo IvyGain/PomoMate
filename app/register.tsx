@@ -46,32 +46,44 @@ export default function RegisterScreen() {
   }, [error, clearError]);
   
   const handleRegister = async () => {
-    // Validate inputs
-    if (!email || !password || !confirmPassword || !displayName) {
-      Alert.alert('入力エラー', 'すべての項目を入力してください。');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      Alert.alert('パスワードエラー', 'パスワードが一致しません。');
-      return;
-    }
-    
-    if (password.length < 6) {
-      Alert.alert('パスワードエラー', 'パスワードは6文字以上で入力してください。');
-      return;
-    }
-    
     try {
+      // Clear any previous errors
+      clearError();
+      
+      // Validate inputs
+      if (!email || !password || !confirmPassword || !displayName) {
+        Alert.alert('入力エラー', 'すべての項目を入力してください。');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        Alert.alert('パスワードエラー', 'パスワードが一致しません。');
+        return;
+      }
+      
+      if (password.length < 6) {
+        Alert.alert('パスワードエラー', 'パスワードは6文字以上で入力してください。');
+        return;
+      }
+      
+      console.log('Starting registration process...');
       const result = await register(email, password, displayName);
+      console.log('Registration result:', result);
       
       if (result?.requiresEmailConfirmation) {
         // Show email confirmation message
+        console.log('Email confirmation required');
         setRegisteredEmail(email);
         setShowConfirmationMessage(true);
+      } else {
+        console.log('Registration completed successfully');
       }
       // If no email confirmation required, navigation is handled by the useProtectedRoute hook
     } catch (error: any) {
+      console.error('Registration error:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       // Check if email already exists
       if (error.message?.includes('already registered')) {
         Alert.alert(
@@ -81,6 +93,13 @@ export default function RegisterScreen() {
             { text: 'ログイン画面へ', onPress: () => router.push('/login') },
             { text: 'OK', style: 'cancel' }
           ]
+        );
+      } else {
+        // Show generic error for other cases
+        Alert.alert(
+          'アカウント作成エラー',
+          `登録に失敗しました: ${error.message || '不明なエラーが発生しました'}`,
+          [{ text: 'OK' }]
         );
       }
     }

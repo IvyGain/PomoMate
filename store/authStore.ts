@@ -126,9 +126,11 @@ export const useAuthStore = create<AuthState>()(
       
       register: async (email: string, password: string, username: string) => {
         try {
+          console.log('AuthStore: Starting registration for email:', email);
           set({ isLoading: true, error: null });
           
           // Sign up with Supabase Auth
+          console.log('AuthStore: Calling supabase.auth.signUp...');
           const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -140,7 +142,12 @@ export const useAuthStore = create<AuthState>()(
             },
           });
           
-          if (authError) throw authError;
+          console.log('AuthStore: signUp response:', { authData, authError });
+          
+          if (authError) {
+            console.error('AuthStore: signUp error:', authError);
+            throw authError;
+          }
           
           // Check if email confirmation is required
           if (authData.user && !authData.session) {

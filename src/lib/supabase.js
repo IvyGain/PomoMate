@@ -1,6 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDemoSupabase } from '../services/demoService';
+
+// Web-compatible storage
+const getStorage = () => {
+  if (typeof window !== 'undefined') {
+    return {
+      getItem: (key) => Promise.resolve(localStorage.getItem(key)),
+      setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
+      removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
+    };
+  }
+  // Fallback for non-web environments
+  try {
+    return require('@react-native-async-storage/async-storage').default;
+  } catch (e) {
+    console.warn('AsyncStorage not available, using memory storage');
+    return {
+      getItem: () => Promise.resolve(null),
+      setItem: () => Promise.resolve(),
+      removeItem: () => Promise.resolve(),
+    };
+  }
+};
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'demo-key';
@@ -15,7 +36,7 @@ console.log('Supabase mode:', isDemoMode ? '🎮 Demo Mode' : '🚀 Live Mode');
 // Use demo service in demo mode, real Supabase otherwise
 export const supabase = isDemoMode ? getDemoSupabase() : createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: AsyncStorage,
+    storage: getStorage(),
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
