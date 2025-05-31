@@ -29,6 +29,13 @@ export default function RegisterScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [debugInfo, setDebugInfo] = useState('');
+  
+  // Component mount debug
+  React.useEffect(() => {
+    setDebugInfo('RegisterScreen mounted successfully');
+    console.log('RegisterScreen mounted');
+  }, []);
   
   // Refs for TextInputs to avoid findDOMNode warnings
   const emailInputRef = useRef<TextInput>(null);
@@ -47,42 +54,52 @@ export default function RegisterScreen() {
   
   const handleRegister = async () => {
     try {
+      setDebugInfo('Starting registration...');
+      console.log('Starting registration process...');
+      
       // Clear any previous errors
       clearError();
       
       // Validate inputs
       if (!email || !password || !confirmPassword || !displayName) {
+        setDebugInfo('Validation failed: missing fields');
         Alert.alert('入力エラー', 'すべての項目を入力してください。');
         return;
       }
       
       if (password !== confirmPassword) {
+        setDebugInfo('Validation failed: password mismatch');
         Alert.alert('パスワードエラー', 'パスワードが一致しません。');
         return;
       }
       
       if (password.length < 6) {
+        setDebugInfo('Validation failed: password too short');
         Alert.alert('パスワードエラー', 'パスワードは6文字以上で入力してください。');
         return;
       }
       
-      console.log('Starting registration process...');
+      setDebugInfo('Calling register function...');
       const result = await register(email, password, displayName);
       console.log('Registration result:', result);
+      setDebugInfo('Registration call completed');
       
       if (result?.requiresEmailConfirmation) {
         // Show email confirmation message
         console.log('Email confirmation required');
+        setDebugInfo('Email confirmation required');
         setRegisteredEmail(email);
         setShowConfirmationMessage(true);
       } else {
         console.log('Registration completed successfully');
+        setDebugInfo('Registration completed successfully');
       }
       // If no email confirmation required, navigation is handled by the useProtectedRoute hook
     } catch (error: any) {
       console.error('Registration error:', error);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
+      setDebugInfo(`Error: ${error.message || 'Unknown error'}`);
       
       // Check if email already exists
       if (error.message?.includes('already registered')) {
@@ -255,6 +272,15 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
               </Link>
             </View>
+            
+            {/* Debug info display */}
+            {debugInfo && (
+              <View style={[styles.debugContainer, { backgroundColor: theme.card }]}>
+                <Text style={[styles.debugText, { color: theme.textSecondary }]}>
+                  Debug: {debugInfo}
+                </Text>
+              </View>
+            )}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -400,5 +426,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  debugContainer: {
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 8,
+  },
+  debugText: {
+    fontSize: 12,
+    fontFamily: 'monospace',
   },
 });
