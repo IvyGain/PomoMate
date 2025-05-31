@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomoMate - 埋め込みテスト</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #6366f1;
+        }
+        .status {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .status .success {
+            color: #4ade80;
+        }
+        .status .warning {
+            color: #fbbf24;
+        }
+        .button {
+            display: inline-block;
+            background-color: #6366f1;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin: 10px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #4f46e5;
+        }
+        .debug {
+            background-color: #374151;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 PomoMate</h1>
+        <p>埋め込みブラウザテストページ</p>
+        
+        <div class="status">
+            <p class="success">✅ HTMLが正常に読み込まれました</p>
+            <p id="js-status" class="warning">⏳ JavaScriptの状態を確認中...</p>
+            <p id="frame-status" class="warning">⏳ Frame状態を確認中...</p>
+        </div>
+        
+        <a href="/login" class="button">ログイン画面へ</a>
+        <a href="/" class="button">ホームへ</a>
+        
+        <div class="debug" id="debug-info">
+            <h3>デバッグ情報:</h3>
+            <pre id="debug-content">読み込み中...</pre>
+        </div>
+    </div>
+    
+    <script>
+        // JavaScript実行確認
+        document.getElementById('js-status').innerHTML = '✅ JavaScriptが正常に実行されています';
+        document.getElementById('js-status').className = 'success';
+        
+        // Frame/iframe検出
+        const isInFrame = window !== window.parent;
+        const frameStatus = document.getElementById('frame-status');
+        if (isInFrame) {
+            frameStatus.innerHTML = '📱 埋め込みフレーム内で実行中';
+            frameStatus.className = 'success';
+        } else {
+            frameStatus.innerHTML = '🌐 通常のブラウザで実行中';
+            frameStatus.className = 'success';
+        }
+        
+        // デバッグ情報収集
+        const debugInfo = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            screenSize: `${screen.width}x${screen.height}`,
+            windowSize: `${window.innerWidth}x${window.innerHeight}`,
+            isInFrame: isInFrame,
+            origin: window.location.origin,
+            pathname: window.location.pathname,
+            referrer: document.referrer || 'なし',
+            timestamp: new Date().toLocaleString('ja-JP')
+        };
+        
+        document.getElementById('debug-content').textContent = JSON.stringify(debugInfo, null, 2);
+        
+        // エラーハンドリング
+        window.addEventListener('error', function(e) {
+            console.error('エラーが発生しました:', e);
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = '#ef4444';
+            errorDiv.style.marginTop = '10px';
+            errorDiv.textContent = `エラー: ${e.message}`;
+            document.querySelector('.status').appendChild(errorDiv);
+        });
+    </script>
+</body>
+</html>

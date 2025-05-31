@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>PomoMate - ポモドーロタイマー</title>
+    
+    <!-- 埋め込み対応のためのメタタグ -->
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <!-- The `react-native-web` recommended style reset -->
+    <style id="expo-reset">
+      /* Reset default styles */
+      * {
+        box-sizing: border-box;
+      }
+      
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: none;
+        position: fixed;
+        width: 100%;
+      }
+      
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+        background-color: #1a1a1a;
+      }
+      
+      /* Loading state styles */
+      .loading-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1a1a1a;
+        z-index: 9999;
+      }
+      
+      .loading-content {
+        text-align: center;
+        color: #ffffff;
+      }
+      
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 20px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 16px;
+        color: #888888;
+      }
+      
+      /* Error state styles */
+      .error-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        z-index: 10000;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .error-container h1 {
+        color: #ef4444;
+        margin-bottom: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      
+      .error-container p {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin-bottom: 10px;
+      }
+      
+      .error-container button {
+        background-color: #6366f1;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      
+      /* noscript styles */
+      noscript {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+        padding: 20px;
+      }
+    </style>
+    
+    <!-- Embed compatibility script -->
+    <script>
+      // 埋め込み環境の検出
+      window.__POMOMATE_EMBEDDED__ = window !== window.parent;
+      
+      // エラーハンドリング
+      window.addEventListener('error', function(event) {
+        console.error('Global error:', event);
+        // React Native Webのエラーは無視
+        if (event.message && event.message.includes('Illegal invocation')) {
+          event.preventDefault();
+          return;
+        }
+        
+        // その他の重大なエラーの場合
+        if (event.message && !event.message.includes('chunk')) {
+          showError(event.message);
+        }
+      });
+      
+      // Promise rejection handling
+      window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled promise rejection:', event.reason);
+        event.preventDefault();
+      });
+      
+      // Show error UI
+      function showError(message) {
+        const loadingEl = document.querySelector('.loading-container');
+        if (loadingEl) loadingEl.style.display = 'none';
+        
+        const errorEl = document.querySelector('.error-container');
+        if (errorEl) {
+          errorEl.style.display = 'flex';
+          const errorMessageEl = errorEl.querySelector('#error-message');
+          if (errorMessageEl) errorMessageEl.textContent = message;
+        }
+      }
+      
+      // Hide loading when app starts
+      window.__POMOMATE_HIDE_LOADING__ = function() {
+        const loadingEl = document.querySelector('.loading-container');
+        if (loadingEl) {
+          loadingEl.style.display = 'none';
+        }
+      };
+    </script>
+    
+    %WEB_ENTRY_SCRIPT%
+  </head>
+
+  <body>
+    <!-- Loading state -->
+    <div class="loading-container" id="loading">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">PomoMateを読み込み中...</div>
+      </div>
+    </div>
+    
+    <!-- Error state -->
+    <div class="error-container" id="error">
+      <h1>読み込みエラー</h1>
+      <p>アプリケーションの読み込みに失敗しました。</p>
+      <p id="error-message"></p>
+      <button onclick="location.reload()">再読み込み</button>
+    </div>
+    
+    <!-- No JavaScript fallback -->
+    <noscript>
+      <h1>JavaScriptが必要です</h1>
+      <p>PomoMateを使用するにはJavaScriptを有効にしてください。</p>
+    </noscript>
+    
+    <!-- The root element for your Expo app -->
+    <div id="root"></div>
+    
+    <!-- Loading timeout -->
+    <script>
+      setTimeout(function() {
+        const loadingEl = document.querySelector('.loading-container');
+        if (loadingEl && loadingEl.style.display !== 'none') {
+          showError('読み込みタイムアウト: ネットワーク接続を確認してください');
+        }
+      }, 30000);
+    </script>
+  </body>
+</html>

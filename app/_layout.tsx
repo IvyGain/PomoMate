@@ -26,6 +26,24 @@ export default function RootLayout() {
   
   const [isReady, setIsReady] = useState(false);
 
+  // 埋め込み環境の検出とロギング
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isEmbedded = window !== window.parent;
+      console.log('🌐 Environment:', {
+        embedded: isEmbedded,
+        origin: window.location.origin,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent
+      });
+      
+      // 読み込み完了を通知
+      if (window.__POMOMATE_HIDE_LOADING__) {
+        window.__POMOMATE_HIDE_LOADING__();
+      }
+    }
+  }, []);
+
   // Initialize auth check
   useEffect(() => {
     checkAuth();
