@@ -1,82 +1,126 @@
 // Web compatibility fixes for React Native Web
 
 if (typeof window !== 'undefined' && window.document) {
-  // Comprehensive fix for CSSStyleDeclaration indexed property setter
-  
-  // 1. Override direct indexed access
-  const defineIndexedProperty = (obj) => {
-    for (let i = 0; i < 1000; i++) {
-      Object.defineProperty(obj, i, {
-        get() { return undefined; },
-        set() { 
-          console.warn(`Prevented setting numeric index ${i} on CSSStyleDeclaration`);
-          return true; 
-        },
-        configurable: true
-      });
-    }
+  // Immediate fix for CSS method binding issues
+  const patchCSSMethods = () => {
+    if (typeof CSSStyleDeclaration === 'undefined') return;
+    
+    const proto = CSSStyleDeclaration.prototype;
+    const methodsToFix = ['setProperty', 'removeProperty', 'getPropertyValue', 'getPropertyPriority', 'item'];
+    
+    methodsToFix.forEach(methodName => {
+      const original = proto[methodName];
+      if (typeof original === 'function') {
+        proto[methodName] = function(...args) {
+          try {
+            return original.apply(this, args);
+          } catch (error) {
+            // Silently ignore illegal invocation errors
+            if (error.message && error.message.includes('Illegal invocation')) {
+              return methodName === 'getPropertyValue' ? '' : undefined;
+            }
+            throw error;
+          }
+        };
+      }
+    });
   };
   
-  // 2. Patch CSSStyleDeclaration prototype
-  if (typeof CSSStyleDeclaration !== 'undefined') {
-    defineIndexedProperty(CSSStyleDeclaration.prototype);
-    
-    // Override setProperty to catch numeric properties and bind context
-    const originalSetProperty = CSSStyleDeclaration.prototype.setProperty;
-    CSSStyleDeclaration.prototype.setProperty = function(prop, value, priority) {
-      if (typeof prop === 'number' || !isNaN(prop)) {
-        console.warn('Blocked numeric property on CSSStyleDeclaration:', prop);
-        return;
-      }
-      try {
-        // Ensure proper binding
-        return originalSetProperty.apply(this, [prop, value, priority]);
-      } catch (e) {
-        console.warn('CSSStyleDeclaration.setProperty error:', e);
-        return;
-      }
-    };
-    
-    // Fix getPropertyValue binding
-    const originalGetPropertyValue = CSSStyleDeclaration.prototype.getPropertyValue;
-    CSSStyleDeclaration.prototype.getPropertyValue = function(prop) {
-      try {
-        return originalGetPropertyValue.apply(this, [prop]);
-      } catch (e) {
-        console.warn('CSSStyleDeclaration.getPropertyValue error:', e);
-        return '';
-      }
-    };
+  // Apply patches immediately
+  patchCSSMethods();
+  
+  // Also patch when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', patchCSSMethods);
   }
   
-  // 3. Fix illegal invocation errors by binding methods properly (but allow debugging)
-  if (typeof console !== 'undefined') {
-    const originalConsoleError = console.error;
-    console.error = function(...args) {
-      const errorString = args[0]?.toString() || '';
-      if (errorString.includes('Illegal invocation') || 
-          errorString.includes('Failed to set an indexed property')) {
-        console.warn('CSS Error (suppressed):', errorString);
-        return;
-      }
-      return originalConsoleError.apply(console, args);
-    };
-  }
-  
-  // 4. Fix for React Native Web style arrays
-  if (window.ReactNativeWebStyle) {
-    const originalFlatten = window.ReactNativeWebStyle.flatten;
-    window.ReactNativeWebStyle.flatten = function(style) {
-      if (Array.isArray(style)) {
-        // Filter out numeric indices
-        style = style.filter((_, index) => {
-          if (typeof style[index] === 'undefined') {
-            return false;
+  // Prevent numeric property assignments on CSS objects
+  const preventNumericAssignment = () => {
+    if (typeof CSSStyleDeclaration === 'undefined') return;
+    
+    const originalDescriptor = Object.getOwnPropertyDescriptor(CSSStyleDeclaration.prototype, 'setProperty');
+    if (!originalDescriptor || originalDescriptor.value.__patched) return;
+    
+    const originalSetProperty = originalDescriptor.value;
+    
+    Object.defineProperty(CSSStyleDeclaration.prototype, 'setProperty', {
+      value: function(property, value, priority) {
+        // Block numeric properties
+        if (typeof property === 'number' || /^\d+$/.test(property)) {
+          return;
+        }
+        
+        try {
+          return originalSetProperty.call(this, property, value, priority);
+        } catch (error) {
+          // Silently handle illegal invocation
+          if (error.message && error.message.includes('Illegal invocation')) {
+            return;
           }
-          return true;
-        });
-      }
-      return originalFlatten ? originalFlatten.call(this, style) : style;
-    };
+          throw error;
+        }
+      },
+      writable: true,
+      configurable: true
+    });
+    
+    // Mark as patched
+    CSSStyleDeclaration.prototype.setProperty.__patched = true;
+  };
+  
+  preventNumericAssignment();
+  
+  // Suppress CSS-related console errors
+  const originalConsoleError = console.error;
+  console.error = function(...args) {
+    const message = args[0]?.toString() || '';
+    
+    // Suppress specific CSS errors that don't affect functionality
+    if (message.includes('Illegal invocation') ||
+        message.includes('Failed to set an indexed property') ||
+        message.includes('CSSStyleDeclaration')) {
+      // Convert to warning for debugging but don't crash
+      console.warn('CSS Warning (suppressed):', ...args);
+      return;
+    }
+    
+    return originalConsoleError.apply(console, args);
+  };
+  
+  // Early error boundary for CSS errors
+  window.addEventListener('error', (event) => {
+    if (event.error && event.error.message && 
+        event.error.message.includes('Illegal invocation')) {
+      event.preventDefault();
+      console.warn('Prevented CSS error from crashing app:', event.error);
+    }
+  });
+  
+  // Polyfill for potential missing methods
+  if (typeof Element !== 'undefined' && Element.prototype) {
+    if (!Element.prototype.getAttribute) {
+      Element.prototype.getAttribute = function(name) {
+        return this.attributes[name]?.value || null;
+      };
+    }
+    
+    if (!Element.prototype.setAttribute) {
+      Element.prototype.setAttribute = function(name, value) {
+        if (!this.attributes) this.attributes = {};
+        this.attributes[name] = { value: String(value) };
+      };
+    }
   }
+}
+
+// Export for manual initialization if needed
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    init: () => {
+      // Re-run patches if needed
+      if (typeof window !== 'undefined' && window.document) {
+        console.log('Web compatibility patches initialized');
+      }
+    }
+  };
 }

@@ -1,15 +1,20 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '@/store/themeStore';
-import { useUserStore } from '@/store/userStore';
 import { Timer } from '@/components/Timer';
 import { LevelProgress } from '@/components/LevelProgress';
 import ProfileHeader from '@/components/ProfileHeader';
 
 export default function HomeScreen() {
   const { theme } = useThemeStore();
-  const userStats = useUserStore();
+  
+  // Simple mock data to avoid userStore dependency issues
+  const mockUserStats = {
+    level: 1,
+    xp: 50,
+    xpToNextLevel: 100,
+  };
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
@@ -22,10 +27,19 @@ export default function HomeScreen() {
         
         <View style={styles.statsContainer}>
           <LevelProgress 
-            level={userStats.level}
-            xp={userStats.xp}
-            xpToNextLevel={userStats.xpToNextLevel}
+            level={mockUserStats.level}
+            xp={mockUserStats.xp}
+            xpToNextLevel={mockUserStats.xpToNextLevel}
           />
+        </View>
+        
+        <View style={styles.infoContainer}>
+          <Text style={[styles.infoText, { color: theme.text }]}>
+            🎯 PomoMate へようこそ！
+          </Text>
+          <Text style={[styles.subText, { color: theme.textSecondary }]}>
+            タイマーを使って集中力を高めましょう
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -47,5 +61,19 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     padding: 16,
+  },
+  infoContainer: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  infoText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subText: {
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

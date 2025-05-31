@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomoMate Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .console-output {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PomoMate Debug Test</h1>
+        
+        <div class="section">
+            <h2>Environment Check</h2>
+            <div id="env-check"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Supabase Connection Test</h2>
+            <button onclick="testSupabase()">Test Supabase Connection</button>
+            <div id="supabase-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Demo Account Test</h2>
+            <button onclick="testDemoLogin()">Test Demo Login</button>
+            <button onclick="testDemoRegister()">Test Demo Register</button>
+            <div id="demo-result"></div>
+        </div>
+        
+        <div class="section">
+            <h2>Console Output</h2>
+            <button onclick="clearConsole()">Clear Console</button>
+            <div id="console-output" class="console-output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Capture console logs
+        const consoleOutput = document.getElementById('console-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(type, ...args) {
+            const timestamp = new Date().toLocaleTimeString();
+            const message = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+            ).join(' ');
+            
+            const color = type === 'error' ? '#f00' : type === 'warn' ? '#ff0' : '#0f0';
+            consoleOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] [${type.toUpperCase()}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = (...args) => {
+            originalLog(...args);
+            addToConsole('log', ...args);
+        };
+        
+        console.error = (...args) => {
+            originalError(...args);
+            addToConsole('error', ...args);
+        };
+        
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addToConsole('warn', ...args);
+        };
+        
+        function clearConsole() {
+            consoleOutput.innerHTML = '';
+        }
+        
+        // Environment check
+        document.getElementById('env-check').innerHTML = `
+            <p>Window Location: ${window.location.href}</p>
+            <p>User Agent: ${navigator.userAgent}</p>
+            <p>Local Storage Available: ${typeof localStorage !== 'undefined' ? 'Yes' : 'No'}</p>
+        `;
+        
+        // Test functions
+        async function testSupabase() {
+            const result = document.getElementById('supabase-result');
+            result.innerHTML = '<p>Testing Supabase connection...</p>';
+            
+            try {
+                // Test with the actual Supabase URL and key
+                const supabaseUrl = 'https://xjxgapahcookarqiwjww.supabase.co';
+                const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqeGdhcGFoY29va2FycWl3and3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2Mzc3MDMsImV4cCI6MjA2NDIxMzcwM30.S2C4PwG_RTv91Fm0VVN3B3lj0A909XddBaqPjZWAKXQ';
+                
+                console.log('Testing Supabase connection with:', { supabaseUrl });
+                
+                // Make a simple test request
+                const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+                    headers: {
+                        'apikey': supabaseAnonKey,
+                        'Authorization': `Bearer ${supabaseAnonKey}`
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    result.innerHTML = '<p class="success">✓ Supabase connection successful!</p>';
+                } else {
+                    result.innerHTML = `<p class="error">✗ Supabase connection failed: ${response.status}</p>`;
+                }
+            } catch (error) {
+                console.error('Supabase test error:', error);
+                result.innerHTML = `<p class="error">✗ Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testDemoLogin() {
+            const result = document.getElementById('demo-result');
+            result.innerHTML = '<p>Testing demo login...</p>';
+            
+            try {
+                console.log('Attempting demo login with demo@example.com');
+                
+                // Simulate the demo login process
+                const demoCredentials = {
+                    email: 'demo@example.com',
+                    password: 'password123'
+                };
+                
+                console.log('Demo credentials:', demoCredentials);
+                
+                // Check if the app is running
+                const appUrl = 'http://localhost:8081'; // Default Expo web URL
+                const response = await fetch(appUrl).catch(() => null);
+                
+                if (response && response.ok) {
+                    result.innerHTML = '<p class="success">✓ App is running! Navigate to /login to test demo account.</p>';
+                } else {
+                    result.innerHTML = '<p class="error">✗ App not running on localhost:8081. Please start the app first.</p>';
+                }
+            } catch (error) {
+                console.error('Demo login test error:', error);
+                result.innerHTML = `<p class="error">✗ Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testDemoRegister() {
+            const result = document.getElementById('demo-result');
+            result.innerHTML = '<p>Testing demo registration...</p>';
+            
+            try {
+                console.log('Testing demo account registration flow');
+                
+                // Log what would happen in the registration process
+                console.log('1. User fills in registration form');
+                console.log('2. App calls supabase.auth.signUp()');
+                console.log('3. If email confirmation required, show confirmation message');
+                console.log('4. If no confirmation required, create user profile');
+                console.log('5. Navigate to main app');
+                
+                result.innerHTML = '<p class="success">✓ Registration flow logged to console</p>';
+            } catch (error) {
+                console.error('Demo register test error:', error);
+                result.innerHTML = `<p class="error">✗ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Initial log
+        console.log('PomoMate Debug Test Page Loaded');
+        console.log('Ready to test demo account functionality');
+    </script>
+</body>
+</html>

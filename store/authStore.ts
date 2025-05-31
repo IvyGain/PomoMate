@@ -11,7 +11,6 @@ const getStorage = () => {
       removeItem: (key: string) => Promise.resolve(localStorage.removeItem(key)),
     };
   }
-  // Fallback for non-web environments
   return require('@react-native-async-storage/async-storage').default;
 };
 
@@ -38,37 +37,13 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   
-  // Auth actions
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, username: string) => Promise<void>;
   logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  updateProfile: (data: Partial<User>) => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
   setUser: (user: User | null) => void;
 }
-
-// Helper function to sync user stats
-const syncUserStats = async (user: User) => {
-  try {
-    // Dynamically import to avoid circular dependency
-    const { useUserStore } = await import('./userStore');
-    const userStore = useUserStore.getState();
-    
-    if (user) {
-      userStore.updateStats({
-        level: user.level,
-        xp: user.experience,
-        totalSessions: 0, // Will be updated from sessions
-        totalMinutes: user.total_focus_time,
-        streak: user.streak_days,
-      });
-    }
-  } catch (error) {
-    console.error('Error syncing user stats:', error);
-  }
-};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -90,7 +65,7 @@ export const useAuthStore = create<AuthState>()(
           if (error) throw error;
           
           if (data.user) {
-            // Fetch user profile from database
+            // Fetch user profile
             const { data: profile, error: profileError } = await supabase
               .from('users')
               .select('*')
@@ -105,15 +80,6 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
               error: null 
             });
-            
-            // Sync user stats
-            await syncUserStats(profile);
-            
-            // For demo account, enable demo mode
-            if (email === 'demo@example.com') {
-              const { useUserStore } = await import('./userStore');
-              useUserStore.getState().enableDemoMode();
-            }
           }
         } catch (error: any) {
           set({ 
@@ -126,11 +92,8 @@ export const useAuthStore = create<AuthState>()(
       
       register: async (email: string, password: string, username: string) => {
         try {
-          console.log('AuthStore: Starting registration for email:', email);
           set({ isLoading: true, error: null });
           
-          // Sign up with Supabase Auth
-          console.log('AuthStore: Calling supabase.auth.signUp...');
           const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -142,39 +105,24 @@ export const useAuthStore = create<AuthState>()(
             },
           });
           
-          console.log('AuthStore: signUp response:', { authData, authError });
-          
-          if (authError) {
-            console.error('AuthStore: signUp error:', authError);
-            throw authError;
-          }
+          if (authError) throw authError;
           
           // Check if email confirmation is required
           if (authData.user && !authData.session) {
-            // Email confirmation required
-            set({ 
-              isLoading: false,
-              error: null 
-            });
-            return { 
-              success: true, 
-              requiresEmailConfirmation: true,
-              email 
-            };
+            set({ isLoading: false, error: null });
+            return;
           }
           
           if (authData.user) {
             // Create user profile
             const { data: profile, error: profileError } = await supabase
               .from('users')
-              .insert([
-                {
-                  id: authData.user.id,
-                  email,
-                  username,
-                  display_name: username,
-                },
-              ])
+              .insert([{
+                id: authData.user.id,
+                email,
+                username,
+                display_name: username,
+              }])
               .select()
               .single();
               
@@ -194,7 +142,7 @@ export const useAuthStore = create<AuthState>()(
                     isLoading: false,
                     error: null 
                   });
-                  return { success: true, requiresEmailConfirmation: false };
+                  return;
                 }
               }
               throw profileError;
@@ -206,13 +154,11 @@ export const useAuthStore = create<AuthState>()(
             ]);
             
             // Create default character
-            await supabase.from('user_characters').insert([
-              {
-                user_id: authData.user.id,
-                character_id: 'balanced_1',
-                is_active: true,
-              },
-            ]);
+            await supabase.from('user_characters').insert([{
+              user_id: authData.user.id,
+              character_id: 'balanced_1',
+              is_active: true,
+            }]);
             
             set({ 
               user: profile, 
@@ -220,26 +166,11 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
               error: null 
             });
-            
-            // Sync user stats
-            await syncUserStats(profile);
-            
-            return { success: true, requiresEmailConfirmation: false };
           }
         } catch (error: any) {
-          console.error('AuthStore: Full registration error:', error);
-          console.error('AuthStore: Error details:', {
-            message: error.message,
-            code: error.code,
-            status: error.status,
-            details: error.details,
-            hint: error.hint,
-            stack: error.stack
-          });
-          
           set({ 
             isLoading: false, 
-            error: `Registration failed: ${error.message || error.code || 'Unknown error'}` 
+            error: error.message || '登録に失敗しました' 
           });
           throw error;
         }
@@ -258,16 +189,7 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null 
           });
-          
-          // Clear user data
-          const { useUserStore } = await import('./userStore');
-          useUserStore.getState().resetStats();
-          
-          // Clear persisted storage
-          const storage = getStorage();
-          await storage.removeItem('auth-storage');
         } catch (error: any) {
-          console.error('Logout error:', error);
           // Force logout even if API fails
           set({ 
             user: null, 
@@ -275,66 +197,11 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null 
           });
-          
-          // Clear user data and storage anyway
-          const { useUserStore } = await import('./userStore');
-          useUserStore.getState().resetStats();
-          const storage = getStorage();
-          await storage.removeItem('auth-storage');
-        }
-      },
-      
-      resetPassword: async (email: string) => {
-        try {
-          set({ isLoading: true, error: null });
-          
-          const { error } = await supabase.auth.resetPasswordForEmail(email);
-          if (error) throw error;
-          
-          set({ isLoading: false });
-        } catch (error: any) {
-          set({ 
-            isLoading: false, 
-            error: error.message || 'パスワードリセットに失敗しました' 
-          });
-          throw error;
-        }
-      },
-      
-      updateProfile: async (data: Partial<User>) => {
-        try {
-          set({ isLoading: true, error: null });
-          
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) throw new Error('認証が必要です');
-          
-          const { data: profile, error } = await supabase
-            .from('users')
-            .update(data)
-            .eq('id', user.id)
-            .select()
-            .single();
-            
-          if (error) throw error;
-          
-          set({ 
-            user: profile, 
-            isLoading: false,
-            error: null 
-          });
-        } catch (error: any) {
-          set({ 
-            isLoading: false, 
-            error: error.message || 'プロフィール更新に失敗しました' 
-          });
-          throw error;
         }
       },
       
       checkAuth: async () => {
         try {
-          set({ isLoading: true });
-          
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session?.user) {
@@ -350,26 +217,19 @@ export const useAuthStore = create<AuthState>()(
             set({ 
               user: profile, 
               isAuthenticated: true,
-              isLoading: false,
               error: null 
             });
-            
-            // Sync user stats
-            await syncUserStats(profile);
           } else {
             set({ 
               user: null, 
               isAuthenticated: false,
-              isLoading: false,
               error: null 
             });
           }
         } catch (error) {
-          console.error('Auth check failed:', error);
           set({ 
             user: null, 
             isAuthenticated: false, 
-            isLoading: false,
             error: null 
           });
         }

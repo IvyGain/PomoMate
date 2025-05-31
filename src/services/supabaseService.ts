@@ -1,13 +1,29 @@
 import { supabase } from '../lib/supabase';
+import { logger } from '../utils/logger';
+import type {
+  SessionCreate,
+  SessionResponse,
+  UserProfile,
+  UserSettings,
+  TeamSessionCreate,
+  TeamSessionResponse,
+  UserAchievement,
+  DailyStats,
+  SupabaseResponse,
+} from '../types/api';
+
+const serviceLogger = logger.child('SupabaseService');
 
 // Session Service
 export const sessionService = {
   async createSession(data: {
     type: 'pomodoro' | 'short_break' | 'long_break';
     duration: number;
-  }) {
+  }): Promise<SessionResponse> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('認証が必要です');
+
+    serviceLogger.info('Creating session', { type: data.type, duration: data.duration });
 
     const { data: session, error } = await supabase
       .from('sessions')
@@ -23,15 +39,18 @@ export const sessionService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      serviceLogger.error('Failed to create session', error);
+      throw error;
+    }
     return session;
   },
 
   async updateSession(sessionId: string, data: {
     status?: 'completed' | 'interrupted';
     actual_duration?: number;
-  }) {
-    const updates: any = { ...data };
+  }): Promise<SessionResponse> {
+    const updates: Partial<SessionResponse> = { ...data };
     if (data.status) {
       updates.ended_at = new Date().toISOString();
     }
@@ -43,11 +62,14 @@ export const sessionService = {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      serviceLogger.error('Failed to update session', error);
+      throw error;
+    }
     return session;
   },
 
-  async getRecentSessions(limit = 10) {
+  async getRecentSessions(limit = 10): Promise<SessionResponse[]> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('認証が必要です');
 
@@ -58,11 +80,14 @@ export const sessionService = {
       .order('started_at', { ascending: false })
       .limit(limit);
 
-    if (error) throw error;
-    return sessions;
+    if (error) {
+      serviceLogger.error('Failed to fetch recent sessions', error);
+      throw error;
+    }
+    return sessions || [];
   },
 
-  async getTodaySessions() {
+  async getTodaySessions(): Promise<SessionResponse[]> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('認証が必要です');
 
@@ -76,23 +101,21 @@ export const sessionService = {
       .gte('started_at', today.toISOString())
       .order('started_at', { ascending: true });
 
-    if (error) throw error;
-    return sessions;
+    if (error) {
+      serviceLogger.error('Failed to fetch today sessions', error);
+      throw error;
+    }
+    return sessions || [];
   },
 };
 
 // User Service
 export const userService = {
-  async updateStats(stats: {
-    experience?: number;
-    coins?: number;
-    level?: number;
-    streak_days?: number;
-    focus_time_today?: number;
-    total_focus_time?: number;
-  }) {
+  async updateStats(stats: Partial<UserProfile>): Promise<UserProfile> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('認証が必要です');
+
+    serviceLogger.info('Updating user stats', { userId: user.id, stats });
 
     const { data: profile, error } = await supabase
       .from('users')

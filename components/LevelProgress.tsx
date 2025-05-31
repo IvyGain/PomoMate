@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, fontSizes, borderRadius } from '@/constants/theme';
 
 interface LevelProgressProps {
   level: number;
@@ -8,27 +7,22 @@ interface LevelProgressProps {
   xpToNextLevel: number;
 }
 
-export const LevelProgress: React.FC<LevelProgressProps> = ({
-  level,
-  xp,
-  xpToNextLevel,
+export const LevelProgress: React.FC<LevelProgressProps> = ({ 
+  level = 1, 
+  xp = 0, 
+  xpToNextLevel = 100 
 }) => {
-  const progress = xp / xpToNextLevel;
+  const progress = Math.min((xp / xpToNextLevel) * 100, 100);
   
   return (
     <View style={styles.container}>
-      <View style={styles.levelInfo}>
-        <View style={styles.levelBadge}>
-          <Text style={styles.levelText}>{level}</Text>
-        </View>
-        <View>
-          <Text style={styles.levelTitle}>レベル {level}</Text>
-          <Text style={styles.xpText}>{xp}/{xpToNextLevel} XP</Text>
-        </View>
-      </View>
+      <Text style={styles.levelText}>レベル {level}</Text>
       
       <View style={styles.progressContainer}>
-        <View style={[styles.progressBar, { width: `${progress * 100}%` }]} />
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${progress}%` }]} />
+        </View>
+        <Text style={styles.xpText}>{xp} / {xpToNextLevel} XP</Text>
       </View>
     </View>
   );
@@ -36,47 +30,35 @@ export const LevelProgress: React.FC<LevelProgressProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  levelInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  levelBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: borderRadius.circle,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
+    padding: 16,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    marginVertical: 8,
   },
   levelText: {
-    color: colors.text,
-    fontSize: fontSizes.md,
+    fontSize: 18,
     fontWeight: 'bold',
-  },
-  levelTitle: {
-    color: colors.text,
-    fontSize: fontSizes.md,
-    fontWeight: 'bold',
-  },
-  xpText: {
-    color: colors.textSecondary,
-    fontSize: fontSizes.sm,
+    color: '#333',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   progressContainer: {
-    height: 8,
-    backgroundColor: colors.inactive,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
+    alignItems: 'center',
   },
   progressBar: {
+    width: '100%',
+    height: 8,
+    backgroundColor: '#e9ecef',
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: '#28a745',
+  },
+  xpText: {
+    fontSize: 14,
+    color: '#666',
   },
 });

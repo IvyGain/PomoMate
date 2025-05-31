@@ -1,11 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Define theme types
-export type ThemeType = 'light' | 'dark';
-
-// Define theme colors
 export interface ThemeColors {
   background: string;
   card: string;
@@ -19,55 +13,55 @@ export interface ThemeColors {
   inactive: string;
 }
 
-// Define dark theme colors
-const darkTheme: ThemeColors = {
-  background: '#121212',
-  card: '#1E1E1E',
-  text: '#FFFFFF',
-  textSecondary: '#AAAAAA',
-  primary: '#6200EE',
-  secondary: '#03DAC6',
-  success: '#4CAF50',
-  warning: '#FFC107',
-  error: '#EF476F',
-  inactive: '#555555',
-};
-
-// Define light theme colors
 const lightTheme: ThemeColors = {
   background: '#FFFFFF',
-  card: '#F5F5F5',
-  text: '#121212',
+  card: '#F8F9FA',
+  text: '#333333',
   textSecondary: '#666666',
-  primary: '#6200EE',
-  secondary: '#03DAC6',
-  success: '#4CAF50',
-  warning: '#FFC107',
-  error: '#EF476F',
-  inactive: '#CCCCCC',
+  primary: '#007AFF',
+  secondary: '#5856D6',
+  success: '#34C759',
+  warning: '#FF9500',
+  error: '#FF3B30',
+  inactive: '#C7C7CC',
 };
 
-// Define theme store
+const darkTheme: ThemeColors = {
+  background: '#000000',
+  card: '#1C1C1E',
+  text: '#FFFFFF',
+  textSecondary: '#99999A',
+  primary: '#0A84FF',
+  secondary: '#5E5CE6',
+  success: '#30D158',
+  warning: '#FF9F0A',
+  error: '#FF453A',
+  inactive: '#48484A',
+};
+
 interface ThemeState {
-  themeType: ThemeType;
+  currentTheme: 'light' | 'dark';
   theme: ThemeColors;
   toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
-export const useThemeStore = create<ThemeState>()(
-  persist(
-    (set) => ({
-      themeType: 'dark',
-      theme: darkTheme,
-      toggleTheme: () => set((state) => {
-        const newThemeType = state.themeType === 'dark' ? 'light' : 'dark';
-        const newTheme = newThemeType === 'dark' ? darkTheme : lightTheme;
-        return { themeType: newThemeType, theme: newTheme };
-      }),
-    }),
-    {
-      name: 'theme-storage',
-      storage: createJSONStorage(() => AsyncStorage),
-    }
-  )
-);
+export const useThemeStore = create<ThemeState>((set, get) => ({
+  currentTheme: 'light',
+  theme: lightTheme,
+  
+  toggleTheme: () => {
+    const newTheme = get().currentTheme === 'light' ? 'dark' : 'light';
+    set({
+      currentTheme: newTheme,
+      theme: newTheme === 'light' ? lightTheme : darkTheme,
+    });
+  },
+  
+  setTheme: (theme: 'light' | 'dark') => {
+    set({
+      currentTheme: theme,
+      theme: theme === 'light' ? lightTheme : darkTheme,
+    });
+  },
+}));
