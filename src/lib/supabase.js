@@ -38,6 +38,18 @@ const storage = {
   },
 };
 
+// Get the correct redirect URL based on environment
+const getRedirectUrl = () => {
+  if (typeof window !== 'undefined') {
+    // In production, use the actual deployment URL
+    if (window.location.hostname !== 'localhost') {
+      return `${window.location.origin}/email-confirmed`;
+    }
+  }
+  // Default to production URL
+  return 'https://pomomate.vercel.app/email-confirmed';
+};
+
 // Create Supabase client with error handling
 let supabase;
 try {
@@ -46,10 +58,13 @@ try {
       storage,
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: false
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      redirectTo: getRedirectUrl()
     },
   });
   console.log('✅ Supabase client initialized successfully');
+  console.log('📧 Email redirect URL:', getRedirectUrl());
 } catch (error) {
   console.error('❌ Failed to initialize Supabase client:', error);
   // Create a mock client to prevent crashes

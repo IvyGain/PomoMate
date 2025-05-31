@@ -94,6 +94,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           
+          const redirectUrl = typeof window !== 'undefined' && window.location.hostname !== 'localhost'
+            ? `${window.location.origin}/email-confirmed`
+            : 'https://pomomate.vercel.app/email-confirmed';
+
           const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -102,6 +106,7 @@ export const useAuthStore = create<AuthState>()(
                 username,
                 display_name: username,
               },
+              emailRedirectTo: redirectUrl,
             },
           });
           
@@ -110,6 +115,7 @@ export const useAuthStore = create<AuthState>()(
           // Check if email confirmation is required
           if (authData.user && !authData.session) {
             set({ isLoading: false, error: null });
+            // Email confirmation required - will be handled by register screen
             return;
           }
           

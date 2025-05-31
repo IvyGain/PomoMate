@@ -1,12 +1,109 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '@/store/themeStore';
 import { CheckCircle } from 'lucide-react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { supabase } from '@/src/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 
 export default function EmailConfirmedScreen() {
   const { theme } = useThemeStore();
+  const { setUser } = useAuthStore();
+  const [isProcessing, setIsProcessing] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const processEmailConfirmation = async () => {
+      try {
+        console.log('📧 Processing email confirmation...');
+        
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+        
+        if (session?.user) {
+          console.log('✅ Email confirmed for:', session.user.email);
+          
+          // Create or update user profile
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (!profile) {
+            // Create profile if it doesn't exist
+            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'User';
+            
+            const { data: newProfile } = await supabase
+              .from('users')
+              .insert([{
+                id: session.user.id,
+                email: session.user.email,
+                username: username,
+                display_name: username,
+                level: 1,
+                experience: 0,
+                coins: 100,
+                streak_days: 0,
+                focus_time_today: 0,
+                total_focus_time: 0,
+              }])
+              .select()
+              .single();
+              
+            if (newProfile) setUser(newProfile);
+          } else {
+            setUser(profile);
+          }
+        }
+      } catch (err: any) {
+        console.error('❌ Email confirmation error:', err);
+        setError(err.message);
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+    
+    processEmailConfirmation();
+  }, []);
+  
+  if (isProcessing) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.content}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={[styles.title, { color: theme.text }]}>
+            認証処理中...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+  
+  if (error) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.content}>
+          <Text style={[styles.title, { color: theme.text }]}>
+            エラーが発生しました
+          </Text>
+          <Text style={[styles.description, { color: theme.textSecondary }]}>
+            {error}
+          </Text>
+          <Link href="/login" asChild>
+            <TouchableOpacity 
+              style={[styles.loginButton, { backgroundColor: theme.primary }]}
+            >
+              <Text style={styles.loginButtonText}>ログイン画面へ</Text>
+            </TouchableOpacity>
+          </Link>
+        </View>
+      </SafeAreaView>
+    );
+  }
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>

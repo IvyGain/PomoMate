@@ -15,6 +15,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SafeTextInput } from '@/components/SafeTextInput';
+import { supabase } from '@/src/lib/supabase';
 
 // デバッグログ
 console.log('📱 RegisterScreen loading...');
@@ -74,7 +75,15 @@ export default function RegisterScreen() {
       console.log('🚀 Calling register function...');
       await register(email, password, username);
       console.log('✅ Registration successful');
-      // Navigation is handled by _layout.tsx
+      
+      // Check if user needs email confirmation
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // Email confirmation required
+        console.log('📧 Email confirmation required, navigating to email-sent');
+        router.replace('/email-sent');
+      }
+      // Otherwise navigation is handled by _layout.tsx
     } catch (error) {
       console.error('❌ Registration failed:', error);
       // Error is shown by the effect above
