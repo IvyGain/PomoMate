@@ -26,12 +26,26 @@ const getStorage = () => {
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'demo-key';
 
+// Debug environment variables
+console.log('Environment variable debug:', {
+  EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+  EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ? '[SET]' : '[NOT SET]',
+  supabaseUrl,
+  supabaseAnonKey: supabaseAnonKey ? '[SET]' : '[NOT SET]',
+  allEnv: Object.keys(process.env).filter(key => key.includes('SUPABASE')),
+});
+
 // Demo mode detection
 const isDemoMode = !process.env.EXPO_PUBLIC_SUPABASE_URL || 
                    supabaseUrl.includes('demo') || 
                    supabaseAnonKey.includes('demo');
 
 console.log('Supabase mode:', isDemoMode ? '🎮 Demo Mode' : '🚀 Live Mode');
+console.log('Demo mode reason:', {
+  noUrl: !process.env.EXPO_PUBLIC_SUPABASE_URL,
+  urlIncludesDemo: supabaseUrl.includes('demo'),
+  keyIncludesDemo: supabaseAnonKey.includes('demo')
+});
 
 // Use demo service in demo mode, real Supabase otherwise
 export const supabase = isDemoMode ? getDemoSupabase() : createClient(supabaseUrl, supabaseAnonKey, {
