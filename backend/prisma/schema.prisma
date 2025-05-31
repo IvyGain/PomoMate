@@ -1,0 +1,248 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  displayName     String
+  photoURL        String?
+  friendCode      String    @unique @default(cuid())
+  
+  // Stats
+  level           Int       @default(1)
+  xp              Int       @default(0)
+  totalSessions   Int       @default(0)
+  totalMinutes    Int       @default(0)
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastActiveDate  DateTime?
+  
+  // Character
+  characterType   String    @default("balanced")
+  characterLevel  Int       @default(1)
+  evolutionPath   String[]  @default(["balanced"])
+  
+  // Settings
+  focusDuration   Int       @default(25)
+  breakDuration   Int       @default(5)
+  longBreakDuration Int     @default(15)
+  autoStartBreak  Boolean   @default(false)
+  autoStartFocus  Boolean   @default(false)
+  soundEnabled    Boolean   @default(true)
+  vibrationEnabled Boolean  @default(true)
+  theme           String    @default("light")
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  sessions        Session[]
+  achievements    UserAchievement[]
+  gameScores      GameScore[]
+  sentFriendRequests     FriendRequest[] @relation("SentRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedRequests")
+  friends         Friend[]  @relation("UserFriends")
+  friendOf        Friend[]  @relation("FriendOfUser")
+  notifications   Notification[]
+  teamSessions    TeamSessionParticipant[]
+  messages        TeamSessionMessage[]
+  activeDays      ActiveDay[]
+}
+
+// Session model (individual pomodoro sessions)
+model Session {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type            String    // "focus" | "break" | "longBreak"
+  duration        Int       // in minutes
+  completedAt     DateTime  @default(now())
+  xpEarned        Int       @default(0)
+  
+  // Optional team session reference
+  teamSessionId   String?
+  teamSession     TeamSession? @relation(fields: [teamSessionId], references: [id])
+  
+  createdAt       DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([completedAt])
+}
+
+// Active days tracking
+model ActiveDay {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date            DateTime  @db.Date
+  sessionsCount   Int       @default(0)
+  totalMinutes    Int       @default(0)
+  
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+}
+
+// Achievements
+model Achievement {
+  id              String    @id @default(cuid())
+  name            String
+  description     String
+  icon            String
+  category        String    // "sessions" | "streak" | "social" | "special"
+  requirement     Json      // Flexible requirement object
+  xpReward        Int       @default(100)
+  
+  users           UserAchievement[]
+}
+
+model UserAchievement {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId   String
+  achievement     Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt      DateTime  @default(now())
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+}
+
+// Games
+model Game {
+  id              String    @id @default(cuid())
+  name            String
+  description     String
+  type            String
+  unlockLevel     Int       @default(1)
+  
+  scores          GameScore[]
+}
+
+model GameScore {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId          String
+  game            Game      @relation(fields: [gameId], references: [id])
+  score           Int
+  playedAt        DateTime  @default(now())
+  
+  @@index([userId, gameId])
+  @@index([score])
+}
+
+// Social features
+model FriendRequest {
+  id              String    @id @default(cuid())
+  fromUserId      String
+  fromUser        User      @relation("SentRequests", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUserId        String
+  toUser          User      @relation("ReceivedRequests", fields: [toUserId], references: [id], onDelete: Cascade)
+  status          String    @default("pending") // "pending" | "accepted" | "rejected"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, status])
+}
+
+model Friend {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+  friendId        String
+  friend          User      @relation("FriendOfUser", fields: [friendId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  
+  @@unique([userId, friendId])
+  @@index([userId])
+  @@index([friendId])
+}
+
+model Notification {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String    // "friendRequest" | "friendAccepted" | "achievement" | etc.
+  title           String
+  message         String
+  data            Json?     // Additional data
+  read            Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+// Team Sessions
+model TeamSession {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  name            String
+  hostId          String
+  
+  // Session settings
+  focusDuration   Int       @default(25)
+  breakDuration   Int       @default(5)
+  
+  // Session state
+  status          String    @default("waiting") // "waiting" | "active" | "paused" | "completed"
+  currentMode     String    @default("focus") // "focus" | "break"
+  startedAt       DateTime?
+  pausedAt        DateTime?
+  completedAt     DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  participants    TeamSessionParticipant[]
+  messages        TeamSessionMessage[]
+  sessions        Session[]
+  
+  @@index([code])
+  @@index([status])
+}
+
+model TeamSessionParticipant {
+  id              String    @id @default(cuid())
+  teamSessionId   String
+  teamSession     TeamSession @relation(fields: [teamSessionId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role            String    @default("participant") // "host" | "participant"
+  isReady         Boolean   @default(false)
+  joinedAt        DateTime  @default(now())
+  leftAt          DateTime?
+  
+  @@unique([teamSessionId, userId])
+  @@index([teamSessionId])
+  @@index([userId])
+}
+
+model TeamSessionMessage {
+  id              String    @id @default(cuid())
+  teamSessionId   String
+  teamSession     TeamSession @relation(fields: [teamSessionId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  message         String
+  createdAt       DateTime  @default(now())
+  
+  @@index([teamSessionId])
+}

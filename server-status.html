@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pomodoro Play - サーバー状態</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .status {
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+        .online {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        .offline {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+        .checking {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: #764ba2;
+        }
+        .log {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🍅 Pomodoro Play - サーバー状態</h1>
+    
+    <div id="status" class="status checking">
+        <h2>確認中...</h2>
+    </div>
+    
+    <div>
+        <a href="http://localhost:8081" class="button" target="_blank">アプリを開く</a>
+        <button class="button" onclick="location.reload()">再チェック</button>
+    </div>
+    
+    <div class="log">
+        <strong>接続情報:</strong><br>
+        URL: http://localhost:8081<br>
+        <span id="timestamp"></span><br>
+        <span id="details"></span>
+    </div>
+
+    <script>
+        async function checkServer() {
+            const statusDiv = document.getElementById('status');
+            const detailsSpan = document.getElementById('details');
+            const timestampSpan = document.getElementById('timestamp');
+            
+            timestampSpan.textContent = '確認時刻: ' + new Date().toLocaleTimeString('ja-JP');
+            
+            try {
+                const response = await fetch('http://localhost:8081', {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                
+                // no-cors mode doesn't give us response details, but if no error, server is up
+                statusDiv.className = 'status online';
+                statusDiv.innerHTML = '<h2>✅ サーバー稼働中</h2><p>Expo開発サーバーが正常に動作しています</p>';
+                detailsSpan.textContent = '状態: オンライン';
+            } catch (error) {
+                statusDiv.className = 'status offline';
+                statusDiv.innerHTML = '<h2>❌ サーバー停止中</h2><p>./start-web.sh を実行してください</p>';
+                detailsSpan.textContent = '状態: オフライン - ' + error.message;
+            }
+        }
+        
+        // Check on load
+        checkServer();
+        
+        // Auto-check every 5 seconds
+        setInterval(checkServer, 5000);
+    </script>
+</body>
+</html>

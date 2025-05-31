@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomoMate - Supabase メール設定手順</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 40px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+        .important {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .screenshot {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .screenshot img {
+            width: 100%;
+            display: block;
+        }
+        .button-visual {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .tab-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .tab-header {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+        .tab-content {
+            padding: 20px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 PomoMate - Supabase メール設定完全ガイド</h1>
+        
+        <div class="important">
+            <strong>⚠️ 重要：</strong> 以下の設定を行うことで、メール確認機能が正しく動作するようになります。
+            現在、メールは送信されていますが、確認リンクのリダイレクトが正しく設定されていません。
+        </div>
+
+        <h2>📋 設定手順</h2>
+
+        <div class="step">
+            <h3><span class="step-number">1</span>URL設定を更新</h3>
+            <p>Supabaseダッシュボードで <strong>Authentication</strong> → <strong>URL Configuration</strong> を開きます。</p>
+            
+            <h4>Site URL:</h4>
+            <div class="code-block">http://localhost:8081</div>
+            <p>※ 本番環境では実際のドメインに変更してください（例: https://pomomate.app）</p>
+            
+            <h4>Redirect URLs（重要！）:</h4>
+            <div class="code-block">http://localhost:8081
+http://localhost:8081/**
+http://localhost:8081/#
+http://localhost:8081/#/**
+http://localhost:8081/email-confirmed</div>
+            <p>※ すべてのURLを追加してください。これが正しく設定されていないと、メール確認後のリダイレクトが失敗します。</p>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">2</span>メールテンプレートを設定</h3>
+            <p><strong>Authentication</strong> → <strong>Email Templates</strong> を開いて、各テンプレートを更新します。</p>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-button active" onclick="showTab('confirm')">Confirm signup</button>
+                    <button class="tab-button" onclick="showTab('reset')">Reset Password</button>
+                    <button class="tab-button" onclick="showTab('magic')">Magic Link</button>
+                </div>
+                
+                <div id="confirm-tab" class="tab-content active">
+                    <h4>Subject:</h4>
+                    <div class="code-block">🍅 PomoMateへようこそ！アカウント登録を完了しましょう</div>
+                    
+                    <h4>Email Body:</h4>
+                    <p>「<strong>Source</strong>」モードに切り替えて、以下のHTMLをペーストしてください：</p>
+                    <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+&lt;h2&gt;ようこそ、{{ .Email }}さん！🎉&lt;/h2&gt;
+
+&lt;p&gt;PomoMateへの登録ありがとうございます！&lt;br&gt;
+あなたの生産性向上の旅が、今まさに始まろうとしています。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="{{ .ConfirmationURL }}"&gt;アカウントを有効化する&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3&gt;🚀 PomoMateで何ができる？&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;🎯 ポモドーロタイマーで集中力を最大化&lt;/li&gt;
+  &lt;li&gt;🐣 可愛いキャラクターを育てながら楽しく継続&lt;/li&gt;
+  &lt;li&gt;📊 詳細な統計で自分の成長を可視化&lt;/li&gt;
+  &lt;li&gt;👥 友達とチームセッションで一緒に頑張る&lt;/li&gt;
+  &lt;li&gt;🏆 実績を解除してモチベーション維持&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;このリンクは24時間有効です。&lt;/p&gt;
+
+&lt;p&gt;© 2024 PomoMate. Focus. Grow. Achieve.&lt;/p&gt;</div>
+                </div>
+                
+                <div id="reset-tab" class="tab-content">
+                    <h4>Subject:</h4>
+                    <div class="code-block">🔐 PomoMate - パスワードリセットのご案内</div>
+                    
+                    <h4>Email Body:</h4>
+                    <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+&lt;h2&gt;パスワードをリセットしましょう 🔑&lt;/h2&gt;
+
+&lt;p&gt;パスワードリセットのリクエストを受け付けました。&lt;br&gt;
+下記のリンクをクリックして、新しいパスワードを設定してください。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="{{ .ConfirmationURL }}"&gt;新しいパスワードを設定&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;⚠️ 重要：&lt;/strong&gt; このリクエストに心当たりがない場合は、このメールを無視してください。パスワードは変更されません。&lt;/p&gt;
+
+&lt;p&gt;このリンクは1時間有効です。&lt;/p&gt;</div>
+                </div>
+                
+                <div id="magic-tab" class="tab-content">
+                    <h4>Subject:</h4>
+                    <div class="code-block">✨ PomoMate - ワンクリックでログイン</div>
+                    
+                    <h4>Email Body:</h4>
+                    <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+&lt;h2&gt;おかえりなさい！✨&lt;/h2&gt;
+
+&lt;p&gt;下のリンクをクリックするだけで、すぐにPomoMateにログインできます。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="{{ .ConfirmationURL }}"&gt;ログインする&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;このリンクは1時間有効です。&lt;/p&gt;</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">3</span>メール送信者情報を設定</h3>
+            <p><strong>Settings</strong> → <strong>Project Settings</strong> を開き、以下を設定：</p>
+            
+            <h4>Auth settings セクション:</h4>
+            <ul>
+                <li><strong>Enable email confirmations</strong>: ON（既定値）</li>
+                <li><strong>Sender name</strong>: PomoMate</li>
+            </ul>
+            
+            <div class="important">
+                <strong>注意：</strong> カスタムドメインからのメール送信（noreply@pomomate.app など）を使用する場合は、Supabaseの有料プランが必要です。
+            </div>
+        </div>
+
+        <div class="step">
+            <h3><span class="step-number">4</span>設定を保存してテスト</h3>
+            <ol>
+                <li>すべての設定を保存</li>
+                <li>アプリで新規登録を実行</li>
+                <li>メールが届くことを確認</li>
+                <li>メール内のリンクをクリック</li>
+                <li>アプリにリダイレクトされ、確認完了画面が表示されることを確認</li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <h3>✅ 設定完了後の動作</h3>
+            <ol>
+                <li>ユーザーが新規登録すると、入力したメールアドレスに確認メールが送信されます</li>
+                <li>メール内の「アカウントを有効化する」ボタンをクリック</li>
+                <li><code>http://localhost:8081/#access_token=...</code> にリダイレクト</li>
+                <li>アプリが自動的にトークンを検出し、セッションを確立</li>
+                <li>確認完了画面が表示され、ログインが可能になります</li>
+            </ol>
+        </div>
+
+        <h2>🔧 トラブルシューティング</h2>
+
+        <div class="step">
+            <h4>「Redirect URL not allowed」エラーが出る場合</h4>
+            <p>URL Configuration の Redirect URLs に以下がすべて追加されているか確認：</p>
+            <div class="code-block">http://localhost:8081
+http://localhost:8081/**
+http://localhost:8081/#
+http://localhost:8081/#/**</div>
+        </div>
+
+        <div class="step">
+            <h4>メールが届かない場合</h4>
+            <ul>
+                <li>迷惑メールフォルダを確認</li>
+                <li>Supabaseダッシュボードの「Logs」→「Auth」でエラーを確認</li>
+                <li>メールアドレスが正しく入力されているか確認</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h4>確認後にログインできない場合</h4>
+            <ul>
+                <li>ブラウザのコンソールでエラーを確認</li>
+                <li>Supabaseの「Table Editor」で users テーブルにレコードが作成されているか確認</li>
+                <li>RLSポリシーが正しく設定されているか確認</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

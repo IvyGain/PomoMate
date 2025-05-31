@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pomodoro Play - ウェブ版テスト</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 50px;
+        }
+        .button {
+            background: rgba(76, 175, 80, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background: rgba(76, 175, 80, 1);
+        }
+        .status {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .instructions {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 Pomodoro Play</h1>
+        <p>ウェブ版とモバイル版の両方でテスト可能</p>
+        
+        <div class="status">
+            ✅ <strong>ウェブ版動作中！</strong><br>
+            パソコンのブラウザで動作確認済み
+        </div>
+        
+        <a href="http://localhost:8081" class="button" target="_blank">
+            🌐 ウェブ版を開く
+        </a>
+        
+        <div class="instructions">
+            <h3>📱 モバイル版テスト方法:</h3>
+            
+            <h4>方法1: ローカル接続</h4>
+            <ol>
+                <li>ターミナルで: <code>./test-mobile.sh</code> を実行</li>
+                <li>表示されるQRコードをスマートフォンでスキャン</li>
+                <li>または表示されるURLを手動入力</li>
+            </ol>
+            
+            <h4>方法2: トンネル接続（推奨）</h4>
+            <ol>
+                <li>ターミナルで: <code>npx expo start --tunnel</code></li>
+                <li>QRコードまたは <code>exp://exp.host/...</code> URLを使用</li>
+            </ol>
+            
+            <h4>方法3: ウェブ版でモバイル確認</h4>
+            <ol>
+                <li>スマートフォンのブラウザでこのページを開く</li>
+                <li>「ウェブ版を開く」ボタンをタップ</li>
+                <li>レスポンシブデザインでモバイル対応済み</li>
+            </ol>
+            
+            <div style="background: rgba(255,193,7,0.2); border: 1px solid rgba(255,193,7,0.5); padding: 10px; border-radius: 5px; margin-top: 15px;">
+                <strong>💡 ヒント:</strong> Expo Goアプリでの接続に問題がある場合は、ウェブ版でまず動作を確認してください。
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if web version is accessible
+        fetch('http://localhost:8081')
+            .then(() => {
+                console.log('Web version is accessible');
+            })
+            .catch(() => {
+                document.querySelector('.status').innerHTML = 
+                    '⚠️ <strong>ウェブサーバーが停止中</strong><br>ターミナルで npx expo start --web を実行してください';
+                document.querySelector('.status').style.background = 'rgba(255, 152, 0, 0.2)';
+                document.querySelector('.status').style.borderColor = 'rgba(255, 152, 0, 0.5)';
+            });
+    </script>
+</body>
+</html>

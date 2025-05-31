@@ -1,0 +1,76 @@
+
+> expo-app@1.0.0 web:stable
+> ./start-stable.sh
+
+🍅 PomoMate - 安定版開発サーバー
+================================
+
+📌 このサーバーはリロードに対応しています
+
+🧹 既存プロセスをクリーンアップ中...
+🗑️  キャッシュをクリア中...
+🚀 サーバーを起動中...
+
+アクセスURL:
+  📱 メイン: http://localhost:8081
+  🔄 リロード対応: http://127.0.0.1:8081
+
+💡 ヒント:
+  - リロード時にエラーが出る場合は http://127.0.0.1:8081 を使用
+  - 新しいタブで開くとより安定します
+  - Ctrl+C で停止
+
+env: load .env.local .env.development
+env: export EXPO_PUBLIC_API_URL EXPO_PUBLIC_WS_URL EXPO_PUBLIC_ENV EXPO_PUBLIC_DEBUG EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_ANON_KEY
+Starting project at /Users/mashimaro/Documents/Workspace/Pomodoro Play
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+Web Bundled 8983ms node_modules/expo-router/entry.js (2465 modules)
+Web Bundled 5475ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 112ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 50ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 45ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 54ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 51ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 53ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 60ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 55ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 54ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 46ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 53ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 52ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 47ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 47ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 48ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 61ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 44ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 53ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 72ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 61ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 47ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 44ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 58ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 110ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 65ms node_modules/expo-router/entry.js (1 module)
+Web Bundled 52ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console
+Web Bundled 49ms node_modules/expo-router/entry.js (1 module)
+ LOG  [web] Logs will appear in the browser console

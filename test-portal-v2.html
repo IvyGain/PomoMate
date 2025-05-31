@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PomoMate テストポータル v2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .status-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #f44336;
+        }
+        
+        .status-indicator.online {
+            background: #4CAF50;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: 600px;
+        }
+        
+        .sidebar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .nav-item {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .content-area {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            position: relative;
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .iframe-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            z-index: 10;
+        }
+        
+        .test-accounts {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .account-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .logs-container {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .error-display {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .iframe-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍅 PomoMate テストポータル v2</h1>
+            <p>開発・テスト用統合環境</p>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-indicator" id="server-status"></div>
+                <span id="server-text">サーバー確認中...</span>
+            </div>
+            <div class="status-item">
+                <span>URL: <code id="current-url">http://localhost:8081</code></span>
+            </div>
+            <div class="status-item">
+                <button class="control-btn" onclick="checkServerStatus()">🔄 状態更新</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <h3 style="margin-bottom: 20px;">ナビゲーション</h3>
+                
+                <button class="nav-item active" onclick="showApp()">
+                    🏠 アプリホーム
+                </button>
+                
+                <button class="nav-item" onclick="showLogin()">
+                    👤 ログイン画面
+                </button>
+                
+                <button class="nav-item" onclick="showRegister()">
+                    📝 新規登録画面
+                </button>
+                
+                <button class="nav-item" onclick="showSettings()">
+                    ⚙️ 設定画面
+                </button>
+                
+                <button class="nav-item" onclick="showSupabase()">
+                    🗄️ Supabase管理
+                </button>
+                
+                <hr style="margin: 20px 0; border: 1px solid rgba(255,255,255,0.2);">
+                
+                <div class="test-accounts">
+                    <h4>テストアカウント</h4>
+                    <div class="account-item">
+                        <strong>デモアカウント</strong><br>
+                        Email: demo@example.com<br>
+                        Pass: password123
+                    </div>
+                    <button class="control-btn" onclick="fillDemoAccount()" style="width: 100%; margin-top: 10px;">
+                        デモ情報を入力
+                    </button>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <div class="iframe-controls">
+                    <button class="control-btn" onclick="reloadFrame()">🔄 再読み込み</button>
+                    <button class="control-btn" onclick="openInNewTab()">🔗 新しいタブで開く</button>
+                    <button class="control-btn" onclick="toggleFullscreen()">⛶ フルスクリーン</button>
+                    <button class="control-btn" onclick="clearErrors()">🧹 エラークリア</button>
+                </div>
+                
+                <div class="iframe-container">
+                    <div class="loading-overlay" id="loading">
+                        読み込み中...
+                    </div>
+                    <iframe id="app-frame" src="http://localhost:8081" onload="hideLoading()"></iframe>
+                </div>
+                
+                <div id="error-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUrl = 'http://localhost:8081';
+        
+        // サーバー状態確認
+        async function checkServerStatus() {
+            const indicator = document.getElementById('server-status');
+            const text = document.getElementById('server-text');
+            
+            try {
+                // CORSエラーを避けるため、iframeで確認
+                const testFrame = document.createElement('iframe');
+                testFrame.style.display = 'none';
+                testFrame.src = currentUrl;
+                
+                const loadPromise = new Promise((resolve, reject) => {
+                    testFrame.onload = () => resolve(true);
+                    testFrame.onerror = () => reject(false);
+                    setTimeout(() => reject(false), 5000); // 5秒でタイムアウト
+                });
+                
+                document.body.appendChild(testFrame);
+                
+                await loadPromise;
+                
+                indicator.className = 'status-indicator online';
+                text.textContent = 'サーバー稼働中';
+                
+                document.body.removeChild(testFrame);
+                
+            } catch (error) {
+                indicator.className = 'status-indicator';
+                text.textContent = 'サーバー停止中';
+                showError('サーバーが起動していません。npm run web:stable を実行してください。');
+            }
+        }
+        
+        // ナビゲーション関数
+        function showApp() {
+            updateFrame('http://localhost:8081');
+            setActiveNav(0);
+        }
+        
+        function showLogin() {
+            updateFrame('http://localhost:8081/login');
+            setActiveNav(1);
+        }
+        
+        function showRegister() {
+            updateFrame('http://localhost:8081/register');
+            setActiveNav(2);
+        }
+        
+        function showSettings() {
+            updateFrame('http://localhost:8081/(tabs)/settings');
+            setActiveNav(3);
+        }
+        
+        function showSupabase() {
+            updateFrame('https://app.supabase.com');
+            setActiveNav(4);
+        }
+        
+        function updateFrame(url) {
+            currentUrl = url;
+            document.getElementById('current-url').textContent = url;
+            document.getElementById('app-frame').src = url;
+            showLoading();
+        }
+        
+        function setActiveNav(index) {
+            document.querySelectorAll('.nav-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+        }
+        
+        // フレーム制御
+        function reloadFrame() {
+            const frame = document.getElementById('app-frame');
+            frame.src = frame.src;
+            showLoading();
+        }
+        
+        function openInNewTab() {
+            window.open(currentUrl, '_blank');
+        }
+        
+        function toggleFullscreen() {
+            const container = document.querySelector('.iframe-container');
+            if (container.style.position === 'fixed') {
+                // 元に戻す
+                container.style.position = '';
+                container.style.top = '';
+                container.style.left = '';
+                container.style.width = '';
+                container.style.height = '';
+                container.style.zIndex = '';
+                container.style.background = '';
+            } else {
+                // フルスクリーン
+                container.style.position = 'fixed';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.width = '100vw';
+                container.style.height = '100vh';
+                container.style.zIndex = '9999';
+                container.style.background = 'white';
+            }
+        }
+        
+        // ローディング制御
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+        
+        // エラーハンドリング
+        function showError(message) {
+            const errorLog = document.getElementById('error-log');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-display';
+            errorDiv.innerHTML = `<strong>エラー:</strong> ${message}`;
+            errorLog.appendChild(errorDiv);
+        }
+        
+        function clearErrors() {
+            document.getElementById('error-log').innerHTML = '';
+        }
+        
+        // デモアカウント入力
+        function fillDemoAccount() {
+            const frame = document.getElementById('app-frame');
+            try {
+                // クロスオリジンの制限により、直接操作はできないため
+                // 代わりにアラートで情報を表示
+                alert('デモアカウント情報:\n\nEmail: demo@example.com\nPassword: password123\n\n手動でコピーして入力してください。');
+            } catch (error) {
+                showError('フレーム内のフォームにアクセスできません。手動で入力してください。');
+            }
+        }
+        
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerStatus();
+            
+            // 定期的にサーバー状態をチェック
+            setInterval(checkServerStatus, 30000);
+            
+            // エラーハンドリング
+            window.addEventListener('error', function(e) {
+                showError(`JavaScript Error: ${e.message}`);
+            });
+        });
+        
+        // フレームからのメッセージを受信
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'error') {
+                showError(`Frame Error: ${event.data.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

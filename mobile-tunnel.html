@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pomodoro Play - トンネル接続</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 50px;
+        }
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            display: inline-block;
+        }
+        .instructions {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .url {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .status {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 Pomodoro Play</h1>
+        <p>トンネル接続でスマートフォンアクセス</p>
+        
+        <div class="status">
+            ✅ <strong>トンネル接続完了！</strong><br>
+            インターネット経由でどこからでもアクセス可能
+        </div>
+        
+        <div class="instructions">
+            <h3>📱 新しいアクセス方法:</h3>
+            <ol>
+                <li><strong>Expo Go</strong> アプリを開く</li>
+                <li>「QRコードをスキャン」を選択</li>
+                <li>ターミナルに表示されるQRコードをスキャン</li>
+            </ol>
+            
+            <p><strong>または：</strong></p>
+            <ol>
+                <li>Expo Go アプリで「URL by hand」を選択</li>
+                <li>ターミナルに表示される <code>exp://exp.host/...</code> URLを入力</li>
+            </ol>
+            
+            <div style="background: rgba(255,193,7,0.2); border: 1px solid rgba(255,193,7,0.5); padding: 10px; border-radius: 5px; margin-top: 15px;">
+                <strong>📝 重要:</strong> ターミナルでExpoサーバーが起動している状態で、表示されるQRコードまたはURLを使用してください。
+            </div>
+        </div>
+        
+        <p style="margin-top: 30px; opacity: 0.8;">
+            🌐 トンネル接続により、Wi-Fi制限なしでアクセス可能！
+        </p>
+    </div>
+
+    <script>
+        // Auto-refresh to check for updates
+        setTimeout(() => {
+            window.location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

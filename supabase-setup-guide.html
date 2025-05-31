@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Play - Supabase セットアップガイド</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 10px 10px 0;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #764ba2;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .sql-section {
+            margin-top: 30px;
+        }
+        details {
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #667eea;
+            padding: 10px;
+        }
+        .copy-button {
+            float: right;
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-button:hover {
+            background: #2d3748;
+        }
+        .status-check {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍅 Pomodoro Play - Supabase セットアップガイド</h1>
+        
+        <div class="warning">
+            <strong>⚠️ 現在の状態:</strong> アプリはデモモードで動作中です。実際のデータ保存にはSupabaseの設定が必要です。
+        </div>
+
+        <h2>📋 必要な手順</h2>
+        
+        <div class="step">
+            <h3>ステップ 1: Supabaseアカウントの作成</h3>
+            <p>まず、Supabaseの無料アカウントを作成します：</p>
+            <a href="https://app.supabase.com" target="_blank" class="button">Supabaseを開く</a>
+            <ol>
+                <li>「Start your project」をクリック</li>
+                <li>GitHubアカウントでサインイン（推奨）またはメールで登録</li>
+                <li>メールでの確認が必要な場合があります</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>ステップ 2: 新しいプロジェクトを作成</h3>
+            <ol>
+                <li>ダッシュボードで「New Project」をクリック</li>
+                <li>以下の情報を入力：
+                    <ul>
+                        <li><strong>Project name:</strong> <span class="highlight">pomodoro-play</span></li>
+                        <li><strong>Database Password:</strong> 安全なパスワードを生成（保存してください！）</li>
+                        <li><strong>Region:</strong> Northeast Asia (Tokyo) 🇯🇵</li>
+                    </ul>
+                </li>
+                <li>「Create new project」をクリック（数分かかります）</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>ステップ 3: APIキーを取得</h3>
+            <p>プロジェクトが作成されたら：</p>
+            <ol>
+                <li>左メニューから「Settings」→「API」を選択</li>
+                <li>以下の2つの値をコピー：
+                    <ul>
+                        <li><strong>Project URL:</strong> https://xxxxx.supabase.co</li>
+                        <li><strong>anon public key:</strong> eyJhbGci...</li>
+                    </ul>
+                </li>
+            </ol>
+            <div class="warning">
+                <strong>重要:</strong> service_role keyではなく、必ず <span class="highlight">anon public</span> keyを使用してください！
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>ステップ 4: データベーステーブルを作成</h3>
+            <p>Supabaseダッシュボードで「SQL Editor」を開き、以下のSQLを実行します：</p>
+            
+            <details open>
+                <summary>📄 データベース作成SQL（クリックしてコピー）</summary>
+                <button class="copy-button" onclick="copySQL()">コピー</button>
+                <div class="code-block" id="sql-code">-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Users table (extends Supabase auth.users)
+CREATE TABLE users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  avatar_url TEXT,
+  level INTEGER DEFAULT 1,
+  experience INTEGER DEFAULT 0,
+  coins INTEGER DEFAULT 0,
+  streak_days INTEGER DEFAULT 0,
+  last_session_date DATE,
+  focus_time_today INTEGER DEFAULT 0,
+  total_focus_time INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Sessions table
+CREATE TABLE sessions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('focus', 'short_break', 'long_break')),
+  duration INTEGER NOT NULL,
+  completed_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  xp_earned INTEGER DEFAULT 0,
+  coins_earned INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- User settings
+CREATE TABLE user_settings (
+  user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  focus_duration INTEGER DEFAULT 25,
+  short_break_duration INTEGER DEFAULT 5,
+  long_break_duration INTEGER DEFAULT 15,
+  sessions_until_long_break INTEGER DEFAULT 4,
+  sound_enabled BOOLEAN DEFAULT true,
+  notification_enabled BOOLEAN DEFAULT true,
+  theme TEXT DEFAULT 'default',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Characters
+CREATE TABLE characters (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  type TEXT NOT NULL,
+  evolution_stage INTEGER DEFAULT 1,
+  base_stats JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- User characters
+CREATE TABLE user_characters (
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  experience INTEGER DEFAULT 0,
+  level INTEGER DEFAULT 1,
+  is_active BOOLEAN DEFAULT false,
+  unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  PRIMARY KEY (user_id, character_id)
+);
+
+-- Enable Row Level Security
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_characters ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies
+CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Users can view own sessions" ON sessions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can create own sessions" ON sessions FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can view own settings" ON user_settings FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can update own settings" ON user_settings FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own settings" ON user_settings FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Insert initial characters
+INSERT INTO characters (id, name, description, type, evolution_stage, base_stats) VALUES
+('balanced_1', 'ポモ', 'バランス型の基本キャラクター', 'balanced', 1, '{"focus": 1, "energy": 1, "persistence": 1}'),
+('focused_1', 'フォカっこ', '集中力特化型のキャラクター', 'focused', 1, '{"focus": 2, "energy": 0.5, "persistence": 0.5}'),
+('energetic_1', 'エナジン', 'エネルギー特化型のキャラクター', 'energetic', 1, '{"focus": 0.5, "energy": 2, "persistence": 0.5}'),
+('persistent_1', 'ツヅケル', '継続力特化型のキャラクター', 'persistent', 1, '{"focus": 0.5, "energy": 0.5, "persistence": 2}');</div>
+            </details>
+        </div>
+
+        <div class="step">
+            <h3>ステップ 5: 環境変数を設定</h3>
+            <p><code>.env.local</code> ファイルを以下の内容で更新してください：</p>
+            <div class="code-block">
+# Supabase Configuration
+EXPO_PUBLIC_SUPABASE_URL=<span class="highlight">YOUR_PROJECT_URL_HERE</span>
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<span class="highlight">YOUR_ANON_KEY_HERE</span>
+
+# Optional settings
+EXPO_PUBLIC_DEBUG=true
+EXPO_PUBLIC_ENV=development</div>
+            <p>⚠️ 必ず実際の値に置き換えてください！</p>
+        </div>
+
+        <div class="step">
+            <h3>ステップ 6: アプリを再起動</h3>
+            <ol>
+                <li>現在のサーバーを停止（Ctrl+C）</li>
+                <li>再起動：
+                    <div class="code-block">./start-web.sh</div>
+                </li>
+                <li>ブラウザのコンソールで確認：
+                    <ul>
+                        <li>✅ <code>Supabase mode: 🚀 Live Mode</code> → 成功！</li>
+                        <li>❌ <code>Supabase mode: 🎮 Demo Mode</code> → 環境変数を確認</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <h3>✅ セットアップ完了後の確認</h3>
+            <ul>
+                <li>新規ユーザー登録が実際に作成される</li>
+                <li>ログアウト後も同じアカウントでログイン可能</li>
+                <li>タイマーの記録が保存される</li>
+                <li>キャラクターの成長が保持される</li>
+            </ul>
+        </div>
+
+        <h2>🔧 トラブルシューティング</h2>
+        
+        <details>
+            <summary>「Invalid API key」エラーが出る</summary>
+            <ul>
+                <li>anon keyが正しくコピーされているか確認</li>
+                <li>service_role keyを使っていないか確認</li>
+                <li>.env.localファイルが正しく保存されているか確認</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>「User already registered」エラーが出る</summary>
+            <ul>
+                <li>そのメールアドレスは既に登録済みです</li>
+                <li>別のメールアドレスを使用するか、ログインしてください</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>データが保存されない</summary>
+            <ul>
+                <li>RLS（Row Level Security）が有効になっているか確認</li>
+                <li>ポリシーが正しく設定されているか確認</li>
+                <li>Supabaseダッシュボードの「Table Editor」でデータを確認</li>
+            </ul>
+        </details>
+
+        <div class="status-check">
+            <h3>📊 現在の設定状態</h3>
+            <p>現在の<code>.env.local</code>ファイル：</p>
+            <ul>
+                <li>SUPABASE_URL: <code id="current-url">未設定</code></li>
+                <li>SUPABASE_ANON_KEY: <code id="current-key">未設定</code></li>
+            </ul>
+            <p>これらの値を実際のSupabaseプロジェクトの値に更新してください。</p>
+        </div>
+    </div>
+
+    <script>
+        function copySQL() {
+            const sqlCode = document.getElementById('sql-code').textContent;
+            navigator.clipboard.writeText(sqlCode).then(() => {
+                const button = document.querySelector('.copy-button');
+                button.textContent = 'コピーしました！';
+                setTimeout(() => {
+                    button.textContent = 'コピー';
+                }, 2000);
+            });
+        }
+
+        // Check current env values
+        fetch('/.env.local')
+            .then(response => response.text())
+            .then(text => {
+                const urlMatch = text.match(/EXPO_PUBLIC_SUPABASE_URL=(.+)/);
+                const keyMatch = text.match(/EXPO_PUBLIC_SUPABASE_ANON_KEY=(.+)/);
+                
+                if (urlMatch && !urlMatch[1].includes('YOUR_')) {
+                    document.getElementById('current-url').textContent = '設定済み ✅';
+                }
+                if (keyMatch && !keyMatch[1].includes('YOUR_')) {
+                    document.getElementById('current-key').textContent = '設定済み ✅';
+                }
+            })
+            .catch(() => {
+                // File not accessible from browser, expected
+            });
+    </script>
+</body>
+</html>
