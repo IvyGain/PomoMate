@@ -36,9 +36,8 @@ console.log('Environment variable debug:', {
   allEnv: Object.keys(process.env).filter(key => key.includes('SUPABASE')),
 });
 
-// Demo mode detection
-const isDemoMode = !process.env.EXPO_PUBLIC_SUPABASE_URL || 
-                   supabaseUrl.includes('demo') || 
+// Demo mode detection - force production mode when using hardcoded values
+const isDemoMode = supabaseUrl.includes('demo') || 
                    supabaseAnonKey.includes('demo');
 
 console.log('Supabase mode:', isDemoMode ? '🎮 Demo Mode' : '🚀 Live Mode');
