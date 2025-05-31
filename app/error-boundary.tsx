@@ -84,6 +84,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ErrorBoundary caught error:', error);
+    console.error('Error info:', errorInfo);
+    console.error('Component stack:', errorInfo.componentStack);
+    
     sendErrorToIframeParent(error, errorInfo);
     if (this.props.onError) {
       this.props.onError(error, errorInfo);

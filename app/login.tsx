@@ -169,14 +169,40 @@ export default function LoginScreen() {
                 </Text>
               </TouchableOpacity>
               
-              <TouchableOpacity onPress={() => {
+              <TouchableOpacity onPress={(e) => {
                 console.log('Register button pressed');
+                console.log('Event:', e);
+                console.log('Router object:', router);
+                console.log('Current pathname:', window?.location?.pathname);
+                
+                // Prevent default if needed
+                if (e && e.preventDefault) {
+                  e.preventDefault();
+                }
+                
                 try {
-                  router.push('/register');
+                  console.log('Attempting navigation to /register');
+                  
+                  // Try different navigation methods
+                  if (router && router.push) {
+                    console.log('Using router.push');
+                    router.push('/register');
+                  } else if (router && router.navigate) {
+                    console.log('Using router.navigate');
+                    router.navigate('/register');
+                  } else if (window && window.location) {
+                    console.log('Using window.location fallback');
+                    window.location.href = '/register';
+                  } else {
+                    throw new Error('No navigation method available');
+                  }
+                  
                   console.log('Navigation to /register completed');
                 } catch (error) {
                   console.error('Navigation error:', error);
-                  Alert.alert('エラー', '登録画面への移動に失敗しました');
+                  console.error('Error stack:', error.stack);
+                  console.error('Error type:', error.constructor.name);
+                  Alert.alert('エラー', `登録画面への移動に失敗しました: ${error.message || error}`);
                 }
               }}>
                 <Text style={[styles.link, { color: theme.primary }]}>
