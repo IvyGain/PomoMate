@@ -12,7 +12,7 @@ import {
   ScrollView,
   Alert
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -155,21 +155,34 @@ export default function LoginScreen() {
             </TouchableOpacity>
             
             <View style={styles.linksContainer}>
-              <Link href="/forgot-password" asChild>
-                <TouchableOpacity>
-                  <Text style={[styles.link, { color: theme.primary }]}>
-                    パスワードをお忘れの方
-                  </Text>
-                </TouchableOpacity>
-              </Link>
+              <TouchableOpacity onPress={() => {
+                console.log('Forgot password button pressed');
+                try {
+                  router.push('/forgot-password');
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  Alert.alert('エラー', 'パスワードリセット画面への移動に失敗しました');
+                }
+              }}>
+                <Text style={[styles.link, { color: theme.primary }]}>
+                  パスワードをお忘れの方
+                </Text>
+              </TouchableOpacity>
               
-              <Link href="/register" asChild>
-                <TouchableOpacity>
-                  <Text style={[styles.link, { color: theme.primary }]}>
-                    新規登録
-                  </Text>
-                </TouchableOpacity>
-              </Link>
+              <TouchableOpacity onPress={() => {
+                console.log('Register button pressed');
+                try {
+                  router.push('/register');
+                  console.log('Navigation to /register completed');
+                } catch (error) {
+                  console.error('Navigation error:', error);
+                  Alert.alert('エラー', '登録画面への移動に失敗しました');
+                }
+              }}>
+                <Text style={[styles.link, { color: theme.primary }]}>
+                  新規登録
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
