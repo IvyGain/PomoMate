@@ -15,7 +15,11 @@
     "test:e2e:report": "playwright show-report",
     "lint": "echo 'Linting passed - no linter configured'",
     "test": "echo 'Tests passed - no test framework configured'",
-    "build": "expo export -p web"
+    "build": "expo export -p web",
+    "auto:start": "./scripts/auto-start.sh",
+    "auto:deploy": "./scripts/auto-deploy.sh",
+    "auto:git-deploy": "git add . && git commit -m 'Auto commit' && git push && vercel --prod",
+    "auto:check": "curl -s https://pomomate-759iia2yc-ivygains-projects.vercel.app > /dev/null && echo '✅ App is running' || echo '❌ App is down'"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",

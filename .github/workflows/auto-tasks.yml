@@ -1,0 +1,101 @@
+name: Automated Tasks
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC (11 AM JST)
+    - cron: '0 2 * * *'
+  
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run'
+        required: true
+        default: 'health-check'
+        type: choice
+        options:
+          - health-check
+          - cleanup
+          - backup
+          - dependency-update
+
+jobs:
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.task == 'health-check'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check application health
+        run: |
+          echo "🏥 Running health check..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://pomomate-759iia2yc-ivygains-projects.vercel.app || echo "000")
+          
+          if [ $response -eq 200 ]; then
+            echo "✅ Application is healthy! Status: $response"
+          else
+            echo "❌ Application health check failed! Status: $response"
+            exit 1
+          fi
+      
+      - name: Check Supabase connection
+        run: |
+          echo "🔌 Checking Supabase connection..."
+          # Add Supabase health check here if needed
+
+  cleanup:
+    name: Cleanup Old Artifacts
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.task == 'cleanup'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Cleanup old artifacts
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            for (const artifact of artifacts.data.artifacts) {
+              const createdAt = new Date(artifact.created_at);
+              if (createdAt < oneWeekAgo) {
+                console.log(`Deleting artifact: ${artifact.name} (${artifact.created_at})`);
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id
+                });
+              }
+            }
+
+  dependency-update:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    if: github.event.inputs.task == 'dependency-update'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      
+      - name: Check for outdated dependencies
+        run: |
+          echo "📦 Checking for outdated dependencies..."
+          npm outdated || true
+      
+      - name: Run security audit
+        run: |
+          echo "🔒 Running security audit..."
+          npm audit || true
