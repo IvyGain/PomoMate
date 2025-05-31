@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   View, 
   Text, 
-  TextInput, 
   TouchableOpacity, 
   StyleSheet, 
   ActivityIndicator,
@@ -12,6 +11,7 @@ import { router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeTextInput } from '@/components/SafeTextInput';
 
 export default function LoginScreen() {
   const { theme } = useThemeStore();
@@ -66,7 +66,7 @@ export default function LoginScreen() {
         </Text>
         
         <View style={styles.form}>
-          <TextInput
+          <SafeTextInput
             style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
             placeholder="メールアドレス"
             placeholderTextColor={theme.textSecondary}
@@ -76,7 +76,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
           />
           
-          <TextInput
+          <SafeTextInput
             style={[styles.input, { backgroundColor: theme.card, color: theme.text }]}
             placeholder="パスワード"
             placeholderTextColor={theme.textSecondary}
@@ -107,9 +107,21 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={() => router.push('/register')}>
+          <TouchableOpacity onPress={() => {
+            console.log('🔍 Navigating to simple register screen');
+            router.push('/register-simple');
+          }}>
             <Text style={[styles.link, { color: theme.primary }]}>
-              新規登録
+              新規登録（テスト）
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={() => {
+            console.log('🔍 Attempting original register navigation');
+            router.push('/register');
+          }} style={{ marginTop: 8 }}>
+            <Text style={[styles.link, { color: theme.primary, fontSize: 14 }]}>
+              新規登録（オリジナル）
             </Text>
           </TouchableOpacity>
         </View>

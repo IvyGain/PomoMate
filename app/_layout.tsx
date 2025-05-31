@@ -1,5 +1,5 @@
-// Apply binding fixes first to prevent "Illegal invocation" errors
-import "@/src/utils/bindingFix";
+// Apply web compatibility fixes first to prevent "Illegal invocation" errors
+import "@/src/utils/webCompatibility";
 
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";

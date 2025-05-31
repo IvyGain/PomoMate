@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
-  TextInput, 
   TouchableOpacity, 
   StyleSheet, 
   ActivityIndicator,
@@ -15,6 +14,7 @@ import { router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeTextInput } from '@/components/SafeTextInput';
 
 // デバッグログ
 console.log('📱 RegisterScreen loading...');
@@ -115,7 +115,7 @@ export default function RegisterScreen() {
             </Text>
             
             <View style={styles.form}>
-              <TextInput
+              <SafeTextInput
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
@@ -130,7 +130,7 @@ export default function RegisterScreen() {
                 testID="username-input"
               />
               
-              <TextInput
+              <SafeTextInput
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
@@ -146,7 +146,7 @@ export default function RegisterScreen() {
                 testID="email-input"
               />
               
-              <TextInput
+              <SafeTextInput
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
@@ -162,7 +162,7 @@ export default function RegisterScreen() {
                 testID="password-input"
               />
               
-              <TextInput
+              <SafeTextInput
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
