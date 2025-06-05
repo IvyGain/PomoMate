@@ -119,8 +119,9 @@ export const BaseGame: React.FC<BaseGameProps> = ({
     isNewHighScore: false,
   });
   
-  const { addBreakActivity } = useTimerStore();
-  const { stats, addXP, addCoins, updateAchievements } = useUserStore();
+  const timerStore = useTimerStore();
+  const userStore = useUserStore();
+  const { stats, recordGamePlay } = userStore;
   
   const calculateRewards = useCallback((finalScore: number) => {
     const xp = Math.floor(finalScore / 10) * 5;
@@ -133,28 +134,31 @@ export const BaseGame: React.FC<BaseGameProps> = ({
     gameLogger.info('Game ended', { gameName, score });
     
     const { xp, coins } = calculateRewards(score);
-    const previousHighScore = stats.games?.[gameName]?.highScore || 0;
+    const previousHighScore = 0; // Will be tracked in backend
     const isNewHighScore = score > previousHighScore;
     
-    // Update stats
-    addXP(xp);
-    addCoins(coins);
+    // Update stats using the stats namespace
+    stats.addXP(xp);
+    stats.addCoins(coins);
     
-    // Record activity
-    addBreakActivity({
-      type: 'game',
-      gameName,
-      score,
-      duration: 0, // Will be calculated by timer store
-    });
+    // Record game play
+    recordGamePlay(gameName);
     
-    // Update achievements
-    updateAchievements();
+    // Log break activity if in break mode
+    if (timerStore.currentMode !== 'focus') {
+      timerStore.addBreakActivity(`Played ${gameName} - Score: ${score}`);
+    }
+    
+    // Check for high score achievement
+    if (isNewHighScore) {
+      const achId = `game_${gameName}_highscore`;
+      stats.updateAchievements([achId]);
+    }
     
     setGameStats({ xpEarned: xp, coinsEarned: coins, isNewHighScore });
     setShowGameOver(true);
     onGameOver(score);
-  }, [score, gameName, calculateRewards, addXP, addCoins, addBreakActivity, updateAchievements, stats.games, onGameOver]);
+  }, [score, gameName, calculateRewards, stats, recordGamePlay, timerStore, onGameOver]);
   
   useEffect(() => {
     if (lives === 0 && maxLives > 0) {

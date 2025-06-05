@@ -1,8 +1,8 @@
-const prisma = require('@prisma/client').PrismaClient;
-const db = new prisma();
+import { PrismaClient } from '@prisma/client';
+const db = new PrismaClient();
 
 // フレンド一覧の取得
-exports.getFriends = async (req, res, next) => {
+export const getFriends = async (req, res, next) => {
   try {
     const userId = req.user.id;
     
@@ -46,7 +46,7 @@ exports.getFriends = async (req, res, next) => {
 };
 
 // フレンドリクエストの送信
-exports.sendFriendRequest = async (req, res, next) => {
+export const sendFriendRequest = async (req, res, next) => {
   try {
     const { friendId } = req.body;
     const userId = req.user.id;
@@ -84,7 +84,7 @@ exports.sendFriendRequest = async (req, res, next) => {
 };
 
 // フレンドリクエストの承認
-exports.acceptFriendRequest = async (req, res, next) => {
+export const acceptFriendRequest = async (req, res, next) => {
   try {
     const { requestId } = req.params;
     const userId = req.user.id;
@@ -109,7 +109,7 @@ exports.acceptFriendRequest = async (req, res, next) => {
 };
 
 // フレンドリクエストの拒否
-exports.rejectFriendRequest = async (req, res, next) => {
+export const rejectFriendRequest = async (req, res, next) => {
   try {
     const { requestId } = req.params;
     const userId = req.user.id;
@@ -133,7 +133,7 @@ exports.rejectFriendRequest = async (req, res, next) => {
 };
 
 // フレンドの削除
-exports.removeFriend = async (req, res, next) => {
+export const removeFriend = async (req, res, next) => {
   try {
     const { friendId } = req.params;
     const userId = req.user.id;
@@ -162,7 +162,7 @@ exports.removeFriend = async (req, res, next) => {
 };
 
 // ペンディング中のフレンドリクエスト一覧
-exports.getPendingRequests = async (req, res, next) => {
+export const getPendingRequests = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
@@ -184,6 +184,74 @@ exports.getPendingRequests = async (req, res, next) => {
     });
 
     res.json(pendingRequests);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 通知一覧の取得
+export const getNotifications = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    
+    const notifications = await db.notification.findMany({
+      where: {
+        userId: userId
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 50
+    });
+
+    res.json(notifications);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// 通知を既読にする
+export const markNotificationRead = async (req, res, next) => {
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user.id;
+
+    const notification = await db.notification.findFirst({
+      where: {
+        id: notificationId,
+        userId: userId
+      }
+    });
+
+    if (!notification) {
+      return res.status(404).json({ error: '通知が見つかりません' });
+    }
+
+    const updatedNotification = await db.notification.update({
+      where: { id: notificationId },
+      data: { isRead: true }
+    });
+
+    res.json(updatedNotification);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// すべての通知を既読にする
+export const markAllNotificationsRead = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    await db.notification.updateMany({
+      where: {
+        userId: userId,
+        isRead: false
+      },
+      data: { isRead: true }
+    });
+
+    res.json({ message: 'すべての通知を既読にしました' });
   } catch (error) {
     next(error);
   }

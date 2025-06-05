@@ -12,23 +12,7 @@ export interface SupabaseError {
   status?: number;
 }
 
-// User related types
-export interface UserProfile {
-  id: string;
-  email: string;
-  username: string;
-  display_name: string;
-  avatar_url?: string;
-  level: number;
-  experience: number;
-  coins: number;
-  streak_days: number;
-  last_session_date?: string;
-  focus_time_today: number;
-  total_focus_time: number;
-  created_at: string;
-  updated_at: string;
-}
+// User related types - UserProfile is now defined in auth.ts
 
 export interface UserSettings {
   id: string;

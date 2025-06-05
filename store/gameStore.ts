@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorageInterface } from '../src/utils/storage';
 
 export interface Game {
   id: string;
@@ -226,7 +226,7 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'game-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getStorageInterface()),
     }
   )
 );

@@ -80,8 +80,15 @@ export default function RegisterScreen() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         // Email confirmation required
-        console.log('📧 Email confirmation required, navigating to email-sent');
-        router.replace('/email-sent');
+        console.log('📧 Email confirmation required');
+        Alert.alert(
+          '登録完了',
+          'アカウントが作成されました。メールアドレスに確認メールが送信されます。\n\n⚠️ 現在メール送信に問題が発生している場合があります。デモユーザーでログインしてお試しください。',
+          [
+            { text: 'デモログインする', onPress: () => router.replace('/login') },
+            { text: 'メール確認を待つ', onPress: () => router.replace('/email-sent') }
+          ]
+        );
       }
       // Otherwise navigation is handled by _layout.tsx
     } catch (error) {

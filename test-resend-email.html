@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend Email Test - PomoMate</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 5px 0;
+        }
+        .checklist li:before {
+            content: "✅ ";
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Resend メール送信テスト</h1>
+        
+        <div class="test-section">
+            <h2>📧 パスワードリセットメール送信テスト</h2>
+            <p>Resendを通じてメールが正しく送信されるかテストします。</p>
+            
+            <input 
+                type="email" 
+                id="testEmail" 
+                placeholder="テスト用メールアドレスを入力"
+                value=""
+            />
+            
+            <button onclick="sendPasswordResetEmail()" id="sendButton">
+                パスワードリセットメールを送信
+            </button>
+            
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔍 送信状況の確認方法</h2>
+            <ol>
+                <li><strong>メールボックスを確認</strong>
+                    <ul>
+                        <li>送信元: info@pomomate.app</li>
+                        <li>件名: "パスワードをリセット" または設定したテンプレート</li>
+                        <li>迷惑メールフォルダも確認</li>
+                    </ul>
+                </li>
+                <li><strong>Resendダッシュボードで確認</strong>
+                    <ul>
+                        <li><a href="https://resend.com/emails" target="_blank">Emails タブ</a>で送信履歴を確認</li>
+                        <li>ステータス: Delivered（配信成功）</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ 設定完了チェックリスト</h2>
+            <ul class="checklist">
+                <li>Resend APIキー作成済み</li>
+                <li>Supabase SMTP設定完了</li>
+                <li>ドメイン認証（pomomate.app）完了</li>
+                <li>送信元メール: info@pomomate.app</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Supabase初期化
+        const supabaseUrl = 'https://kucvkpozzxdjqqozjmpy.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y3ZrcG96enhkanFxb3pqbXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjQzNTUsImV4cCI6MjA1MTQwMDM1NX0.bAW2GDYdIGj8QdAjCXOq1V7IbOR9X8F7l82H_m0cRe8';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+        async function sendPasswordResetEmail() {
+            const email = document.getElementById('testEmail').value;
+            const button = document.getElementById('sendButton');
+            const resultDiv = document.getElementById('result');
+            
+            if (!email) {
+                showResult('error', 'メールアドレスを入力してください');
+                return;
+            }
+            
+            // メールアドレスの簡単な検証
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showResult('error', '有効なメールアドレスを入力してください');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = '送信中...';
+            showResult('info', '📤 メール送信リクエストを処理中...');
+            
+            try {
+                const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: 'https://pomomate-lt8dny1oh-ivygains-projects.vercel.app/reset-password'
+                });
+                
+                if (error) {
+                    console.error('送信エラー:', error);
+                    showResult('error', `❌ エラーが発生しました: ${error.message}`);
+                } else {
+                    console.log('送信成功:', data);
+                    showResult('success', `
+                        ✅ メール送信リクエストが成功しました！<br><br>
+                        📧 <strong>${email}</strong> にメールを送信しました。<br><br>
+                        以下を確認してください：<br>
+                        1. メールボックス（迷惑メールフォルダも）<br>
+                        2. <a href="https://resend.com/emails" target="_blank">Resendダッシュボード</a>で送信状況
+                    `);
+                }
+            } catch (err) {
+                console.error('予期しないエラー:', err);
+                showResult('error', `❌ 予期しないエラーが発生しました: ${err.message}`);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'パスワードリセットメールを送信';
+            }
+        }
+        
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = 'block';
+        }
+        
+        // Enterキーでも送信できるように
+        document.getElementById('testEmail').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendPasswordResetEmail();
+            }
+        });
+        
+        // ページ読み込み時の情報表示
+        window.onload = function() {
+            console.log('🚀 Resend Email Test Page Loaded');
+            console.log('📧 送信元: info@pomomate.app');
+            console.log('🔗 Supabase URL:', supabaseUrl);
+        };
+    </script>
+</body>
+</html>

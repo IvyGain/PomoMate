@@ -1,12 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorageInterface } from '../src/utils/storage';
 import { achievements } from '@/constants/achievements';
 import { CharacterType, determineCharacterType, getCharacterByEvolutionPath } from '@/constants/characters';
 import { useAuthStore } from './authStore';
-
-import { supabase } from '../src/lib/supabase';
 import { userService, characterService, achievementService } from '../src/services/supabaseService';
+import { supabase } from '../src/lib/supabase';
 
 interface UserStats {
   level: number;
@@ -52,6 +51,14 @@ interface UserState extends UserStats {
   enableDemoMode: () => void;
   resetStats: () => void;
   completeSession: (duration: number, type: 'focus' | 'break') => void;
+  addBreakActivity: (activity: string) => void;
+  
+  // Stats namespace for compatibility
+  stats: {
+    addXP: (amount: number) => void;
+    addCoins: (amount: number) => void;
+    updateAchievements: (achievementIds: string[]) => void;
+  };
 }
 
 // XP required for each level (index is level - 1)
@@ -805,10 +812,36 @@ export const useUserStore = create<UserState>()(
         const isTeamSession = false; // Default to individual session
         get().addSession(duration, isTeamSession);
       },
+      
+      addBreakActivity: (activity: string) => {
+        // Log break activity (can be extended to track break activities)
+        console.log(`Break activity: ${activity}`);
+        // Could add to a breakActivities array if needed
+      },
+      
+      // Stats namespace for compatibility
+      stats: {
+        addXP: (amount: number) => {
+          get().addXp(amount);
+        },
+        
+        addCoins: (amount: number) => {
+          const currentLevel = get().level;
+          const currentXp = get().xp;
+          // Convert coins to XP (1 coin = 10 XP for now)
+          get().addXp(amount * 10);
+        },
+        
+        updateAchievements: (achievementIds: string[]) => {
+          achievementIds.forEach(id => {
+            get().unlockAchievement(id);
+          });
+        },
+      },
     }),
     {
       name: 'user-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getStorageInterface()),
     }
   )
 );

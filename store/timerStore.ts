@@ -1,41 +1,22 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getStorageInterface } from '../src/utils/storage';
 import { sessionService, settingsService } from '../src/services/supabaseService';
 import { realtimeService } from '../src/lib/supabaseRealtime';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import { handleError } from '../src/utils/errorHandler';
+import { 
+  TimerMode, 
+  TeamSessionParticipant, 
+  ChatMessage, 
+  TeamSession as BaseTeamSession 
+} from '../src/types/timer';
 
-export type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
+// Re-export types for convenience
+export type { TeamSessionParticipant, ChatMessage } from '../src/types/timer';
 
-export interface TeamSessionParticipant {
-  id: string;
-  name: string;
-  avatar: string;
-  isReady: boolean;
-  isActive: boolean;
-  joinedAt: string;
-}
-
-export interface ChatMessage {
-  id: string;
-  senderId: string;
-  senderName: string;
-  senderAvatar: string;
-  text: string;
-  timestamp: string;
-}
-
-export interface TeamSession {
-  id: string;
-  hostId: string;
-  name: string;
-  participants: TeamSessionParticipant[];
-  currentMode: TimerMode;
-  timeRemaining: number;
-  isRunning: boolean;
-  createdAt: string;
-  voiceChatEnabled: boolean;
-  messages: ChatMessage[];
+// Extend TeamSession to include realtimeChannel
+export interface TeamSession extends BaseTeamSession {
   realtimeChannel?: RealtimeChannel;
 }
 
@@ -783,7 +764,7 @@ export const useTimerStore = create<TimerState>()(
     }),
     {
       name: 'timer-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getStorageInterface()),
       partialize: (state) => ({
         focusDuration: state.focusDuration,
         shortBreakDuration: state.shortBreakDuration,

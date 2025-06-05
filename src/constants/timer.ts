@@ -1,3 +1,14 @@
+export const TIMER_MODES = {
+  FOCUS: 'focus' as const,
+  SHORT_BREAK: 'short_break' as const,
+  LONG_BREAK: 'long_break' as const,
+  // Legacy aliases for backward compatibility
+  WORK: 'focus' as const,
+  BREAK: 'short_break' as const,
+} as const;
+
+export type TimerMode = typeof TIMER_MODES[keyof typeof TIMER_MODES];
+
 export const TIMER_CONSTANTS = {
   // Timer durations in minutes
   DURATIONS: {

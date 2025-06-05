@@ -35,7 +35,7 @@ import {
 } from 'lucide-react-native';
 
 export default function SettingsScreen() {
-  const { theme, toggleTheme, themeType } = useThemeStore();
+  const { theme, toggleTheme, currentTheme } = useThemeStore();
   const { resetProgress } = useUserStore();
   const { logout } = useAuthStore();
   const { 
@@ -50,7 +50,7 @@ export default function SettingsScreen() {
     updateSettings
   } = useTimerStore();
   
-  const isDarkMode = themeType === 'dark';
+  const isDarkMode = currentTheme === 'dark';
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [appSoundEnabled, setAppSoundEnabled] = useState(true);
   

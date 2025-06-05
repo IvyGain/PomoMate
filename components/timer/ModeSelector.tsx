@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { TimerMode } from '../../types/timer';
+import { TimerMode } from '@/src/types/timer';
+import { TIMER_MODES } from '@/src/constants/timer';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ModeSelectorProps {
@@ -11,17 +12,17 @@ interface ModeSelectorProps {
 }
 
 const modeConfig = {
-  [TimerMode.WORK]: {
+  [TIMER_MODES.FOCUS]: {
     label: '集中',
     icon: 'flame' as const,
     color: '#ef4444',
   },
-  [TimerMode.BREAK]: {
+  [TIMER_MODES.SHORT_BREAK]: {
     label: '小休憩',
     icon: 'cafe' as const,
     color: '#3b82f6',
   },
-  [TimerMode.LONG_BREAK]: {
+  [TIMER_MODES.LONG_BREAK]: {
     label: '長休憩',
     icon: 'bed' as const,
     color: '#8b5cf6',

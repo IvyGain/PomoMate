@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase接続修正 - PomoMate</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .warning {
+            color: #856404;
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            color: #004085;
+            background: #cce5ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Supabase接続問題の修正</h1>
+        
+        <div class="test-section">
+            <h2>問題: Failed to fetch エラー</h2>
+            <div class="warning">
+                このエラーは通常、以下のいずれかが原因です：
+                <ul>
+                    <li>CORS（クロスオリジン）ポリシーの問題</li>
+                    <li>Supabase URLまたはAnon Keyの設定ミス</li>
+                    <li>ネットワーク接続の問題</li>
+                    <li>Supabaseプロジェクトが一時停止している</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>1. 基本接続テスト（エラーハンドリング改善版）</h2>
+            <button onclick="testBasicConnection()">基本接続テスト</button>
+            <div id="basicResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. 直接APIテスト</h2>
+            <button onclick="testDirectAPI()">Supabase API直接テスト</button>
+            <div id="apiResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Auth専用テスト（メール送信）</h2>
+            <input type="email" id="testEmail" placeholder="テストメールアドレス" value="">
+            <button onclick="testAuthOnly()">Auth機能のみテスト</button>
+            <div id="authResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. CORSとネットワーク診断</h2>
+            <button onclick="runDiagnostics()">診断を実行</button>
+            <div id="diagnosticsResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 推奨される解決策</h2>
+            <div class="info">
+                <h4>Supabaseダッシュボードで確認すること：</h4>
+                <ol>
+                    <li><strong>プロジェクトステータス</strong>
+                        <ul>
+                            <li>Supabaseダッシュボード → 右上のプロジェクト名</li>
+                            <li>「Active」になっているか確認</li>
+                        </ul>
+                    </li>
+                    <li><strong>API設定</strong>
+                        <ul>
+                            <li>Settings → API</li>
+                            <li>URL: <code>https://kucvkpozzxdjqqozjmpy.supabase.co</code></li>
+                            <li>Anon Key: 正しいキーが設定されているか</li>
+                        </ul>
+                    </li>
+                    <li><strong>Authentication → URL Configuration</strong>
+                        <ul>
+                            <li>Site URLに <code>http://localhost:*</code> が含まれているか</li>
+                            <li>または具体的なローカルURLが設定されているか</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://kucvkpozzxdjqqozjmpy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y3ZrcG96enhkanFxb3pqbXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjQzNTUsImV4cCI6MjA1MTQwMDM1NX0.bAW2GDYdIGj8QdAjCXOq1V7IbOR9X8F7l82H_m0cRe8';
+
+        // 1. 基本接続テスト
+        async function testBasicConnection() {
+            const resultDiv = document.getElementById('basicResult');
+            resultDiv.innerHTML = '<div class="info">テスト中...</div>';
+            
+            try {
+                console.log('Supabase初期化開始...');
+                const { createClient } = supabase;
+                const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                console.log('接続テスト実行中...');
+                
+                // シンプルなauthチェック
+                const { data: session, error } = await client.auth.getSession();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Supabase接続成功！<br>
+                        接続状態: 正常<br>
+                        Auth機能: 利用可能
+                    </div>
+                `;
+            } catch (error) {
+                console.error('接続エラー詳細:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 接続エラー<br>
+                        <strong>エラー:</strong> ${error.message}<br>
+                        <strong>タイプ:</strong> ${error.name}<br>
+                        <details>
+                            <summary>詳細情報</summary>
+                            <pre>${JSON.stringify(error, null, 2)}</pre>
+                        </details>
+                    </div>
+                `;
+            }
+        }
+
+        // 2. 直接APIテスト
+        async function testDirectAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '<div class="info">API直接アクセステスト中...</div>';
+            
+            try {
+                // REST APIに直接アクセス
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ REST API接続成功！<br>
+                        ステータス: ${response.status}<br>
+                        Supabaseプロジェクトはアクティブです
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ API接続エラー<br>
+                        ${error.message}<br>
+                        <br>
+                        <strong>考えられる原因:</strong><br>
+                        • Supabaseプロジェクトが一時停止中<br>
+                        • URLまたはAPIキーが正しくない<br>
+                        • ネットワーク接続の問題
+                    </div>
+                `;
+            }
+        }
+
+        // 3. Auth専用テスト
+        async function testAuthOnly() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                document.getElementById('authResult').innerHTML = 
+                    '<div class="error">メールアドレスを入力してください</div>';
+                return;
+            }
+            
+            const resultDiv = document.getElementById('authResult');
+            resultDiv.innerHTML = '<div class="info">Authテスト中...</div>';
+            
+            try {
+                const { createClient } = supabase;
+                const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // パスワードリセットメール送信
+                const { data, error } = await client.auth.resetPasswordForEmail(email, {
+                    redirectTo: `${window.location.origin}/reset-password`
+                });
+                
+                if (error) throw error;
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ メール送信リクエスト成功！<br>
+                        送信先: ${email}<br>
+                        <br>
+                        📧 メールボックスを確認してください<br>
+                        🔍 <a href="https://resend.com/emails" target="_blank">Resendダッシュボード</a>で送信状況を確認
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Authエラー<br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 4. 診断
+        async function runDiagnostics() {
+            const resultDiv = document.getElementById('diagnosticsResult');
+            resultDiv.innerHTML = '<div class="info">診断実行中...</div>';
+            
+            const diagnostics = {
+                url: SUPABASE_URL,
+                keyLength: SUPABASE_ANON_KEY.length,
+                keyPrefix: SUPABASE_ANON_KEY.substring(0, 20) + '...',
+                origin: window.location.origin,
+                protocol: window.location.protocol,
+                userAgent: navigator.userAgent
+            };
+            
+            // URLの妥当性チェック
+            const urlValid = SUPABASE_URL.startsWith('https://') && 
+                           SUPABASE_URL.includes('.supabase.co');
+            
+            resultDiv.innerHTML = `
+                <div class="info">
+                    <h4>診断結果:</h4>
+                    <pre>${JSON.stringify(diagnostics, null, 2)}</pre>
+                    <br>
+                    <strong>URL妥当性:</strong> ${urlValid ? '✅ 正常' : '❌ 異常'}<br>
+                    <strong>プロトコル:</strong> ${window.location.protocol === 'https:' ? '✅ HTTPS' : '⚠️ HTTP'}<br>
+                    <br>
+                    ${!urlValid ? '<div class="error">Supabase URLの形式が正しくありません</div>' : ''}
+                </div>
+            `;
+        }
+
+        // ページ読み込み時
+        window.onload = function() {
+            console.log('Supabase接続診断ツール起動');
+            console.log('URL:', SUPABASE_URL);
+            console.log('Key length:', SUPABASE_ANON_KEY.length);
+        };
+    </script>
+</body>
+</html>

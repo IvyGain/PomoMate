@@ -11,6 +11,8 @@ export interface ThemeColors {
   warning: string;
   error: string;
   inactive: string;
+  border: string;
+  overlay: string;
 }
 
 const lightTheme: ThemeColors = {
@@ -24,6 +26,8 @@ const lightTheme: ThemeColors = {
   warning: '#FF9500',
   error: '#FF3B30',
   inactive: '#C7C7CC',
+  border: '#E5E5EA',
+  overlay: 'rgba(0, 0, 0, 0.4)',
 };
 
 const darkTheme: ThemeColors = {
@@ -37,6 +41,8 @@ const darkTheme: ThemeColors = {
   warning: '#FF9F0A',
   error: '#FF453A',
   inactive: '#48484A',
+  border: '#38383A',
+  overlay: 'rgba(0, 0, 0, 0.7)',
 };
 
 interface ThemeState {

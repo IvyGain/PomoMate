@@ -1,10 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Import Supabase services
+import { getStorageInterface } from '../src/utils/storage';
 import { socialService } from '../src/services/supabaseService';
 import { realtimeService } from '../src/lib/supabaseRealtime';
+import { handleError } from '../src/utils/errorHandler';
 
 export interface Friend {
   id: string;
@@ -294,7 +293,7 @@ export const useSocialStore = create<SocialState>()(
     }),
     {
       name: 'social-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getStorageInterface()),
     }
   )
 );

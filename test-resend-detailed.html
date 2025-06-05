@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend詳細デバッグ - PomoMate</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .info {
+            color: #004085;
+            background: #cce5ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Resend 詳細デバッグツール</h1>
+        
+        <div class="debug-section">
+            <h2>1. Supabase接続テスト</h2>
+            <button onclick="testSupabaseConnection()">接続テスト実行</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>2. Auth設定確認</h2>
+            <button onclick="checkAuthSettings()">設定を確認</button>
+            <div id="authSettingsResult"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>3. メール送信テスト（詳細ログ付き）</h2>
+            <input type="email" id="testEmail" placeholder="テストメールアドレス" value="">
+            <button onclick="sendTestEmailWithDebug()">詳細デバッグ付きで送信</button>
+            <div id="emailDebugResult"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>4. 代替メソッドテスト</h2>
+            <button onclick="testAlternativeMethods()">他の認証メソッドをテスト</button>
+            <div id="alternativeResult"></div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📋 チェックリスト</h2>
+            <div id="checklist">
+                <p>以下を確認してください：</p>
+                <ol>
+                    <li><strong>Resendダッシュボード</strong>
+                        <ul>
+                            <li>Domain Status: <code>Verified ✅</code></li>
+                            <li>API Key Permission: <code>Full access</code></li>
+                            <li>API Key Domain: <code>pomomate.app</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>Supabase SMTP設定</strong>
+                        <ul>
+                            <li>Host: <code>smtp.resend.com</code></li>
+                            <li>Port: <code>587</code></li>
+                            <li>Username: <code>resend</code></li>
+                            <li>Password: <code>re_xxxxx</code> (APIキー)</li>
+                            <li>Sender: <code>info@pomomate.app</code></li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>📝 ログ出力</h2>
+            <div id="logOutput" style="max-height: 300px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase初期化
+        const supabaseUrl = 'https://kucvkpozzxdjqqozjmpy.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y3ZrcG96enhkanFxb3pqbXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjQzNTUsImV4cCI6MjA1MTQwMDM1NX0.bAW2GDYdIGj8QdAjCXOq1V7IbOR9X8F7l82H_m0cRe8';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+        // ログ出力関数
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            // コンソールにも出力
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // 1. Supabase接続テスト
+        async function testSupabaseConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="info">接続テスト中...</div>';
+            
+            try {
+                log('Supabase接続テスト開始');
+                
+                // ヘルスチェック的なクエリを実行
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('count')
+                    .limit(1);
+                
+                if (error && error.code !== 'PGRST116') { // テーブルが存在しない場合のエラーは無視
+                    throw error;
+                }
+                
+                log('Supabase接続: 成功', 'success');
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Supabase接続成功<br>
+                        URL: ${supabaseUrl}<br>
+                        状態: 正常
+                    </div>
+                `;
+            } catch (error) {
+                log(`Supabase接続エラー: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 接続エラー: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 2. Auth設定確認
+        async function checkAuthSettings() {
+            const resultDiv = document.getElementById('authSettingsResult');
+            resultDiv.innerHTML = '<div class="info">設定確認中...</div>';
+            
+            try {
+                log('Auth設定確認開始');
+                
+                // 現在の認証設定を取得
+                const session = await supabaseClient.auth.getSession();
+                
+                resultDiv.innerHTML = `
+                    <div class="info">
+                        <h4>認証設定情報:</h4>
+                        <pre>${JSON.stringify({
+                            url: supabaseUrl,
+                            authUrl: supabaseClient.auth.url,
+                            hasSession: !!session.data.session,
+                            headers: supabaseClient.auth.headers
+                        }, null, 2)}</pre>
+                    </div>
+                `;
+                
+                log('Auth設定確認完了', 'success');
+            } catch (error) {
+                log(`Auth設定エラー: ${error.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 設定確認エラー: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 3. 詳細デバッグ付きメール送信
+        async function sendTestEmailWithDebug() {
+            const email = document.getElementById('testEmail').value;
+            const resultDiv = document.getElementById('emailDebugResult');
+            
+            if (!email) {
+                resultDiv.innerHTML = '<div class="error">メールアドレスを入力してください</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">送信処理中...</div>';
+            log(`メール送信開始: ${email}`);
+            
+            try {
+                // リクエスト前の状態を記録
+                const startTime = Date.now();
+                
+                const { data, error } = await supabaseClient.auth.resetPasswordForEmail(
+                    email,
+                    {
+                        redirectTo: window.location.origin + '/reset-password'
+                    }
+                );
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                log(`API応答時間: ${duration}ms`);
+                
+                if (error) {
+                    log(`メール送信エラー: ${error.message}`, 'error');
+                    log(`エラーコード: ${error.code || 'なし'}`, 'error');
+                    log(`エラー詳細: ${JSON.stringify(error)}`, 'error');
+                    
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ エラーが発生しました<br>
+                            <strong>エラーメッセージ:</strong> ${error.message}<br>
+                            <strong>エラーコード:</strong> ${error.code || 'なし'}<br>
+                            <details>
+                                <summary>詳細情報</summary>
+                                <pre>${JSON.stringify(error, null, 2)}</pre>
+                            </details>
+                        </div>
+                    `;
+                } else {
+                    log(`メール送信成功: ${email}`, 'success');
+                    log(`レスポンスデータ: ${JSON.stringify(data)}`, 'info');
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ メール送信リクエスト成功！<br>
+                            <strong>送信先:</strong> ${email}<br>
+                            <strong>処理時間:</strong> ${duration}ms<br>
+                            <br>
+                            📧 メールボックスを確認してください（迷惑メールフォルダも）<br>
+                            🔍 <a href="https://resend.com/emails" target="_blank">Resendダッシュボード</a>で送信状況を確認
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                log(`予期しないエラー: ${err.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ 予期しないエラー: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        // 4. 代替メソッドテスト
+        async function testAlternativeMethods() {
+            const resultDiv = document.getElementById('alternativeResult');
+            resultDiv.innerHTML = '<div class="info">テスト中...</div>';
+            
+            try {
+                log('代替メソッドテスト開始');
+                
+                // サインアップのテスト（メール送信をトリガー）
+                const testEmail = `test-${Date.now()}@example.com`;
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: testEmail,
+                    password: 'TestPassword123!',
+                    options: {
+                        emailRedirectTo: window.location.origin
+                    }
+                });
+                
+                if (error) {
+                    log(`サインアップテストエラー: ${error.message}`, 'error');
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ サインアップテストエラー: ${error.message}<br>
+                            <small>これはSMTP設定の問題を示している可能性があります</small>
+                        </div>
+                    `;
+                } else {
+                    log('サインアップテスト成功', 'success');
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ サインアップAPIは正常に動作しています<br>
+                            <small>メール送信の問題はSMTP設定にある可能性が高いです</small>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                log(`代替メソッドエラー: ${err.message}`, 'error');
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ テストエラー: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        // ページ読み込み時
+        window.onload = function() {
+            log('デバッグツール初期化完了');
+            log(`Supabase URL: ${supabaseUrl}`);
+            log('すべてのテストを順番に実行してください');
+        };
+    </script>
+</body>
+</html>

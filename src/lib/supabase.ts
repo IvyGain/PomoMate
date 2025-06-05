@@ -1,4 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '../types/database';
 
 // Clean environment variables by removing any whitespace
 const supabaseUrl = (process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://xjxgapahcookarqiwjww.supabase.co').trim();
@@ -41,19 +42,17 @@ const storage = {
 // Get the correct redirect URL based on environment
 const getRedirectUrl = () => {
   if (typeof window !== 'undefined') {
-    // In production, use the actual deployment URL
-    if (window.location.hostname !== 'localhost') {
-      return `${window.location.origin}/email-confirmed`;
-    }
+    // Use current origin for redirect
+    return `${window.location.origin}/email-confirmed`;
   }
-  // Default to production URL
-  return 'https://pomomate.vercel.app/email-confirmed';
+  // Default to Vercel deployment URL (from the actual error message)
+  return 'https://pomomate-p0iya2bod-ivygains-projects.vercel.app/email-confirmed';
 };
 
 // Create Supabase client with error handling
-let supabase;
+let supabase: SupabaseClient<Database>;
 try {
-  supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
       storage,
       autoRefreshToken: true,

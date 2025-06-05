@@ -10,6 +10,7 @@ import { StatusBar, View, StyleSheet } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
 import { useThemeStore } from "@/store/themeStore";
 import { useAuthStore } from "@/store/authStore";
+import { useAuthCallback } from "@/src/hooks/useAuthCallback";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,6 +26,9 @@ export default function RootLayout() {
   const segments = useSegments();
   
   const [isReady, setIsReady] = useState(false);
+  
+  // Handle auth callbacks (email confirmation, etc.)
+  useAuthCallback();
 
   // 埋め込み環境の検出とロギング
   useEffect(() => {
@@ -76,15 +80,31 @@ export default function RootLayout() {
 
     // Segments might be undefined or empty on initial load
     const firstSegment = segments?.[0];
-    const inAuthGroup = firstSegment === 'login' || firstSegment === 'register' || firstSegment === 'forgot-password' || firstSegment === 'test-register';
+    const currentPath = segments.join('/');
     
-    // Allow navigation to register and other auth pages
-    if (!isAuthenticated && !inAuthGroup && segments.length > 0) {
+    // Auth-related pages that don't require authentication
+    const authPages = ['login', 'register', 'forgot-password', 'email-confirmed', 'email-sent'];
+    const isAuthPage = authPages.includes(firstSegment || '');
+    
+    // Check if this is an auth callback URL
+    const isAuthCallback = typeof window !== 'undefined' && 
+      (window.location.search.includes('token_hash=') || 
+       window.location.search.includes('access_token=') ||
+       window.location.hash.includes('access_token='));
+    
+    // Don't redirect if we're processing an auth callback
+    if (isAuthCallback) {
+      console.log('🔗 Auth callback detected, skipping navigation redirect');
+      return;
+    }
+    
+    // Allow navigation to auth pages and email confirmation
+    if (!isAuthenticated && !isAuthPage && segments.length > 0) {
       // Not authenticated and not on auth page -> go to login
       console.log('➡️ Redirecting to login (not authenticated)');
       router.replace('/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      // Authenticated and on auth page -> go to home
+    } else if (isAuthenticated && (firstSegment === 'login' || firstSegment === 'register')) {
+      // Authenticated and on login/register page -> go to home
       console.log('➡️ Redirecting to home (authenticated on auth page)');
       router.replace('/(tabs)');
     } else if (isAuthenticated && segments.length === 0) {
@@ -114,6 +134,8 @@ export default function RootLayout() {
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="register" options={{ title: "新規登録" }} />
           <Stack.Screen name="forgot-password" options={{ title: "パスワードリセット" }} />
+          <Stack.Screen name="email-confirmed" options={{ headerShown: false }} />
+          <Stack.Screen name="email-sent" options={{ title: "メール送信完了" }} />
         </Stack>
       </View>
     </ErrorBoundary>

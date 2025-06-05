@@ -1,8 +1,8 @@
-const prisma = require('@prisma/client').PrismaClient;
-const db = new prisma();
+import { PrismaClient } from '@prisma/client';
+const db = new PrismaClient();
 
 // ゲーム一覧の取得
-exports.getGames = async (req, res, next) => {
+export const getGames = async (req, res, next) => {
   try {
     const games = await db.game.findMany({
       include: {
@@ -19,7 +19,7 @@ exports.getGames = async (req, res, next) => {
 };
 
 // 特定のゲームの詳細取得
-exports.getGameById = async (req, res, next) => {
+export const getGameById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -43,7 +43,7 @@ exports.getGameById = async (req, res, next) => {
 };
 
 // ユーザーのゲーム統計情報を取得
-exports.getUserGameStats = async (req, res, next) => {
+export const getUserGameStats = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
@@ -70,7 +70,7 @@ exports.getUserGameStats = async (req, res, next) => {
 };
 
 // ゲームスコアの更新
-exports.updateGameScore = async (req, res, next) => {
+export const updateGameScore = async (req, res, next) => {
   try {
     const { gameId } = req.params;
     const { score, sessionId } = req.body;
@@ -147,7 +147,7 @@ exports.updateGameScore = async (req, res, next) => {
 };
 
 // リーダーボードの取得
-exports.getLeaderboard = async (req, res, next) => {
+export const getLeaderboard = async (req, res, next) => {
   try {
     const { gameId } = req.params;
     const { period = 'all' } = req.query; // all, daily, weekly, monthly
@@ -212,7 +212,7 @@ exports.getLeaderboard = async (req, res, next) => {
 };
 
 // アチーブメントの取得
-exports.getAchievements = async (req, res, next) => {
+export const getAchievements = async (req, res, next) => {
   try {
     const { gameId } = req.params;
     const userId = req.user.id;
@@ -246,7 +246,7 @@ exports.getAchievements = async (req, res, next) => {
 };
 
 // アチーブメントの解除
-exports.unlockAchievement = async (req, res, next) => {
+export const unlockAchievement = async (req, res, next) => {
   try {
     const { gameId, achievementId } = req.params;
     const userId = req.user.id;
@@ -285,6 +285,54 @@ exports.unlockAchievement = async (req, res, next) => {
     });
 
     res.json(updatedUserGame);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ゲームスコア一覧の取得（リーダーボードのエイリアス）
+export const getGameScores = getLeaderboard;
+
+// スコアの送信（updateGameScoreのエイリアス）
+export const submitScore = updateGameScore;
+
+// ゲームのアンロック
+export const unlockGame = async (req, res, next) => {
+  try {
+    const { gameId } = req.params;
+    const userId = req.user.id;
+
+    // ゲームの存在確認
+    const game = await db.game.findUnique({
+      where: { id: gameId }
+    });
+
+    if (!game) {
+      return res.status(404).json({ error: 'ゲームが見つかりません' });
+    }
+
+    // ユーザーゲーム記録の作成または更新
+    const userGame = await db.userGame.upsert({
+      where: {
+        userId_gameId: {
+          userId,
+          gameId
+        }
+      },
+      update: {
+        unlocked: true
+      },
+      create: {
+        userId,
+        gameId,
+        unlocked: true,
+        highScore: 0,
+        totalScore: 0,
+        gamesPlayed: 0
+      }
+    });
+
+    res.json(userGame);
   } catch (error) {
     next(error);
   }
