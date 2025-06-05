@@ -31,17 +31,17 @@ const lightTheme: ThemeColors = {
 };
 
 const darkTheme: ThemeColors = {
-  background: '#000000',
-  card: '#1C1C1E',
+  background: '#121212',
+  card: '#1E1E1E',
   text: '#FFFFFF',
-  textSecondary: '#99999A',
-  primary: '#0A84FF',
-  secondary: '#5E5CE6',
-  success: '#30D158',
-  warning: '#FF9F0A',
-  error: '#FF453A',
-  inactive: '#48484A',
-  border: '#38383A',
+  textSecondary: '#AAAAAA',
+  primary: '#FF6B6B',
+  secondary: '#4ECDC4',
+  success: '#6BCB77',
+  warning: '#FFD166',
+  error: '#EF476F',
+  inactive: '#555555',
+  border: '#333333',
   overlay: 'rgba(0, 0, 0, 0.7)',
 };
 
@@ -53,8 +53,8 @@ interface ThemeState {
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  currentTheme: 'light',
-  theme: lightTheme,
+  currentTheme: 'dark',
+  theme: darkTheme,
   
   toggleTheme: () => {
     const newTheme = get().currentTheme === 'light' ? 'dark' : 'light';

@@ -50,13 +50,30 @@ export default function LoginScreen() {
       return;
     }
     
+    console.log('🔄 Starting login process with:', { email });
+    
     try {
+      console.log('🔐 Calling login function...');
       await login(email, password);
+      console.log('✅ Login function completed successfully');
+      
       // Force immediate navigation after successful login
-      console.log('Login successful, navigating to tabs');
+      console.log('🚀 Navigating to tabs...');
       router.replace('/(tabs)');
-    } catch (error) {
-      // Error is handled by the store
+      console.log('✅ Navigation initiated');
+    } catch (error: any) {
+      console.error('❌ Login failed:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      
+      Alert.alert(
+        'ログインエラー', 
+        `ログインに失敗しました: ${error.message || 'Unknown error'}`,
+        [{ text: 'OK' }]
+      );
     }
   };
 
