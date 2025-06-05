@@ -13,8 +13,8 @@
 3. 以下の変数の値から**改行文字を除去**：
 
 ```
-EXPO_PUBLIC_SUPABASE_URL=https://xjxgapahcookarqiwjww.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqeGdhcGFoY29va2FycWl3and3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2Mzc3MDMsImV4cCI6MjA2NDIxMzcwM30.S2C4PwG_RTv91Fm0VVN3B3lj0A909XddBaqPjZWAKXQ
+EXPO_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY_HERE
 ```
 
 **重要**: 値の最後に改行やスペースがないことを確認
@@ -109,8 +109,8 @@ ON CONFLICT (id) DO NOTHING;
 ### 3. Supabase認証設定
 
 1. Supabaseダッシュボード → Authentication → Settings
-2. **Site URL**: `https://pomomate-70nm74py6-ivygains-projects.vercel.app`
-3. **Redirect URLs**: `https://pomomate-70nm74py6-ivygains-projects.vercel.app/**`
+2. **Site URL**: `https://YOUR_VERCEL_URL.vercel.app`
+3. **Redirect URLs**: `https://YOUR_VERCEL_URL.vercel.app/**`
 4. **Email Settings** → **Enable confirmations**: `OFF` (テスト用)
 
 ### 4. 再デプロイ

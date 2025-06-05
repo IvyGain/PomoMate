@@ -154,8 +154,8 @@
 
     <script>
         // Supabase初期化
-        const supabaseUrl = 'https://kucvkpozzxdjqqozjmpy.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y3ZrcG96enhkanFxb3pqbXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjQzNTUsImV4cCI6MjA1MTQwMDM1NX0.bAW2GDYdIGj8QdAjCXOq1V7IbOR9X8F7l82H_m0cRe8';
+        const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://YOUR_PROJECT_ID.supabase.co';
+        const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY_HERE';
         
         const { createClient } = supabase;
         const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
@@ -182,7 +182,7 @@
             
             try {
                 const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                    redirectTo: 'https://pomomate-lt8dny1oh-ivygains-projects.vercel.app/reset-password'
+                    redirectTo: `${window.location.origin}/reset-password`
                 });
                 
                 if (error) {

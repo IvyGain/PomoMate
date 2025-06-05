@@ -9,7 +9,7 @@
 
 ### 1. Supabaseダッシュボードにアクセス
 ```
-https://supabase.com/dashboard/project/xjxgapahcookarqiwjww
+https://supabase.com/dashboard/project/YOUR_PROJECT_ID
 ```
 
 ### 2. データベーステーブルの作成
@@ -61,14 +61,14 @@ ALTER TABLE users DISABLE ROW LEVEL SECURITY;
 
 ### 認証情報の確認
 現在使用されているSupabaseプロジェクト:
-- URL: `https://xjxgapahcookarqiwjww.supabase.co`  
-- プロジェクトID: `xjxgapahcookarqiwjww`
+- URL: `https://YOUR_PROJECT_ID.supabase.co`  
+- プロジェクトID: `YOUR_PROJECT_ID`
 
 ### 設定確認コマンド
 ```bash
 # 現在のプロジェクト状況確認
-curl -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqeGdhcGFoY29va2FycWl3and3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2Mzc3MDMsImV4cCI6MjA2NDIxMzcwM30.S2C4PwG_RTv91Fm0VVN3B3lj0A909XddBaqPjZWAKXQ" \
-https://xjxgapahcookarqiwjww.supabase.co/rest/v1/users?select=id
+curl -H "apikey: YOUR_SUPABASE_ANON_KEY" \
+https://YOUR_PROJECT_ID.supabase.co/rest/v1/users?select=id
 ```
 
 ## 🎯 今すぐ実行すべき最優先タスク

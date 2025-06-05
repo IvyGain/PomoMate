@@ -138,7 +138,7 @@
                     <li><strong>API設定</strong>
                         <ul>
                             <li>Settings → API</li>
-                            <li>URL: <code>https://kucvkpozzxdjqqozjmpy.supabase.co</code></li>
+                            <li>URL: <code>https://YOUR_PROJECT_ID.supabase.co</code></li>
                             <li>Anon Key: 正しいキーが設定されているか</li>
                         </ul>
                     </li>
@@ -155,8 +155,8 @@
 
     <script>
         // Supabase設定
-        const SUPABASE_URL = 'https://kucvkpozzxdjqqozjmpy.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt1Y3ZrcG96enhkanFxb3pqbXB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4MjQzNTUsImV4cCI6MjA1MTQwMDM1NX0.bAW2GDYdIGj8QdAjCXOq1V7IbOR9X8F7l82H_m0cRe8';
+        const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://YOUR_PROJECT_ID.supabase.co';
+        const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY_HERE';
 
         // 1. 基本接続テスト
         async function testBasicConnection() {
