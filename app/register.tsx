@@ -16,6 +16,7 @@ import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SafeTextInput } from '@/components/SafeTextInput';
 import { supabase } from '@/src/lib/supabase';
+import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react-native';
 
 // デバッグログ
 console.log('📱 RegisterScreen loading...');
@@ -32,6 +33,8 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // コンポーネントマウント確認
   useEffect(() => {
@@ -131,68 +134,84 @@ export default function RegisterScreen() {
             </Text>
             
             <View style={styles.form}>
-              <SafeTextInput
-                style={[styles.input, { 
-                  backgroundColor: theme.card, 
-                  color: theme.text,
-                  borderColor: theme.border || 'transparent',
-                }]}
-                placeholder="ユーザー名"
-                placeholderTextColor={theme.textSecondary}
-                value={username}
-                onChangeText={setUsername}
-                autoCapitalize="none"
-                autoCorrect={false}
-                testID="username-input"
-              />
+              <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
+                <User size={20} color={theme.textSecondary} style={styles.inputIcon} />
+                <SafeTextInput
+                  style={[styles.input, { color: theme.text }]}
+                  placeholder="ユーザー名"
+                  placeholderTextColor={theme.textSecondary}
+                  value={username}
+                  onChangeText={setUsername}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  testID="username-input"
+                />
+              </View>
               
-              <SafeTextInput
-                style={[styles.input, { 
-                  backgroundColor: theme.card, 
-                  color: theme.text,
-                  borderColor: theme.border || 'transparent',
-                }]}
-                placeholder="メールアドレス"
-                placeholderTextColor={theme.textSecondary}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
-                testID="email-input"
-              />
+              <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
+                <Mail size={20} color={theme.textSecondary} style={styles.inputIcon} />
+                <SafeTextInput
+                  style={[styles.input, { color: theme.text }]}
+                  placeholder="メールアドレス"
+                  placeholderTextColor={theme.textSecondary}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  testID="email-input"
+                />
+              </View>
               
-              <SafeTextInput
-                style={[styles.input, { 
-                  backgroundColor: theme.card, 
-                  color: theme.text,
-                  borderColor: theme.border || 'transparent',
-                }]}
-                placeholder="パスワード（6文字以上）"
-                placeholderTextColor={theme.textSecondary}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-                testID="password-input"
-              />
+              <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
+                <Lock size={20} color={theme.textSecondary} style={styles.inputIcon} />
+                <SafeTextInput
+                  style={[styles.input, { color: theme.text }]}
+                  placeholder="パスワード（6文字以上）"
+                  placeholderTextColor={theme.textSecondary}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  testID="password-input"
+                />
+                <TouchableOpacity 
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} color={theme.textSecondary} />
+                  ) : (
+                    <Eye size={20} color={theme.textSecondary} />
+                  )}
+                </TouchableOpacity>
+              </View>
               
-              <SafeTextInput
-                style={[styles.input, { 
-                  backgroundColor: theme.card, 
-                  color: theme.text,
-                  borderColor: theme.border || 'transparent',
-                }]}
-                placeholder="パスワード確認"
-                placeholderTextColor={theme.textSecondary}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-                testID="confirm-password-input"
-              />
+              <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
+                <Lock size={20} color={theme.textSecondary} style={styles.inputIcon} />
+                <SafeTextInput
+                  style={[styles.input, { color: theme.text }]}
+                  placeholder="パスワード確認"
+                  placeholderTextColor={theme.textSecondary}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  testID="confirm-password-input"
+                />
+                <TouchableOpacity 
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={styles.eyeIcon}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff size={20} color={theme.textSecondary} />
+                  ) : (
+                    <Eye size={20} color={theme.textSecondary} />
+                  )}
+                </TouchableOpacity>
+              </View>
               
               <TouchableOpacity 
                 style={[styles.button, { 
@@ -259,13 +278,24 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: 'center',
   },
-  input: {
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 12,
     marginBottom: 16,
     paddingHorizontal: 16,
     height: 56,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
+    flex: 1,
+    height: 56,
     fontSize: 16,
-    borderWidth: 1,
+  },
+  eyeIcon: {
+    padding: 8,
   },
   button: {
     borderRadius: 12,

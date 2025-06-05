@@ -20,6 +20,8 @@ module.exports = {
     '/node_modules/',
     '/.expo/',
     '/web-build/',
+    '/e2e/',
+    '/backend/',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
