@@ -52,7 +52,9 @@ export default function LoginScreen() {
     
     try {
       await login(email, password);
-      // Navigation is now handled by the useProtectedRoute hook in _layout.tsx
+      // Force immediate navigation after successful login
+      console.log('Login successful, navigating to tabs');
+      router.replace('/(tabs)');
     } catch (error) {
       // Error is handled by the store
     }
@@ -66,6 +68,9 @@ export default function LoginScreen() {
     try {
       console.log('Attempting demo login with:', demoEmail);
       await login(demoEmail, demoPassword);
+      // Force immediate navigation after successful demo login
+      console.log('Demo login successful, navigating to tabs');
+      router.replace('/(tabs)');
     } catch (error) {
       console.error('Demo login failed:', error);
       Alert.alert(
