@@ -44,11 +44,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'default',
             value: 'default',
-            description: '最初から遊べます'
+            description: '最初から遊べます',
           },
           icon: '🎯',
           difficulty: '簡単',
-          image: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'memory_match',
@@ -59,11 +59,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'level',
             value: 3,
-            description: 'レベル3に到達する'
+            description: 'レベル3に到達する',
           },
           icon: '🃏',
           difficulty: '普通',
-          image: 'https://images.unsplash.com/photo-1605870445919-838d190e8e1b?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1605870445919-838d190e8e1b?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'number_puzzle',
@@ -74,11 +74,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'level',
             value: 5,
-            description: 'レベル5に到達する'
+            description: 'レベル5に到達する',
           },
           icon: '🔢',
           difficulty: '普通',
-          image: 'https://images.unsplash.com/photo-1611996575749-79a3a250f948?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1611996575749-79a3a250f948?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'pattern_memory',
@@ -89,11 +89,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'achievement',
             value: 'focus_master',
-            description: '「集中マスター」の実績を解除する'
+            description: '「集中マスター」の実績を解除する',
           },
           icon: '🧠',
           difficulty: '難しい',
-          image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'anagram',
@@ -104,11 +104,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'achievement',
             value: 'consistency_pro',
-            description: '「継続のプロ」の実績を解除する'
+            description: '「継続のプロ」の実績を解除する',
           },
           icon: '📝',
           difficulty: '難しい',
-          image: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1544396821-4dd40b938ad3?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'math_challenge',
@@ -119,11 +119,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'level',
             value: 8,
-            description: 'レベル8に到達する'
+            description: 'レベル8に到達する',
           },
           icon: '🧮',
           difficulty: '普通',
-          image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'color_match',
@@ -134,11 +134,11 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'achievement',
             value: 'time_wizard',
-            description: '「タイムウィザード」の実績を解除する'
+            description: '「タイムウィザード」の実績を解除する',
           },
           icon: '🎨',
           difficulty: '簡単',
-          image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1000&auto=format&fit=crop'
+          image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?q=80&w=1000&auto=format&fit=crop',
         },
         {
           id: 'word_scramble',
@@ -149,12 +149,12 @@ export const useGameStore = create<GameState>()(
           unlockCondition: {
             type: 'default',
             value: 'default',
-            description: '最初から遊べます'
+            description: '最初から遊べます',
           },
           icon: '📚',
           difficulty: '普通',
-          image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop'
-        }
+          image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1000&auto=format&fit=crop',
+        },
       ],
       unlockedGames: ['tap_target', 'word_scramble'],
       selectedGame: null,
@@ -167,12 +167,12 @@ export const useGameStore = create<GameState>()(
         
         // ゲームを解放する
         const updatedGames = state.games.map(game => 
-          game.id === gameId ? { ...game, unlocked: true } : game
+          game.id === gameId ? { ...game, unlocked: true } : game,
         );
         
         return {
           games: updatedGames,
-          unlockedGames: [...state.unlockedGames, gameId]
+          unlockedGames: [...state.unlockedGames, gameId],
         };
       }),
       
@@ -182,7 +182,7 @@ export const useGameStore = create<GameState>()(
         const updatedGames = state.games.map(game => 
           game.id === gameId && score > game.highScore 
             ? { ...game, highScore: score } 
-            : game
+            : game,
         );
         
         return { games: updatedGames };
@@ -222,11 +222,11 @@ export const useGameStore = create<GameState>()(
         });
         
         return newlyUnlocked;
-      }
+      },
     }),
     {
       name: 'game-storage',
       storage: createJSONStorage(() => getStorageInterface()),
-    }
-  )
+    },
+  ),
 );

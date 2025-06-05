@@ -162,7 +162,7 @@ export const ColorMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) =
             <View style={styles.problemContainer}>
               <Text style={[
                 styles.colorText,
-                { color: currentProblem.textColor }
+                { color: currentProblem.textColor },
               ]}>
                 {currentProblem.text}
               </Text>

@@ -47,7 +47,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: 'ポモドーロタイマーの効果を5%向上させる',
     type: 'timerBoost',
     value: 5,
-    isActive: true
+    isActive: true,
   },
   basic_xp: {
     id: 'basic_xp',
@@ -55,7 +55,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: 'セッション完了時のXP獲得量を5%増加させる',
     type: 'xpBoost',
     value: 5,
-    isActive: true
+    isActive: true,
   },
   basic_focus: {
     id: 'basic_focus',
@@ -63,7 +63,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '集中セッション中の効果を5%向上させる',
     type: 'focusEnhancement',
     value: 5,
-    isActive: true
+    isActive: true,
   },
   
   // Balanced abilities
@@ -73,7 +73,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: 'すべてのボーナスを均等に10%向上させる',
     type: 'timerBoost',
     value: 10,
-    isActive: true
+    isActive: true,
   },
   balanced_versatility: {
     id: 'balanced_versatility',
@@ -81,7 +81,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: 'すべてのミニゲームのスコアを10%向上させる',
     type: 'gameScoreBoost',
     value: 10,
-    isActive: true
+    isActive: true,
   },
   
   // Focused abilities
@@ -91,7 +91,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '集中セッションの効果を20%向上させる',
     type: 'focusEnhancement',
     value: 20,
-    isActive: true
+    isActive: true,
   },
   focused_flow_state: {
     id: 'focused_flow_state',
@@ -99,7 +99,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '連続セッション時のXP獲得量を15%増加させる',
     type: 'xpBoost',
     value: 15,
-    isActive: true
+    isActive: true,
   },
   
   // Consistent abilities
@@ -109,7 +109,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '1日休んでもストリークが途切れない（週に1回まで）',
     type: 'streakProtection',
     value: 1,
-    isActive: true
+    isActive: true,
   },
   consistent_habit: {
     id: 'consistent_habit',
@@ -117,7 +117,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '連続日数に応じてXP獲得量が最大20%まで増加する',
     type: 'xpBoost',
     value: 20,
-    isActive: true
+    isActive: true,
   },
   
   // Advanced abilities (Level 3+)
@@ -127,7 +127,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '実績解除時のXP報酬を25%増加させる',
     type: 'achievementBoost',
     value: 25,
-    isActive: true
+    isActive: true,
   },
   advanced_game: {
     id: 'advanced_game',
@@ -135,7 +135,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: 'すべてのミニゲームのスコアを25%向上させる',
     type: 'gameScoreBoost',
     value: 25,
-    isActive: true
+    isActive: true,
   },
   advanced_break: {
     id: 'advanced_break',
@@ -143,7 +143,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '休憩時間を15%短縮しても同じ効果を得られる',
     type: 'breakTimeReduction',
     value: 15,
-    isActive: true
+    isActive: true,
   },
   
   // Special abilities (Level 4+)
@@ -153,7 +153,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '特別なミニゲームや機能をアンロックする',
     type: 'specialUnlock',
     value: 1,
-    isActive: true
+    isActive: true,
   },
   special_time_warp: {
     id: 'special_time_warp',
@@ -161,7 +161,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '週に1回、過去のセッションを記録できる',
     type: 'specialUnlock',
     value: 1,
-    isActive: true
+    isActive: true,
   },
   
   // New unique abilities
@@ -171,7 +171,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '集中セッション中の外部通知を自動的にブロックする',
     type: 'focusEnhancement',
     value: 30,
-    isActive: true
+    isActive: true,
   },
   samurai_discipline: {
     id: 'samurai_discipline',
@@ -179,7 +179,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '連続セッションをこなすごとに集中力が5%ずつ向上する（最大30%）',
     type: 'focusEnhancement',
     value: 30,
-    isActive: true
+    isActive: true,
   },
   dragon_breath: {
     id: 'dragon_breath',
@@ -187,7 +187,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '1日に3回まで、セッション時間を2倍にカウントできる',
     type: 'timerBoost',
     value: 100,
-    isActive: true
+    isActive: true,
   },
   phoenix_rebirth: {
     id: 'phoenix_rebirth',
@@ -195,7 +195,7 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '3日間ストリークが途切れても、1回だけ復活できる',
     type: 'streakProtection',
     value: 3,
-    isActive: true
+    isActive: true,
   },
   kitsune_wisdom: {
     id: 'kitsune_wisdom',
@@ -203,8 +203,8 @@ const ABILITIES: Record<string, CharacterAbility> = {
     description: '実績解除時のXP報酬が50%増加し、追加の特典を得られる',
     type: 'achievementBoost',
     value: 50,
-    isActive: true
-  }
+    isActive: true,
+  },
 };
 
 // Character evolution paths with detailed images
@@ -220,7 +220,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y3V0ZSUyMGNoYXJhY3RlcnxlbnwwfHwwfHx8MA%3D%3D',
     color: colors.primary,
     personality: '好奇心旺盛で元気いっぱい',
-    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp]
+    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp],
   },
   focused_1: { 
     id: 'focused_1',
@@ -232,7 +232,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1566140967404-b8b3932483f5?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: colors.secondary,
     personality: '真面目で集中力が高い',
-    abilities: [ABILITIES.basic_focus, ABILITIES.basic_timer]
+    abilities: [ABILITIES.basic_focus, ABILITIES.basic_timer],
   },
   consistent_1: { 
     id: 'consistent_1',
@@ -244,7 +244,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1563396983906-b3795482a59a?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: colors.warning,
     personality: '忍耐強く継続力がある',
-    abilities: [ABILITIES.basic_xp, ABILITIES.basic_focus]
+    abilities: [ABILITIES.basic_xp, ABILITIES.basic_focus],
   },
   
   // Level 2 (First evolution)
@@ -258,7 +258,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: colors.primary,
     personality: '協調性があり多才',
-    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp, ABILITIES.balanced_adaptability]
+    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp, ABILITIES.balanced_adaptability],
   },
   focused_2: { 
     id: 'focused_2',
@@ -270,7 +270,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889175123-8ee362201f81?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: colors.secondary,
     personality: '分析的で冷静',
-    abilities: [ABILITIES.basic_focus, ABILITIES.basic_timer, ABILITIES.focused_deep_work]
+    abilities: [ABILITIES.basic_focus, ABILITIES.basic_timer, ABILITIES.focused_deep_work],
   },
   consistent_2: { 
     id: 'consistent_2',
@@ -282,7 +282,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: colors.warning,
     personality: '粘り強く安定している',
-    abilities: [ABILITIES.basic_xp, ABILITIES.basic_focus, ABILITIES.consistent_streak]
+    abilities: [ABILITIES.basic_xp, ABILITIES.basic_focus, ABILITIES.consistent_streak],
   },
   
   // Mixed Level 2 evolutions
@@ -296,7 +296,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#9370DB', // Purple blend
     personality: '柔軟で集中力も高い',
-    abilities: [ABILITIES.basic_timer, ABILITIES.basic_focus, ABILITIES.focused_flow_state]
+    abilities: [ABILITIES.basic_timer, ABILITIES.basic_focus, ABILITIES.focused_flow_state],
   },
   balanced_consistent_2: {
     id: 'balanced_consistent_2',
@@ -308,7 +308,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#4ECDC4', // Teal blend
     personality: '安定していて多才',
-    abilities: [ABILITIES.basic_xp, ABILITIES.balanced_adaptability, ABILITIES.consistent_streak]
+    abilities: [ABILITIES.basic_xp, ABILITIES.balanced_adaptability, ABILITIES.consistent_streak],
   },
   focused_balanced_2: {
     id: 'focused_balanced_2',
@@ -320,7 +320,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889175123-8ee362201f81?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#7986CB', // Blue-purple blend
     personality: '集中力があり柔軟',
-    abilities: [ABILITIES.basic_focus, ABILITIES.balanced_adaptability, ABILITIES.focused_deep_work]
+    abilities: [ABILITIES.basic_focus, ABILITIES.balanced_adaptability, ABILITIES.focused_deep_work],
   },
   focused_consistent_2: {
     id: 'focused_consistent_2',
@@ -332,7 +332,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889175123-8ee362201f81?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#5E35B1', // Deep purple blend
     personality: '集中力と継続力を兼ね備える',
-    abilities: [ABILITIES.basic_focus, ABILITIES.consistent_streak, ABILITIES.focused_deep_work]
+    abilities: [ABILITIES.basic_focus, ABILITIES.consistent_streak, ABILITIES.focused_deep_work],
   },
   consistent_balanced_2: {
     id: 'consistent_balanced_2',
@@ -344,7 +344,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#FFA726', // Orange blend
     personality: '継続力があり多才',
-    abilities: [ABILITIES.basic_xp, ABILITIES.balanced_adaptability, ABILITIES.consistent_habit]
+    abilities: [ABILITIES.basic_xp, ABILITIES.balanced_adaptability, ABILITIES.consistent_habit],
   },
   consistent_focused_2: {
     id: 'consistent_focused_2',
@@ -356,7 +356,7 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGN1dGUlMjBjaGFyYWN0ZXJ8ZW58MHx8MHx8fDA%3D',
     color: '#FF7043', // Deep orange blend
     personality: '継続的に集中できる',
-    abilities: [ABILITIES.basic_focus, ABILITIES.consistent_habit, ABILITIES.focused_flow_state]
+    abilities: [ABILITIES.basic_focus, ABILITIES.consistent_habit, ABILITIES.focused_flow_state],
   },
   
   // Level 3 (Second evolution - a few examples)
@@ -374,8 +374,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.basic_timer, 
       ABILITIES.basic_xp, 
       ABILITIES.balanced_adaptability, 
-      ABILITIES.balanced_versatility
-    ]
+      ABILITIES.balanced_versatility,
+    ],
   },
   focused_focused_focused_3: { 
     id: 'focused_focused_focused_3',
@@ -391,8 +391,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.basic_focus, 
       ABILITIES.basic_timer, 
       ABILITIES.focused_deep_work, 
-      ABILITIES.focused_flow_state
-    ]
+      ABILITIES.focused_flow_state,
+    ],
   },
   consistent_consistent_consistent_3: { 
     id: 'consistent_consistent_consistent_3',
@@ -408,8 +408,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.basic_xp, 
       ABILITIES.basic_focus, 
       ABILITIES.consistent_streak, 
-      ABILITIES.consistent_habit
-    ]
+      ABILITIES.consistent_habit,
+    ],
   },
   
   // Mixed Level 3 evolutions (examples)
@@ -427,8 +427,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.balanced_adaptability,
       ABILITIES.focused_deep_work,
       ABILITIES.consistent_streak,
-      ABILITIES.advanced_achievement
-    ]
+      ABILITIES.advanced_achievement,
+    ],
   },
   
   // Level 4 (Third evolution - examples)
@@ -447,8 +447,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.balanced_versatility,
       ABILITIES.advanced_achievement,
       ABILITIES.advanced_game,
-      ABILITIES.special_unlock
-    ]
+      ABILITIES.special_unlock,
+    ],
   },
   focused_focused_focused_focused_4: {
     id: 'focused_focused_focused_focused_4',
@@ -465,8 +465,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.focused_flow_state,
       ABILITIES.advanced_break,
       ABILITIES.advanced_game,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   // Level 5 (Final evolution - examples)
@@ -486,8 +486,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.advanced_achievement,
       ABILITIES.advanced_game,
       ABILITIES.special_unlock,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   // New unique character designs
@@ -505,8 +505,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.balanced_adaptability,
       ABILITIES.focused_deep_work,
       ABILITIES.balanced_versatility,
-      ABILITIES.advanced_achievement
-    ]
+      ABILITIES.advanced_achievement,
+    ],
   },
   
   consistent_balanced_consistent_3: {
@@ -523,8 +523,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_streak,
       ABILITIES.balanced_adaptability,
       ABILITIES.consistent_habit,
-      ABILITIES.advanced_break
-    ]
+      ABILITIES.advanced_break,
+    ],
   },
   
   focused_consistent_focused_3: {
@@ -541,8 +541,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.focused_deep_work,
       ABILITIES.consistent_streak,
       ABILITIES.focused_flow_state,
-      ABILITIES.advanced_break
-    ]
+      ABILITIES.advanced_break,
+    ],
   },
   
   // Unique Level 4 characters
@@ -561,8 +561,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_streak,
       ABILITIES.focused_deep_work,
       ABILITIES.advanced_achievement,
-      ABILITIES.special_unlock
-    ]
+      ABILITIES.special_unlock,
+    ],
   },
   
   focused_balanced_focused_consistent_4: {
@@ -580,8 +580,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.balanced_versatility,
       ABILITIES.focused_flow_state,
       ABILITIES.consistent_streak,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   consistent_focused_consistent_balanced_4: {
@@ -599,8 +599,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.focused_deep_work,
       ABILITIES.consistent_habit,
       ABILITIES.balanced_versatility,
-      ABILITIES.advanced_game
-    ]
+      ABILITIES.advanced_game,
+    ],
   },
   
   // Unique Level 5 characters
@@ -620,8 +620,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_streak,
       ABILITIES.advanced_achievement,
       ABILITIES.special_unlock,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   focused_consistent_focused_consistent_focused_5: {
@@ -640,8 +640,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.focused_flow_state,
       ABILITIES.consistent_habit,
       ABILITIES.advanced_break,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   consistent_balanced_consistent_balanced_consistent_5: {
@@ -660,8 +660,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_habit,
       ABILITIES.balanced_versatility,
       ABILITIES.advanced_achievement,
-      ABILITIES.special_unlock
-    ]
+      ABILITIES.special_unlock,
+    ],
   },
   
   // New Japanese-themed characters
@@ -679,8 +679,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.focused_deep_work,
       ABILITIES.focused_flow_state,
       ABILITIES.ninja_focus,
-      ABILITIES.advanced_break
-    ]
+      ABILITIES.advanced_break,
+    ],
   },
   
   samurai_consistent_3: {
@@ -697,8 +697,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_streak,
       ABILITIES.consistent_habit,
       ABILITIES.samurai_discipline,
-      ABILITIES.advanced_achievement
-    ]
+      ABILITIES.advanced_achievement,
+    ],
   },
   
   dragon_balanced_4: {
@@ -716,8 +716,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.balanced_versatility,
       ABILITIES.dragon_breath,
       ABILITIES.advanced_game,
-      ABILITIES.special_unlock
-    ]
+      ABILITIES.special_unlock,
+    ],
   },
   
   phoenix_consistent_4: {
@@ -735,8 +735,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.consistent_habit,
       ABILITIES.phoenix_rebirth,
       ABILITIES.advanced_achievement,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   kitsune_focused_5: {
@@ -755,8 +755,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
       ABILITIES.kitsune_wisdom,
       ABILITIES.advanced_game,
       ABILITIES.special_unlock,
-      ABILITIES.special_time_warp
-    ]
+      ABILITIES.special_time_warp,
+    ],
   },
   
   // Default fallback
@@ -770,8 +770,8 @@ export const CHARACTER_EVOLUTIONS: Record<string, Character> = {
     image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Y3V0ZSUyMGNoYXJhY3RlcnxlbnwwfHwwfHx8MA%3D%3D',
     color: colors.primary,
     personality: '好奇心旺盛で元気いっぱい',
-    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp]
-  }
+    abilities: [ABILITIES.basic_timer, ABILITIES.basic_xp],
+  },
 };
 
 // Helper function to get character by evolution path and level
@@ -800,7 +800,7 @@ export const getCharacterByEvolutionPath = (evolutionPath: CharacterType[], leve
 export const determineCharacterType = (
   sessions: number, 
   streak: number, 
-  totalDays: number
+  totalDays: number,
 ): CharacterType => {
   // Simple logic: check which stat is highest
   if (sessions > streak * 3 && sessions > totalDays * 2) {

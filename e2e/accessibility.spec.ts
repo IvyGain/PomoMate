@@ -10,8 +10,8 @@ test.describe('アクセシビリティテスト', () => {
     await checkA11y(page, null, {
       detailedReport: true,
       detailedReportOptions: {
-        html: true
-      }
+        html: true,
+      },
     });
     
     // キーボードナビゲーション

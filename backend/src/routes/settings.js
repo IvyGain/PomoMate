@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth.js';
 import {
   getSettings,
-  updateSettings
+  updateSettings,
 } from '../controllers/settingsController.js';
 
 const router = Router();

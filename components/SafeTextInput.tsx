@@ -23,7 +23,7 @@ export const SafeTextInput = React.forwardRef<RNTextInput, TextInputProps>((prop
               // @ts-ignore - Web-specific style
               outline: 'none',
               boxSizing: 'border-box',
-            }
+            },
           ]}
         />
       </div>

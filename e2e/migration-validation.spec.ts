@@ -7,8 +7,8 @@ test.describe('Supabase Migration Validation', () => {
       window.process = {
         env: {
           EXPO_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key'
-        }
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+        },
       };
     });
   });
@@ -32,7 +32,7 @@ test.describe('Supabase Migration Validation', () => {
       error.includes('Module not found') ||
       error.includes('Cannot read property') ||
       error.includes('is not a function') ||
-      error.includes('Supabase')
+      error.includes('Supabase'),
     );
 
     expect(criticalErrors).toHaveLength(0);
@@ -68,7 +68,7 @@ test.describe('Supabase Migration Validation', () => {
       '[data-testid="character-tab"]',
       '[data-testid="social-tab"]',
       '[data-testid="achievements-tab"]',
-      '[data-testid="settings-tab"]'
+      '[data-testid="settings-tab"]',
     ];
 
     // Fallback selectors if data-testid is not available
@@ -78,7 +78,7 @@ test.describe('Supabase Migration Validation', () => {
       'text="Character"', 
       'text="Social"',
       'text="Achievements"',
-      'text="Settings"'
+      'text="Settings"',
     ];
 
     let navigationWorking = false;
@@ -118,7 +118,7 @@ test.describe('Supabase Migration Validation', () => {
     // Should not have auth-related errors during initial load
     const criticalAuthErrors = authErrors.filter(error => 
       error.includes('Cannot read property') ||
-      error.includes('is not a function')
+      error.includes('is not a function'),
     );
 
     expect(criticalAuthErrors).toHaveLength(0);

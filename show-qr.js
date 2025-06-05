@@ -7,7 +7,7 @@ const ip = Object.values(networkInterfaces)
   .find(i => i.family === 'IPv4' && !i.internal)?.address;
 
 const expUrl = `exp://${ip}:8081`;
-const tunnelUrl = `exp://exp.host/@anonymous/pomodoro-play`;
+const tunnelUrl = 'exp://exp.host/@anonymous/pomodoro-play';
 
 console.log('\n🎯 Pomodoro Play - スマホでテスト\n');
 console.log('📱 アクセス方法:');

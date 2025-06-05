@@ -31,7 +31,7 @@ class MigrationTestRunner {
     try {
       // Run the Playwright tests
       const { stdout, stderr } = await execAsync(
-        'npx playwright test e2e/supabase-migration-validation.spec.ts --reporter=json'
+        'npx playwright test e2e/supabase-migration-validation.spec.ts --reporter=json',
       );
 
       // Parse test results
@@ -64,7 +64,7 @@ class MigrationTestRunner {
           test: test.title,
           status: test.status as 'passed' | 'failed' | 'skipped',
           error: test.error?.message,
-          duration: test.duration
+          duration: test.duration,
         });
 
         // Identify issues from failed tests
@@ -84,7 +84,7 @@ class MigrationTestRunner {
         severity: 'critical',
         category: 'Environment Configuration',
         issue: 'Supabase environment variables not properly configured',
-        recommendation: 'Ensure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set in .env file'
+        recommendation: 'Ensure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY are set in .env file',
       });
     }
 
@@ -93,7 +93,7 @@ class MigrationTestRunner {
         severity: 'critical',
         category: 'Dependencies',
         issue: 'Missing required dependencies',
-        recommendation: 'Run "npm install" to install all dependencies'
+        recommendation: 'Run "npm install" to install all dependencies',
       });
     }
 
@@ -102,7 +102,7 @@ class MigrationTestRunner {
         severity: 'high',
         category: 'TypeScript',
         issue: 'TypeScript compilation errors',
-        recommendation: 'Fix TypeScript errors by running "npx tsc --noEmit" and addressing issues'
+        recommendation: 'Fix TypeScript errors by running "npx tsc --noEmit" and addressing issues',
       });
     }
   }
@@ -117,7 +117,7 @@ class MigrationTestRunner {
           severity: 'high',
           category: 'Authentication',
           issue: 'Supabase authentication not properly configured',
-          recommendation: 'Verify Supabase auth settings and ensure email auth is enabled'
+          recommendation: 'Verify Supabase auth settings and ensure email auth is enabled',
         });
       }
       if (errorMessage.includes('Network request failed')) {
@@ -125,7 +125,7 @@ class MigrationTestRunner {
           severity: 'critical',
           category: 'Network',
           issue: 'Cannot connect to Supabase backend',
-          recommendation: 'Check Supabase URL configuration and network connectivity'
+          recommendation: 'Check Supabase URL configuration and network connectivity',
         });
       }
     }
@@ -137,7 +137,7 @@ class MigrationTestRunner {
           severity: 'medium',
           category: 'Storage',
           issue: 'Storage adapter issues after migration',
-          recommendation: 'Ensure proper storage adapter is configured for the platform'
+          recommendation: 'Ensure proper storage adapter is configured for the platform',
         });
       }
     }
@@ -148,7 +148,7 @@ class MigrationTestRunner {
         severity: 'high',
         category: 'Runtime',
         issue: 'Undefined property access - likely missing null checks',
-        recommendation: 'Add proper null/undefined checks in components accessing Supabase data'
+        recommendation: 'Add proper null/undefined checks in components accessing Supabase data',
       });
     }
   }
@@ -165,7 +165,7 @@ class MigrationTestRunner {
         severity: 'critical',
         category: 'Overall Health',
         issue: 'More than 50% of tests failing',
-        recommendation: 'Major issues with migration - review Supabase setup and configuration'
+        recommendation: 'Major issues with migration - review Supabase setup and configuration',
       });
     }
 
@@ -178,7 +178,7 @@ class MigrationTestRunner {
         severity: 'critical',
         category: 'Authentication',
         issue: `${authFailures} authentication tests failing`,
-        recommendation: 'Priority fix: Ensure Supabase auth is properly initialized and configured'
+        recommendation: 'Priority fix: Ensure Supabase auth is properly initialized and configured',
       });
     }
 
@@ -192,21 +192,21 @@ class MigrationTestRunner {
       severity: 'medium',
       category: 'Security',
       issue: 'Row Level Security (RLS) policies need verification',
-      recommendation: 'Review and enable RLS policies for all tables in Supabase dashboard'
+      recommendation: 'Review and enable RLS policies for all tables in Supabase dashboard',
     });
 
     this.issues.push({
       severity: 'low',
       category: 'Performance',
       issue: 'Database indexes may need optimization',
-      recommendation: 'Monitor query performance and add indexes for frequently queried columns'
+      recommendation: 'Monitor query performance and add indexes for frequently queried columns',
     });
 
     this.issues.push({
       severity: 'medium',
       category: 'Real-time',
       issue: 'Real-time subscriptions need testing',
-      recommendation: 'Test real-time features if app uses Supabase real-time subscriptions'
+      recommendation: 'Test real-time features if app uses Supabase real-time subscriptions',
     });
   }
 
@@ -303,7 +303,7 @@ ${details ? '\nFailures:\n' + details : ''}`;
       critical: this.issues.filter(i => i.severity === 'critical'),
       high: this.issues.filter(i => i.severity === 'high'),
       medium: this.issues.filter(i => i.severity === 'medium'),
-      low: this.issues.filter(i => i.severity === 'low')
+      low: this.issues.filter(i => i.severity === 'low'),
     };
 
     let output = '';
@@ -311,28 +311,28 @@ ${details ? '\nFailures:\n' + details : ''}`;
     if (groupedIssues.critical.length > 0) {
       output += '### 🚨 Critical Issues\n\n';
       output += groupedIssues.critical.map(i => 
-        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`
+        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`,
       ).join('\n\n') + '\n\n';
     }
 
     if (groupedIssues.high.length > 0) {
       output += '### ⚠️  High Priority Issues\n\n';
       output += groupedIssues.high.map(i => 
-        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`
+        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`,
       ).join('\n\n') + '\n\n';
     }
 
     if (groupedIssues.medium.length > 0) {
       output += '### ⚡ Medium Priority Issues\n\n';
       output += groupedIssues.medium.map(i => 
-        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`
+        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`,
       ).join('\n\n') + '\n\n';
     }
 
     if (groupedIssues.low.length > 0) {
       output += '### 💡 Low Priority Issues\n\n';
       output += groupedIssues.low.map(i => 
-        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`
+        `- **${i.category}**: ${i.issue}\n  - *Fix*: ${i.recommendation}`,
       ).join('\n\n') + '\n\n';
     }
 
@@ -348,7 +348,7 @@ ${details ? '\nFailures:\n' + details : ''}`;
       '5. **Monitoring**: Set up error tracking (Sentry) and analytics',
       '6. **Performance**: Use React.memo and useMemo for expensive operations',
       '7. **Security**: Enable RLS and review all security policies',
-      '8. **Testing**: Add unit tests for critical business logic'
+      '8. **Testing**: Add unit tests for critical business logic',
     ];
 
     return recommendations.join('\n');

@@ -6,7 +6,7 @@ import {
   refreshToken, 
   getMe, 
   updateProfile,
-  resetPasswordRequest 
+  resetPasswordRequest, 
 } from '../controllers/authController.js';
 import { authenticate } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimiter.js';

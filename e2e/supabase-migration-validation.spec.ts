@@ -68,7 +68,7 @@ test.describe('Supabase Migration Validation', () => {
       const criticalErrors = errors.filter(error => 
         !error.includes('Warning:') && 
         !error.includes('DevTools') &&
-        !error.includes('Source map')
+        !error.includes('Source map'),
       );
       
       expect(criticalErrors).toHaveLength(0);
@@ -212,7 +212,7 @@ test.describe('Supabase Migration Validation', () => {
                               Object.keys(localStorageData).some(key => 
                                 key.includes('supabase') || 
                                 key.includes('auth') || 
-                                key.includes('user')
+                                key.includes('user'),
                               );
       
       expect(hasPersistedData).toBeTruthy();

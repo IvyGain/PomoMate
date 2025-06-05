@@ -33,8 +33,8 @@ test.describe('PomoMate - ボタン動作確認', () => {
         text: el.textContent?.trim() || '',
         type: el.tagName.toLowerCase(),
         href: el.getAttribute('href') || '',
-        isVisible: (el as HTMLElement).offsetParent !== null
-      })).filter(el => el.text && el.isVisible)
+        isVisible: (el as HTMLElement).offsetParent !== null,
+      })).filter(el => el.text && el.isVisible),
     );
 
     console.log(`発見したボタン数: ${loginButtons.length}`);
@@ -58,8 +58,8 @@ test.describe('PomoMate - ボタン動作確認', () => {
         const mainButtons = await page.$$eval('button, [role="button"]', elements => 
           elements.map(el => ({
             text: el.textContent?.trim() || '',
-            isVisible: (el as HTMLElement).offsetParent !== null
-          })).filter(el => el.text && el.isVisible)
+            isVisible: (el as HTMLElement).offsetParent !== null,
+          })).filter(el => el.text && el.isVisible),
         );
 
         console.log(`発見したボタン数: ${mainButtons.length}`);
@@ -100,8 +100,8 @@ test.describe('PomoMate - ボタン動作確認', () => {
             const tabButtons = await page.$$eval('button, [role="button"]', elements => 
               elements.map(el => ({
                 text: el.textContent?.trim() || '',
-                isVisible: (el as HTMLElement).offsetParent !== null
-              })).filter(el => el.text && el.isVisible)
+                isVisible: (el as HTMLElement).offsetParent !== null,
+              })).filter(el => el.text && el.isVisible),
             );
             
             console.log(`  ${tabName}画面のボタン数: ${tabButtons.length}`);
@@ -143,8 +143,8 @@ test.describe('PomoMate - ボタン動作確認', () => {
           elements.map(el => ({
             text: el.textContent?.trim() || '',
             type: el.tagName.toLowerCase(),
-            isVisible: (el as HTMLElement).offsetParent !== null
-          })).filter(el => el.text && el.isVisible)
+            isVisible: (el as HTMLElement).offsetParent !== null,
+          })).filter(el => el.text && el.isVisible),
         );
 
         console.log(`発見したボタン数: ${registerButtons.length}`);
@@ -159,7 +159,7 @@ test.describe('PomoMate - ボタン動作確認', () => {
     // スクリーンショット保存
     await page.screenshot({ 
       path: 'test-results/button-test-final.png',
-      fullPage: true 
+      fullPage: true, 
     });
   });
 });

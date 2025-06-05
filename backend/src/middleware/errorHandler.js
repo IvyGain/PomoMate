@@ -6,7 +6,7 @@ export const errorHandler = (err, req, res, next) => {
     return res.status(400).json({
       error: 'Validation Error',
       message: err.message,
-      details: err.details
+      details: err.details,
     });
   }
 
@@ -14,14 +14,14 @@ export const errorHandler = (err, req, res, next) => {
   if (err.name === 'JsonWebTokenError') {
     return res.status(401).json({
       error: 'Invalid Token',
-      message: '認証トークンが無効です'
+      message: '認証トークンが無効です',
     });
   }
 
   if (err.name === 'TokenExpiredError') {
     return res.status(401).json({
       error: 'Token Expired',
-      message: '認証トークンの有効期限が切れています'
+      message: '認証トークンの有効期限が切れています',
     });
   }
 
@@ -29,7 +29,7 @@ export const errorHandler = (err, req, res, next) => {
   if (err.code === 'P2002') {
     return res.status(409).json({
       error: 'Duplicate Entry',
-      message: 'このデータは既に存在します'
+      message: 'このデータは既に存在します',
     });
   }
 
@@ -38,6 +38,6 @@ export const errorHandler = (err, req, res, next) => {
     error: err.message || 'Internal Server Error',
     message: process.env.NODE_ENV === 'production' 
       ? 'サーバーエラーが発生しました' 
-      : err.message
+      : err.message,
   });
 };

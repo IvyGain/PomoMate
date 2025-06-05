@@ -21,9 +21,9 @@ export const demoService = {
     return {
       data: {
         user: { id: this.demoUser.id, email },
-        session: { access_token: 'demo-token' }
+        session: { access_token: 'demo-token' },
       },
-      error: null
+      error: null,
     };
   },
 
@@ -31,9 +31,9 @@ export const demoService = {
     return {
       data: {
         user: { id: this.demoUser.id, email },
-        session: { access_token: 'demo-token' }
+        session: { access_token: 'demo-token' },
       },
-      error: null
+      error: null,
     };
   },
 
@@ -44,7 +44,7 @@ export const demoService = {
   async getUser() {
     return {
       data: { user: { id: this.demoUser.id, email: this.demoUser.email } },
-      error: null
+      error: null,
     };
   },
 
@@ -52,10 +52,10 @@ export const demoService = {
     return {
       data: { 
         session: { 
-          user: { id: this.demoUser.id, email: this.demoUser.email }
-        }
+          user: { id: this.demoUser.id, email: this.demoUser.email },
+        },
       },
-      error: null
+      error: null,
     };
   },
 
@@ -69,30 +69,30 @@ export const demoService = {
               return { data: this.demoUser, error: null };
             }
             return { data: null, error: null };
-          }
+          },
         }),
         order: (column: string, options?: any) => ({
           limit: (count: number) => ({
             then: async (callback: any) => {
               return callback({ data: [], error: null });
-            }
-          })
-        })
+            },
+          }),
+        }),
       }),
       insert: (data: any) => ({
         select: () => ({
-          single: async () => ({ data: { ...data, id: Date.now() }, error: null })
-        })
+          single: async () => ({ data: { ...data, id: Date.now() }, error: null }),
+        }),
       }),
       update: (data: any) => ({
         eq: (column: string, value: any) => ({
           select: () => ({
-            single: async () => ({ data: { ...this.demoUser, ...data }, error: null })
-          })
-        })
-      })
+            single: async () => ({ data: { ...this.demoUser, ...data }, error: null }),
+          }),
+        }),
+      }),
     };
-  }
+  },
 };
 
 // Replace Supabase client with demo service in demo mode
@@ -104,13 +104,13 @@ export const getDemoSupabase = () => ({
     getUser: demoService.getUser.bind(demoService),
     getSession: demoService.getSession.bind(demoService),
     resetPasswordForEmail: async () => ({ error: null }),
-    onAuthStateChange: () => ({ subscription: { unsubscribe: () => {} } })
+    onAuthStateChange: () => ({ subscription: { unsubscribe: () => {} } }),
   },
   from: demoService.from.bind(demoService),
   channel: () => ({
     on: () => ({ subscribe: () => ({}) }),
     subscribe: () => ({}),
-    send: async () => ({})
+    send: async () => ({}),
   }),
-  removeChannel: () => {}
+  removeChannel: () => {},
 });

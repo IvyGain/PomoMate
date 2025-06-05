@@ -1,16 +1,16 @@
 // Apply web compatibility fixes first to prevent "Illegal invocation" errors
-import "@/src/utils/webCompatibility";
+import '@/src/utils/webCompatibility';
 
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useFonts } from "expo-font";
-import { Stack, useRouter, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState } from "react";
-import { StatusBar, View, StyleSheet } from "react-native";
-import { ErrorBoundary } from "./error-boundary";
-import { useThemeStore } from "@/store/themeStore";
-import { useAuthStore } from "@/store/authStore";
-import { useAuthCallback } from "@/src/hooks/useAuthCallback";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useFonts } from 'expo-font';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState } from 'react';
+import { StatusBar, View, StyleSheet } from 'react-native';
+import { ErrorBoundary } from './error-boundary';
+import { useThemeStore } from '@/store/themeStore';
+import { useAuthStore } from '@/store/authStore';
+import { useAuthCallback } from '@/src/hooks/useAuthCallback';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -38,7 +38,7 @@ export default function RootLayout() {
         embedded: isEmbedded,
         origin: window.location.origin,
         referrer: document.referrer,
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
       });
       
       // 読み込み完了を通知
@@ -76,7 +76,7 @@ export default function RootLayout() {
       isAuthenticated,
       currentPath: segments.join('/'),
       firstSegment: segments[0],
-      segmentsLength: segments.length
+      segmentsLength: segments.length,
     });
 
     // Add a small delay to ensure auth state is stable
@@ -139,10 +139,10 @@ export default function RootLayout() {
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ title: "新規登録" }} />
-          <Stack.Screen name="forgot-password" options={{ title: "パスワードリセット" }} />
+          <Stack.Screen name="register" options={{ title: '新規登録' }} />
+          <Stack.Screen name="forgot-password" options={{ title: 'パスワードリセット' }} />
           <Stack.Screen name="email-confirmed" options={{ headerShown: false }} />
-          <Stack.Screen name="email-sent" options={{ title: "メール送信完了" }} />
+          <Stack.Screen name="email-sent" options={{ title: 'メール送信完了' }} />
         </Stack>
       </View>
     </ErrorBoundary>

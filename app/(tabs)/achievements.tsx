@@ -23,11 +23,11 @@ export default function AchievementsScreen() {
     
     if (filter === 'unlocked') {
       filtered = filtered.filter(achievement => 
-        userStats.unlockedAchievements.includes(achievement.id)
+        userStats.unlockedAchievements.includes(achievement.id),
       );
     } else if (filter === 'locked') {
       filtered = filtered.filter(achievement => 
-        !userStats.unlockedAchievements.includes(achievement.id)
+        !userStats.unlockedAchievements.includes(achievement.id),
       );
     }
     
@@ -59,13 +59,13 @@ export default function AchievementsScreen() {
           <TouchableOpacity
             style={[
               styles.filterButton, 
-              filter === 'all' && [styles.activeFilter, { backgroundColor: theme.primary }]
+              filter === 'all' && [styles.activeFilter, { backgroundColor: theme.primary }],
             ]}
             onPress={() => setFilter('all')}
           >
             <Text style={[
               styles.filterText, 
-              { color: filter === 'all' ? theme.text : theme.textSecondary }
+              { color: filter === 'all' ? theme.text : theme.textSecondary },
             ]}>
               全て
             </Text>
@@ -74,13 +74,13 @@ export default function AchievementsScreen() {
           <TouchableOpacity
             style={[
               styles.filterButton, 
-              filter === 'unlocked' && [styles.activeFilter, { backgroundColor: theme.primary }]
+              filter === 'unlocked' && [styles.activeFilter, { backgroundColor: theme.primary }],
             ]}
             onPress={() => setFilter('unlocked')}
           >
             <Text style={[
               styles.filterText, 
-              { color: filter === 'unlocked' ? theme.text : theme.textSecondary }
+              { color: filter === 'unlocked' ? theme.text : theme.textSecondary },
             ]}>
               解除済み
             </Text>
@@ -89,13 +89,13 @@ export default function AchievementsScreen() {
           <TouchableOpacity
             style={[
               styles.filterButton, 
-              filter === 'locked' && [styles.activeFilter, { backgroundColor: theme.primary }]
+              filter === 'locked' && [styles.activeFilter, { backgroundColor: theme.primary }],
             ]}
             onPress={() => setFilter('locked')}
           >
             <Text style={[
               styles.filterText, 
-              { color: filter === 'locked' ? theme.text : theme.textSecondary }
+              { color: filter === 'locked' ? theme.text : theme.textSecondary },
             ]}>
               未解除
             </Text>

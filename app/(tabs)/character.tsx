@@ -13,7 +13,7 @@ export default function CharacterScreen() {
   
   const character = getCharacterByEvolutionPath(
     userStats.characterEvolutionPath,
-    userStats.characterLevel
+    userStats.characterLevel,
   );
   
   // Calculate progress to next evolution
@@ -36,7 +36,7 @@ export default function CharacterScreen() {
             
             <Text style={[styles.characterType, { color: theme.primary }]}>
               {character.personality === 'balanced' ? 'バランス型' : 
-               character.personality === 'focused' ? '集中型' : '継続型'}
+                character.personality === 'focused' ? '集中型' : '継続型'}
             </Text>
             
             <Text style={[styles.characterDescription, { color: theme.textSecondary }]}>
@@ -60,8 +60,8 @@ export default function CharacterScreen() {
                       styles.progressBarFill, 
                       { 
                         backgroundColor: theme.primary,
-                        width: `${evolutionProgress}%` 
-                      }
+                        width: `${evolutionProgress}%`, 
+                      },
                     ]} 
                   />
                 </View>
@@ -89,8 +89,8 @@ export default function CharacterScreen() {
                     styles.abilityBadge, 
                     { 
                       backgroundColor: ability.isActive ? theme.success : theme.inactive,
-                      opacity: ability.isActive ? 1 : 0.7
-                    }
+                      opacity: ability.isActive ? 1 : 0.7,
+                    },
                   ]}
                 >
                   <Text style={styles.abilityBadgeText}>
@@ -121,7 +121,7 @@ export default function CharacterScreen() {
             {userStats.characterEvolutionPath.map((type, index) => {
               const evolutionCharacter = getCharacterByEvolutionPath(
                 userStats.characterEvolutionPath.slice(0, index + 1),
-                index + 1
+                index + 1,
               );
               
               return (
@@ -131,8 +131,8 @@ export default function CharacterScreen() {
                       styles.evolutionHistoryDot, 
                       { 
                         backgroundColor: index === userStats.characterLevel - 1 ? 
-                          theme.primary : theme.inactive 
-                      }
+                          theme.primary : theme.inactive, 
+                      },
                     ]} 
                   />
                   <View style={styles.evolutionHistoryContent}>
@@ -141,7 +141,7 @@ export default function CharacterScreen() {
                     </Text>
                     <Text style={[styles.evolutionHistoryType, { color: theme.textSecondary }]}>
                       {type === 'balanced' ? 'バランス型' : 
-                       type === 'focused' ? '集中型' : '継続型'}
+                        type === 'focused' ? '集中型' : '継続型'}
                     </Text>
                   </View>
                 </View>

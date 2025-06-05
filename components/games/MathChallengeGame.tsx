@@ -118,7 +118,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
     return {
       question: `${num1} ${operator} ${num2} = ?`,
       answer,
-      options
+      options,
     };
   };
   
@@ -157,7 +157,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
     if (selectedAnswer === currentProblem.answer) {
       // 正解
       const pointsEarned = difficulty === Difficulty.Easy ? 1 :
-                          difficulty === Difficulty.Medium ? 2 : 3;
+        difficulty === Difficulty.Medium ? 2 : 3;
       
       setScore(score + pointsEarned);
       setMessage(`+${pointsEarned}ポイント`);
@@ -189,7 +189,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
     
     // 難易度に応じたスコア倍率
     const multiplier = difficulty === Difficulty.Easy ? 1 :
-                      difficulty === Difficulty.Medium ? 1.5 : 2;
+      difficulty === Difficulty.Medium ? 1.5 : 2;
     
     const finalScore = Math.round(score * multiplier);
     
@@ -270,7 +270,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
           <Text style={styles.statLabel}>難易度</Text>
           <Text style={styles.statValue}>
             {difficulty === Difficulty.Easy ? 'かんたん' : 
-             difficulty === Difficulty.Medium ? 'ふつう' : 'むずかしい'}
+              difficulty === Difficulty.Medium ? 'ふつう' : 'むずかしい'}
           </Text>
         </View>
       </View>
@@ -288,7 +288,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
                 style={[
                   styles.optionButton,
                   selectedOption === option && 
-                    (option === currentProblem.answer ? styles.correctOption : styles.wrongOption)
+                    (option === currentProblem.answer ? styles.correctOption : styles.wrongOption),
                 ]}
                 onPress={() => checkAnswer(option)}
                 disabled={selectedOption !== null}
@@ -302,7 +302,7 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
             <View style={[
               styles.messageContainer,
               messageType === 'success' ? styles.successMessage : 
-              messageType === 'error' ? styles.errorMessage : styles.neutralMessage
+                messageType === 'error' ? styles.errorMessage : styles.neutralMessage,
             ]}>
               <Text style={styles.messageText}>{message}</Text>
             </View>
@@ -316,13 +316,13 @@ export const MathChallengeGame: React.FC<{ onClose: () => void }> = ({ onClose }
           <Text style={styles.gameOverScore}>
             スコア: {score} × 
             {difficulty === Difficulty.Easy ? '1' : 
-             difficulty === Difficulty.Medium ? '1.5' : '2'} = 
+              difficulty === Difficulty.Medium ? '1.5' : '2'} = 
             {Math.round(score * (difficulty === Difficulty.Easy ? 1 : 
-                               difficulty === Difficulty.Medium ? 1.5 : 2))}
+              difficulty === Difficulty.Medium ? 1.5 : 2))}
           </Text>
           
           {Math.round(score * (difficulty === Difficulty.Easy ? 1 : 
-                             difficulty === Difficulty.Medium ? 1.5 : 2)) > highScore && (
+            difficulty === Difficulty.Medium ? 1.5 : 2)) > highScore && (
             <View style={styles.newHighScore}>
               <Zap size={20} color={colors.warning} />
               <Text style={styles.newHighScoreText}>新記録達成！</Text>

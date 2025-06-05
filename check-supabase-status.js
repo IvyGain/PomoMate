@@ -45,7 +45,7 @@ async function checkSupabaseStatus() {
     console.log('\n3️⃣ デモユーザー確認...');
     const { data: demoLogin, error: demoError } = await supabase.auth.signInWithPassword({
       email: 'demo@example.com',
-      password: 'demo123456'
+      password: 'demo123456',
     });
 
     if (demoError) {

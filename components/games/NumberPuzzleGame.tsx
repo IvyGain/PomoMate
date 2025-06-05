@@ -34,7 +34,7 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
     // 1-15のタイルを作成し、シャッフル
     let newTiles: Tile[] = Array.from({ length: 15 }, (_, i) => ({
       value: i + 1,
-      position: i
+      position: i,
     }));
     
     // 解けるパズルになるようにシャッフル
@@ -189,7 +189,7 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
                     style={[
                       styles.tile, 
                       styles.emptyTile,
-                      { width: tileSize, height: tileSize }
+                      { width: tileSize, height: tileSize },
                     ]} 
                   />
                 );
@@ -200,7 +200,7 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
                   key={position}
                   style={[
                     styles.tile,
-                    { width: tileSize, height: tileSize }
+                    { width: tileSize, height: tileSize },
                   ]}
                   onPress={() => handleTilePress(position)}
                 >

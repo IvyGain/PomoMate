@@ -140,7 +140,7 @@ describe('Real-time Sync Integration Tests', () => {
           sessionName,
           hostData.id,
           hostData.name,
-          hostData.avatar
+          hostData.avatar,
         );
       });
 
@@ -160,7 +160,7 @@ describe('Real-time Sync Integration Tests', () => {
           sessionId!,
           participant.id,
           participant.name,
-          participant.avatar
+          participant.avatar,
         );
         expect(joined).toBe(true);
       });
@@ -222,7 +222,7 @@ describe('Real-time Sync Integration Tests', () => {
           'user-1',
           'User 1',
           'avatar1.png',
-          'Hello team!'
+          'Hello team!',
         );
       });
 

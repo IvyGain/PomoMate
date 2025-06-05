@@ -19,7 +19,7 @@ if (typeof window !== 'undefined') {
             }
           },
           writable: true,
-          configurable: true
+          configurable: true,
         });
       }
     });
@@ -39,7 +39,7 @@ if (typeof window !== 'undefined') {
     'getElementsByClassName',
     'getElementsByTagName',
     'querySelector',
-    'querySelectorAll'
+    'querySelectorAll',
   ];
 
   nativeMethods.forEach(methodName => {

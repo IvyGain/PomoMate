@@ -9,7 +9,7 @@ import {
   TimerMode, 
   TeamSessionParticipant, 
   ChatMessage, 
-  TeamSession as BaseTeamSession 
+  TeamSession as BaseTeamSession, 
 } from '../src/types/timer';
 
 // Re-export types for convenience
@@ -145,8 +145,8 @@ export const useTimerStore = create<TimerState>()(
             teamSessions: state.teamSessions.map(session => 
               session.id === currentTeamSessionId 
                 ? { ...session, timeRemaining: newTimeRemaining, isRunning: false }
-                : session
-            )
+                : session,
+            ),
           }));
         }
         
@@ -159,7 +159,7 @@ export const useTimerStore = create<TimerState>()(
           isRunning, 
           isTeamSession, 
           currentTeamSessionId, 
-          teamSessions 
+          teamSessions, 
         } = get();
         
         if (isTeamSession && currentTeamSessionId) {
@@ -172,9 +172,9 @@ export const useTimerStore = create<TimerState>()(
               teamSessions: state.teamSessions.map(s => 
                 s.id === currentTeamSessionId 
                   ? { ...s, timeRemaining: s.timeRemaining - 1 }
-                  : s
+                  : s,
               ),
-              timeRemaining: session.timeRemaining - 1
+              timeRemaining: session.timeRemaining - 1,
             }));
           } else if (session && session.isRunning && session.timeRemaining === 0) {
             // Team session timer completed
@@ -194,13 +194,13 @@ export const useTimerStore = create<TimerState>()(
                 teamSessions: state.teamSessions.map(s => 
                   s.id === currentTeamSessionId 
                     ? { 
-                        ...s, 
-                        currentMode: nextMode,
-                        timeRemaining: shouldTakeLongBreak ? get().longBreakDuration * 60 : get().shortBreakDuration * 60,
-                        isRunning: autoStartBreaks
-                      }
-                    : s
-                )
+                      ...s, 
+                      currentMode: nextMode,
+                      timeRemaining: shouldTakeLongBreak ? get().longBreakDuration * 60 : get().shortBreakDuration * 60,
+                      isRunning: autoStartBreaks,
+                    }
+                    : s,
+                ),
               }));
               
               // Call completeSession to update user stats
@@ -214,13 +214,13 @@ export const useTimerStore = create<TimerState>()(
                 teamSessions: state.teamSessions.map(s => 
                   s.id === currentTeamSessionId 
                     ? { 
-                        ...s, 
-                        currentMode: 'focus',
-                        timeRemaining: get().focusDuration * 60,
-                        isRunning: autoStartFocus
-                      }
-                    : s
-                )
+                      ...s, 
+                      currentMode: 'focus',
+                      timeRemaining: get().focusDuration * 60,
+                      isRunning: autoStartFocus,
+                    }
+                    : s,
+                ),
               }));
             }
           }
@@ -240,7 +240,7 @@ export const useTimerStore = create<TimerState>()(
               completedSessions: newCompletedSessions,
               currentMode: nextMode,
               timeRemaining: shouldTakeLongBreak ? get().longBreakDuration * 60 : get().shortBreakDuration * 60,
-              isRunning: autoStartBreaks
+              isRunning: autoStartBreaks,
             });
             
             // Call completeSession to update user stats
@@ -250,7 +250,7 @@ export const useTimerStore = create<TimerState>()(
             set({ 
               currentMode: 'focus',
               timeRemaining: get().focusDuration * 60,
-              isRunning: autoStartFocus
+              isRunning: autoStartFocus,
             });
           }
         }
@@ -288,25 +288,25 @@ export const useTimerStore = create<TimerState>()(
           const duration = currentState.currentMode === 'focus' 
             ? currentState.focusDuration 
             : currentState.currentMode === 'shortBreak' 
-            ? currentState.shortBreakDuration 
-            : currentState.longBreakDuration;
+              ? currentState.shortBreakDuration 
+              : currentState.longBreakDuration;
             
           // Map timer modes to Supabase session types
           const sessionType = currentState.currentMode === 'focus' 
             ? 'pomodoro' 
             : currentState.currentMode === 'shortBreak'
-            ? 'short_break'
-            : 'long_break';
+              ? 'short_break'
+              : 'long_break';
             
           const sessionData = await sessionService.createSession({
             type: sessionType,
-            duration
+            duration,
           });
           
           // Update the session as completed
           await sessionService.updateSession(sessionData.id, {
             status: 'completed',
-            actual_duration: duration
+            actual_duration: duration,
           });
           
           // Update user stats store
@@ -324,8 +324,8 @@ export const useTimerStore = create<TimerState>()(
           const duration = currentState.currentMode === 'focus' 
             ? currentState.focusDuration 
             : currentState.currentMode === 'shortBreak' 
-            ? currentState.shortBreakDuration 
-            : currentState.longBreakDuration;
+              ? currentState.shortBreakDuration 
+              : currentState.longBreakDuration;
           userStore.completeSession(duration, currentState.currentMode === 'focus' ? 'focus' : 'break');
         }
       },
@@ -346,7 +346,7 @@ export const useTimerStore = create<TimerState>()(
         set({ 
           ...settings, 
           timeRemaining: newTimeRemaining,
-          isRunning: false
+          isRunning: false,
         });
         
         // Sync with Supabase
@@ -361,7 +361,7 @@ export const useTimerStore = create<TimerState>()(
             notification_enabled: true, // Default
             vibration_enabled: get().vibrationEnabled,
             theme: 'light', // Get from theme store if needed
-            language: 'ja'
+            language: 'ja',
           });
         } catch (error) {
           console.error('設定同期エラー:', error);
@@ -384,26 +384,26 @@ export const useTimerStore = create<TimerState>()(
             // Update local state when session changes
             set(state => ({
               teamSessions: state.teamSessions.map(s => 
-                s.id === sessionId ? { ...s, ...session } : s
-              )
+                s.id === sessionId ? { ...s, ...session } : s,
+              ),
             }));
           },
           onSessionStart: (session) => {
             set(state => ({
               teamSessions: state.teamSessions.map(s => 
-                s.id === sessionId ? { ...s, isRunning: true } : s
+                s.id === sessionId ? { ...s, isRunning: true } : s,
               ),
-              isRunning: true
+              isRunning: true,
             }));
           },
           onSessionEnd: (session) => {
             set(state => ({
               teamSessions: state.teamSessions.map(s => 
-                s.id === sessionId ? { ...s, isRunning: false } : s
+                s.id === sessionId ? { ...s, isRunning: false } : s,
               ),
-              isRunning: false
+              isRunning: false,
             }));
-          }
+          },
         });
         
         const newSession: TeamSession = {
@@ -417,8 +417,8 @@ export const useTimerStore = create<TimerState>()(
               avatar: hostAvatar,
               isReady: true,
               isActive: true,
-              joinedAt: new Date().toISOString()
-            }
+              joinedAt: new Date().toISOString(),
+            },
           ],
           currentMode: 'focus',
           timeRemaining: get().focusDuration * 60,
@@ -432,10 +432,10 @@ export const useTimerStore = create<TimerState>()(
               senderName: 'システム',
               senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
               text: `${hostName}さんがセッションを作成しました。`,
-              timestamp: new Date().toISOString()
-            }
+              timestamp: new Date().toISOString(),
+            },
           ],
-          realtimeChannel: channel
+          realtimeChannel: channel,
         };
         
         set(state => ({
@@ -444,7 +444,7 @@ export const useTimerStore = create<TimerState>()(
           currentTeamSessionId: sessionId,
           currentMode: 'focus',
           timeRemaining: get().focusDuration * 60,
-          isRunning: false
+          isRunning: false,
         }));
         
         return sessionId;
@@ -471,26 +471,26 @@ export const useTimerStore = create<TimerState>()(
             onSessionUpdate: (sessionUpdate) => {
               set(state => ({
                 teamSessions: state.teamSessions.map(s => 
-                  s.id === sessionId ? { ...s, ...sessionUpdate } : s
-                )
+                  s.id === sessionId ? { ...s, ...sessionUpdate } : s,
+                ),
               }));
             },
             onSessionStart: (sessionUpdate) => {
               set(state => ({
                 teamSessions: state.teamSessions.map(s => 
-                  s.id === sessionId ? { ...s, isRunning: true } : s
+                  s.id === sessionId ? { ...s, isRunning: true } : s,
                 ),
-                isRunning: true
+                isRunning: true,
               }));
             },
             onSessionEnd: (sessionUpdate) => {
               set(state => ({
                 teamSessions: state.teamSessions.map(s => 
-                  s.id === sessionId ? { ...s, isRunning: false } : s
+                  s.id === sessionId ? { ...s, isRunning: false } : s,
                 ),
-                isRunning: false
+                isRunning: false,
               }));
-            }
+            },
           });
           
           session.realtimeChannel = channel;
@@ -506,8 +506,8 @@ export const useTimerStore = create<TimerState>()(
               avatar: userAvatar,
               isReady: false,
               isActive: true,
-              joinedAt: new Date().toISOString()
-            }
+              joinedAt: new Date().toISOString(),
+            },
           ],
           messages: [
             ...session.messages,
@@ -517,20 +517,20 @@ export const useTimerStore = create<TimerState>()(
               senderName: 'システム',
               senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
               text: `${userName}さんが参加しました。`,
-              timestamp: new Date().toISOString()
-            }
-          ]
+              timestamp: new Date().toISOString(),
+            },
+          ],
         };
         
         set(state => ({
           teamSessions: state.teamSessions.map(s => 
-            s.id === sessionId ? updatedSession : s
+            s.id === sessionId ? updatedSession : s,
           ),
           isTeamSession: true,
           currentTeamSessionId: sessionId,
           currentMode: session.currentMode,
           timeRemaining: session.timeRemaining,
-          isRunning: session.isRunning
+          isRunning: session.isRunning,
         }));
         
         return true;
@@ -562,9 +562,9 @@ export const useTimerStore = create<TimerState>()(
               senderName: 'システム',
               senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
               text: `${participant.name}さんが退出しました。`,
-              timestamp: new Date().toISOString()
-            }
-          ]
+              timestamp: new Date().toISOString(),
+            },
+          ],
         };
         
         // If current user is leaving, unsubscribe from realtime
@@ -574,10 +574,10 @@ export const useTimerStore = create<TimerState>()(
         
         set(state => ({
           teamSessions: state.teamSessions.map(s => 
-            s.id === sessionId ? updatedSession : s
+            s.id === sessionId ? updatedSession : s,
           ),
           isTeamSession: false,
-          currentTeamSessionId: null
+          currentTeamSessionId: null,
         }));
       },
       
@@ -586,9 +586,9 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? { ...session, isRunning: true }
-              : session
+              : session,
           ),
-          isRunning: true
+          isRunning: true,
         }));
       },
       
@@ -597,9 +597,9 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? { ...session, isRunning: false }
-              : session
+              : session,
           ),
-          isRunning: false
+          isRunning: false,
         }));
       },
       
@@ -622,16 +622,16 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? { 
-                  ...session, 
-                  currentMode: mode, 
-                  timeRemaining: newTimeRemaining,
-                  isRunning: false 
-                }
-              : session
+                ...session, 
+                currentMode: mode, 
+                timeRemaining: newTimeRemaining,
+                isRunning: false, 
+              }
+              : session,
           ),
           currentMode: mode,
           timeRemaining: newTimeRemaining,
-          isRunning: false
+          isRunning: false,
         }));
       },
       
@@ -640,8 +640,8 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? { ...session, voiceChatEnabled: !session.voiceChatEnabled }
-              : session
-          )
+              : session,
+          ),
         }));
       },
       
@@ -650,13 +650,13 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? {
-                  ...session,
-                  participants: session.participants.map(p =>
-                    p.id === userId ? { ...p, isReady } : p
-                  )
-                }
-              : session
-          )
+                ...session,
+                participants: session.participants.map(p =>
+                  p.id === userId ? { ...p, isReady } : p,
+                ),
+              }
+              : session,
+          ),
         }));
       },
       
@@ -673,7 +673,7 @@ export const useTimerStore = create<TimerState>()(
         set(state => ({
           teamSessions: state.teamSessions.filter(s => s.id !== sessionId),
           isTeamSession: currentTeamSessionId === sessionId ? false : state.isTeamSession,
-          currentTeamSessionId: currentTeamSessionId === sessionId ? null : currentTeamSessionId
+          currentTeamSessionId: currentTeamSessionId === sessionId ? null : currentTeamSessionId,
         }));
       },
       
@@ -684,7 +684,7 @@ export const useTimerStore = create<TimerState>()(
           senderName: userName,
           senderAvatar: userAvatar,
           text,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
         
         // Send message via Supabase realtime
@@ -692,7 +692,7 @@ export const useTimerStore = create<TimerState>()(
           userId,
           username: userName,
           content: text,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
         
         // Update local state
@@ -700,8 +700,8 @@ export const useTimerStore = create<TimerState>()(
           teamSessions: state.teamSessions.map(session => 
             session.id === sessionId 
               ? { ...session, messages: [...session.messages, newMessage] }
-              : session
-          )
+              : session,
+          ),
         }));
       },
       
@@ -717,7 +717,7 @@ export const useTimerStore = create<TimerState>()(
             notification_enabled: true,
             vibration_enabled: get().vibrationEnabled,
             theme: 'light',
-            language: 'ja'
+            language: 'ja',
           });
         } catch (error) {
           console.error('設定同期エラー:', error);
@@ -776,6 +776,6 @@ export const useTimerStore = create<TimerState>()(
         soundEnabled: state.soundEnabled,
         vibrationEnabled: state.vibrationEnabled,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -907,7 +907,7 @@ export const getAchievementProgress = (
     totalSessions: number;
     teamSessionsCompleted: number;
     teamSessionMinutes: number;
-  }
+  },
 ) => {
   let currentValue = 0;
   

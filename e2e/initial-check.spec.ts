@@ -5,7 +5,7 @@ test.describe('初期確認テスト', () => {
     // Expoの開発サーバーにアクセス
     const response = await page.goto('http://localhost:8081', { 
       waitUntil: 'domcontentloaded',
-      timeout: 30000 
+      timeout: 30000, 
     });
     
     // レスポンスステータスを確認
@@ -39,8 +39,8 @@ test.describe('初期確認テスト', () => {
     const response = await request.options('http://localhost:3000/api/health', {
       headers: {
         'Origin': 'http://localhost:8081',
-        'Access-Control-Request-Method': 'GET'
-      }
+        'Access-Control-Request-Method': 'GET',
+      },
     });
     
     const headers = response.headers();

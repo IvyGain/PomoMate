@@ -13,9 +13,9 @@ export const getUserStats = async (req, res, next) => {
         where: {
           OR: [
             { userId: req.user.id, friendId: userId },
-            { userId: userId, friendId: req.user.id }
-          ]
-        }
+            { userId: userId, friendId: req.user.id },
+          ],
+        },
       });
 
       if (!friendship) {
@@ -42,10 +42,10 @@ export const getUserStats = async (req, res, next) => {
         _count: {
           select: {
             achievements: true,
-            friends: true
-          }
-        }
-      }
+            friends: true,
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -59,7 +59,7 @@ export const getUserStats = async (req, res, next) => {
       ...user,
       xpToNextLevel,
       achievementCount: user._count.achievements,
-      friendCount: user._count.friends
+      friendCount: user._count.friends,
     });
   } catch (error) {
     next(error);
@@ -77,9 +77,9 @@ export const getUserAchievements = async (req, res, next) => {
         where: {
           OR: [
             { userId: req.user.id, friendId: userId },
-            { userId: userId, friendId: req.user.id }
-          ]
-        }
+            { userId: userId, friendId: req.user.id },
+          ],
+        },
       });
 
       if (!friendship) {
@@ -90,14 +90,14 @@ export const getUserAchievements = async (req, res, next) => {
     const achievements = await prisma.userAchievement.findMany({
       where: { userId },
       include: {
-        achievement: true
+        achievement: true,
       },
-      orderBy: { unlockedAt: 'desc' }
+      orderBy: { unlockedAt: 'desc' },
     });
 
     // Get all achievements to show locked ones
     const allAchievements = await prisma.achievement.findMany({
-      orderBy: { category: 'asc' }
+      orderBy: { category: 'asc' },
     });
 
     const unlockedIds = new Set(achievements.map(ua => ua.achievementId));
@@ -105,13 +105,13 @@ export const getUserAchievements = async (req, res, next) => {
     const formattedAchievements = allAchievements.map(achievement => ({
       ...achievement,
       unlocked: unlockedIds.has(achievement.id),
-      unlockedAt: achievements.find(ua => ua.achievementId === achievement.id)?.unlockedAt
+      unlockedAt: achievements.find(ua => ua.achievementId === achievement.id)?.unlockedAt,
     }));
 
     res.json({
       achievements: formattedAchievements,
       totalUnlocked: achievements.length,
-      totalAvailable: allAchievements.length
+      totalAvailable: allAchievements.length,
     });
   } catch (error) {
     next(error);
@@ -139,13 +139,13 @@ export const updateCharacter = async (req, res, next) => {
       select: {
         characterType: true,
         characterLevel: true,
-        evolutionPath: true
-      }
+        evolutionPath: true,
+      },
     });
 
     res.json({
       message: 'Character updated',
-      character: updatedUser
+      character: updatedUser,
     });
   } catch (error) {
     next(error);
@@ -164,9 +164,9 @@ export const getActiveDays = async (req, res, next) => {
         where: {
           OR: [
             { userId: req.user.id, friendId: userId },
-            { userId: userId, friendId: req.user.id }
-          ]
-        }
+            { userId: userId, friendId: req.user.id },
+          ],
+        },
       });
 
       if (!friendship) {
@@ -181,18 +181,18 @@ export const getActiveDays = async (req, res, next) => {
       const endDate = new Date(year, month, 0);
       where.date = {
         gte: startDate,
-        lte: endDate
+        lte: endDate,
       };
     }
 
     const activeDays = await prisma.activeDay.findMany({
       where,
-      orderBy: { date: 'asc' }
+      orderBy: { date: 'asc' },
     });
 
     res.json({
       activeDays,
-      total: activeDays.length
+      total: activeDays.length,
     });
   } catch (error) {
     next(error);
@@ -205,7 +205,7 @@ export const getLeaderboard = async (req, res, next) => {
     const { type = 'level', period = 'all', limit = 10 } = req.query;
 
     let orderBy = {};
-    let where = {};
+    const where = {};
 
     // Determine sort field
     switch (type) {
@@ -249,8 +249,8 @@ export const getLeaderboard = async (req, res, next) => {
         xp: true,
         currentStreak: true,
         totalSessions: true,
-        totalMinutes: true
-      }
+        totalMinutes: true,
+      },
     });
 
     // Get user's rank
@@ -263,8 +263,8 @@ export const getLeaderboard = async (req, res, next) => {
           xp: true,
           currentStreak: true,
           totalSessions: true,
-          totalMinutes: true
-        }
+          totalMinutes: true,
+        },
       });
 
       if (userStats) {
@@ -278,25 +278,25 @@ export const getLeaderboard = async (req, res, next) => {
                   { level: { gt: userStats.level } },
                   { 
                     level: userStats.level,
-                    xp: { gt: userStats.xp }
-                  }
-                ]
-              }
+                    xp: { gt: userStats.xp },
+                  },
+                ],
+              },
             });
             break;
           case 'streak':
             betterCount = await prisma.user.count({
-              where: { currentStreak: { gt: userStats.currentStreak } }
+              where: { currentStreak: { gt: userStats.currentStreak } },
             });
             break;
           case 'sessions':
             betterCount = await prisma.user.count({
-              where: { totalSessions: { gt: userStats.totalSessions } }
+              where: { totalSessions: { gt: userStats.totalSessions } },
             });
             break;
           case 'minutes':
             betterCount = await prisma.user.count({
-              where: { totalMinutes: { gt: userStats.totalMinutes } }
+              where: { totalMinutes: { gt: userStats.totalMinutes } },
             });
             break;
         }
@@ -306,7 +306,7 @@ export const getLeaderboard = async (req, res, next) => {
 
     res.json({
       leaderboard: users,
-      userRank
+      userRank,
     });
   } catch (error) {
     next(error);

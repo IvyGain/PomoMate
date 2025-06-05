@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new winston.transports.File({
       filename: 'logs/all.log',
-    })
+    }),
   );
 }
 

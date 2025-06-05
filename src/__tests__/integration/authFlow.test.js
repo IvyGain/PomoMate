@@ -163,7 +163,7 @@ describe('Auth Flow Integration Tests', () => {
       // Verify token refresh was called
       expect(apiClient.post).toHaveBeenCalledWith(
         expect.stringContaining('/auth/refresh'),
-        { refreshToken: 'old-refresh-token' }
+        { refreshToken: 'old-refresh-token' },
       );
 
       // Verify new tokens were stored

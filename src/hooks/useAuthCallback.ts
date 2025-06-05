@@ -33,7 +33,7 @@ export const useAuthCallback = () => {
           try {
             const { data, error: verifyError } = await supabase.auth.verifyOtp({
               token_hash: tokenHash,
-              type: 'email'
+              type: 'email',
             });
             
             if (verifyError) {

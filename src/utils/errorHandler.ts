@@ -59,7 +59,7 @@ export class ErrorHandler {
     message: string,
     code?: string,
     status?: number,
-    details?: any
+    details?: any,
   ): AppError {
     const error = new Error(message) as AppError;
     error.code = code;
@@ -97,7 +97,7 @@ export class ErrorHandler {
       'エラー',
       appError.userMessage || appError.message,
       [{ text: 'OK', style: 'default' }],
-      { cancelable: false }
+      { cancelable: false },
     );
   }
 
@@ -118,7 +118,7 @@ export class ErrorHandler {
         error.message,
         this.mapSupabaseErrorCode(error.code),
         error.status,
-        error.details
+        error.details,
       );
     }
 
@@ -129,7 +129,7 @@ export class ErrorHandler {
         data?.message || data?.error || 'Network error',
         this.mapHttpStatusToCode(status),
         status,
-        data?.details
+        data?.details,
       );
     }
 
@@ -138,7 +138,7 @@ export class ErrorHandler {
       return this.createError(
         'Request timeout',
         'network/timeout',
-        0
+        0,
       );
     }
 
@@ -146,7 +146,7 @@ export class ErrorHandler {
       return this.createError(
         'No internet connection',
         'network/no-connection',
-        0
+        0,
       );
     }
 
@@ -155,7 +155,7 @@ export class ErrorHandler {
       error.message || 'Unknown error',
       'unknown',
       500,
-      error
+      error,
     );
   }
 
@@ -260,5 +260,5 @@ export const createError = (
   message: string,
   code?: string,
   status?: number,
-  details?: any
+  details?: any,
 ) => ErrorHandler.createError(message, code, status, details);

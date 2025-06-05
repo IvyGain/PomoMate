@@ -59,7 +59,7 @@ try {
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      redirectTo: getRedirectUrl()
+      redirectTo: getRedirectUrl(),
     },
   });
   console.log('✅ Supabase client initialized successfully');
@@ -73,8 +73,8 @@ try {
       signInWithPassword: async () => ({ error: new Error('Supabase not initialized') }),
       signOut: async () => ({ error: new Error('Supabase not initialized') }),
       getSession: async () => ({ data: { session: null }, error: null }),
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } })
-    }
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
   };
 }
 

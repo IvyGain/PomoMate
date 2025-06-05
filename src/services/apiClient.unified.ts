@@ -44,7 +44,7 @@ export class UnifiedAPIClient {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Response interceptor for error handling
@@ -67,7 +67,7 @@ export class UnifiedAPIClient {
           }
         }
         return Promise.reject(error);
-      }
+      },
     );
 
     this.initialized = true;
@@ -127,7 +127,7 @@ export class UnifiedAPIClient {
     method: 'get' | 'post' | 'put' | 'delete' | 'patch',
     endpoint: string,
     data?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<APIResponse<T>> {
     try {
       if (!this.initialized) {
@@ -147,7 +147,7 @@ export class UnifiedAPIClient {
 
   // Supabase query wrapper
   private static async supabaseQuery<T>(
-    queryFn: () => Promise<{ data: T | null; error: any }>
+    queryFn: () => Promise<{ data: T | null; error: any }>,
   ): Promise<T> {
     try {
       const { data, error } = await queryFn();
@@ -193,7 +193,7 @@ export class UnifiedAPIClient {
       order?: { column: string; ascending?: boolean };
       limit?: number;
       single?: boolean;
-    }
+    },
   ): Promise<T> {
     return this.supabaseQuery<T>(async () => {
       let queryBuilder = supabase.from(table).select(query?.columns || '*');
@@ -233,7 +233,7 @@ export class UnifiedAPIClient {
   static async supabaseInsert<T>(
     table: string,
     data: any | any[],
-    options?: { returning?: boolean }
+    options?: { returning?: boolean },
   ): Promise<T> {
     return this.supabaseQuery<T>(async () => {
       const query = supabase.from(table).insert(data);
@@ -250,7 +250,7 @@ export class UnifiedAPIClient {
     table: string,
     data: any,
     filters: Record<string, any>,
-    options?: { returning?: boolean }
+    options?: { returning?: boolean },
   ): Promise<T> {
     return this.supabaseQuery<T>(async () => {
       let query = supabase.from(table).update(data);
@@ -270,7 +270,7 @@ export class UnifiedAPIClient {
 
   static async supabaseDelete<T>(
     table: string,
-    filters: Record<string, any>
+    filters: Record<string, any>,
   ): Promise<T> {
     return this.supabaseQuery<T>(async () => {
       let query = supabase.from(table).delete();
@@ -290,10 +290,10 @@ export class UnifiedAPIClient {
       method: 'get' | 'post' | 'put' | 'delete' | 'patch';
       endpoint: string;
       data?: any;
-    }>
+    }>,
   ): Promise<APIResponse<T>[]> {
     const promises = requests.map((req) =>
-      this.request<T>(req.method, req.endpoint, req.data)
+      this.request<T>(req.method, req.endpoint, req.data),
     );
     
     return Promise.all(promises);
@@ -303,7 +303,7 @@ export class UnifiedAPIClient {
   static async uploadFile(
     endpoint: string,
     file: File | Blob,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, any>,
   ): Promise<APIResponse<any>> {
     const formData = new FormData();
     formData.append('file', file);
@@ -325,7 +325,7 @@ export class UnifiedAPIClient {
   static async uploadToStorage(
     bucket: string,
     path: string,
-    file: File | Blob
+    file: File | Blob,
   ): Promise<string> {
     const { data, error } = await supabase.storage
       .from(bucket)

@@ -18,10 +18,10 @@ const criticalFiles = [
   'supabase/migrations/002_row_level_security.sql',
   'supabase/migrations/003_seed_data.sql',
   'SUPABASE_PROJECT_SETUP.md',
-  '.env.example'
+  '.env.example',
 ];
 
-let missingFiles = [];
+const missingFiles = [];
 criticalFiles.forEach(file => {
   if (!fs.existsSync(file)) {
     missingFiles.push(file);
@@ -102,7 +102,7 @@ if (fs.existsSync('supabase/migrations/001_initial_schema.sql')) {
     'teams',
     'team_members',
     'team_sessions',
-    'shop_items'
+    'shop_items',
   ];
   
   const missingTables = requiredTables.filter(table => !schema.includes(`CREATE TABLE ${table}`));
@@ -119,7 +119,7 @@ const { execSync } = require('child_process');
 try {
   execSync('npx tsc --noEmit --skipLibCheck 2>&1 | grep -v "e2e/"', { 
     stdio: 'pipe',
-    cwd: process.cwd()
+    cwd: process.cwd(),
   });
   console.log('✅ TypeScript compilation successful');
 } catch (error) {

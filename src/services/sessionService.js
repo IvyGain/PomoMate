@@ -10,7 +10,7 @@ class SessionService {
           type: data.type,
           duration: data.duration,
           teamSessionId: data.teamSessionId,
-        })
+        }),
       );
       
       return response.data;
@@ -66,7 +66,7 @@ class SessionService {
   async getTeamSession(sessionId) {
     try {
       const response = await apiRequest.get(
-        ENDPOINTS.sessions.team.get(sessionId)
+        ENDPOINTS.sessions.team.get(sessionId),
       );
       
       return response.data.teamSession;
@@ -79,7 +79,7 @@ class SessionService {
     try {
       const response = await apiRequest.put(
         ENDPOINTS.sessions.team.join('join'),
-        { code: code.toUpperCase() }
+        { code: code.toUpperCase() },
       );
       
       return response.data.teamSession;
@@ -91,7 +91,7 @@ class SessionService {
   async leaveTeamSession(sessionId) {
     try {
       const response = await apiRequest.put(
-        ENDPOINTS.sessions.team.leave(sessionId)
+        ENDPOINTS.sessions.team.leave(sessionId),
       );
       
       return response.data;
@@ -104,7 +104,7 @@ class SessionService {
     try {
       const response = await apiRequest.put(
         ENDPOINTS.sessions.team.status(sessionId),
-        { status, currentMode }
+        { status, currentMode },
       );
       
       return response.data.teamSession;
@@ -117,7 +117,7 @@ class SessionService {
     try {
       const response = await apiRequest.post(
         ENDPOINTS.sessions.team.messages(sessionId),
-        { message }
+        { message },
       );
       
       return response.data.data;
@@ -129,7 +129,7 @@ class SessionService {
   async deleteTeamSession(sessionId) {
     try {
       const response = await apiRequest.delete(
-        ENDPOINTS.sessions.team.delete(sessionId)
+        ENDPOINTS.sessions.team.delete(sessionId),
       );
       
       return response.data;

@@ -18,7 +18,7 @@ export class ApiClient {
   
   private async handleResponse<T>(
     promise: Promise<SupabaseResponse<T>>,
-    operation: string
+    operation: string,
   ): Promise<T> {
     try {
       const { data, error } = await promise;
@@ -78,7 +78,7 @@ export class ApiClient {
     id: string,
     options?: {
       select?: string;
-    }
+    },
   ): Promise<T> {
     const query = supabase
       .from(table)
@@ -97,7 +97,7 @@ export class ApiClient {
       orderBy?: { column: string; ascending?: boolean };
       limit?: number;
       offset?: number;
-    }
+    },
   ): Promise<T[]> {
     let query = supabase
       .from(table)
@@ -136,7 +136,7 @@ export class ApiClient {
     data: Partial<T>,
     options?: {
       select?: string;
-    }
+    },
   ): Promise<T> {
     const query = supabase
       .from(table)
@@ -153,7 +153,7 @@ export class ApiClient {
     data: Partial<T>,
     options?: {
       select?: string;
-    }
+    },
   ): Promise<T> {
     const query = supabase
       .from(table)
@@ -167,7 +167,7 @@ export class ApiClient {
   
   async delete(
     table: string,
-    id: string
+    id: string,
   ): Promise<void> {
     const query = supabase
       .from(table)
@@ -183,7 +183,7 @@ export class ApiClient {
     data: Partial<T>[],
     options?: {
       select?: string;
-    }
+    },
   ): Promise<T[]> {
     const query = supabase
       .from(table)
@@ -195,10 +195,10 @@ export class ApiClient {
   
   async updateMany<T>(
     table: string,
-    updates: { id: string; data: Partial<T> }[]
+    updates: { id: string; data: Partial<T> }[],
   ): Promise<void> {
     const promises = updates.map(({ id, data }) =>
-      this.update(table, id, data)
+      this.update(table, id, data),
     );
     
     await Promise.all(promises);
@@ -207,7 +207,7 @@ export class ApiClient {
   // RPC calls
   async rpc<T>(
     functionName: string,
-    params?: Record<string, any>
+    params?: Record<string, any>,
   ): Promise<T> {
     const query = supabase.rpc(functionName, params);
     return this.handleResponse(query, `RPC ${functionName}`);

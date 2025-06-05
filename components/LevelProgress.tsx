@@ -10,7 +10,7 @@ interface LevelProgressProps {
 export const LevelProgress: React.FC<LevelProgressProps> = ({ 
   level = 1, 
   xp = 0, 
-  xpToNextLevel = 100 
+  xpToNextLevel = 100, 
 }) => {
   const progress = Math.min((xp / xpToNextLevel) * 100, 100);
   

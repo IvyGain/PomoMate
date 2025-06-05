@@ -17,7 +17,7 @@ export const createTeamSession = async (req, res, next) => {
     while (!isUnique) {
       code = generateTeamSessionCode();
       const existing = await prisma.teamSession.findUnique({
-        where: { code }
+        where: { code },
       });
       if (!existing) isUnique = true;
     }
@@ -34,9 +34,9 @@ export const createTeamSession = async (req, res, next) => {
           create: {
             userId: hostId,
             role: 'host',
-            isReady: true
-          }
-        }
+            isReady: true,
+          },
+        },
       },
       include: {
         participants: {
@@ -46,17 +46,17 @@ export const createTeamSession = async (req, res, next) => {
                 id: true,
                 displayName: true,
                 photoURL: true,
-                level: true
-              }
-            }
-          }
-        }
-      }
+                level: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     res.json({
       message: 'Team session created',
-      teamSession
+      teamSession,
     });
   } catch (error) {
     next(error);
@@ -78,10 +78,10 @@ export const getTeamSession = async (req, res, next) => {
                 id: true,
                 displayName: true,
                 photoURL: true,
-                level: true
-              }
-            }
-          }
+                level: true,
+              },
+            },
+          },
         },
         messages: {
           include: {
@@ -89,14 +89,14 @@ export const getTeamSession = async (req, res, next) => {
               select: {
                 id: true,
                 displayName: true,
-                photoURL: true
-              }
-            }
+                photoURL: true,
+              },
+            },
           },
           orderBy: { createdAt: 'desc' },
-          take: 50
-        }
-      }
+          take: 50,
+        },
+      },
     });
 
     if (!teamSession) {
@@ -105,7 +105,7 @@ export const getTeamSession = async (req, res, next) => {
 
     // Check if user is a participant
     const isParticipant = teamSession.participants.some(
-      p => p.userId === req.user.id
+      p => p.userId === req.user.id,
     );
 
     if (!isParticipant) {
@@ -132,8 +132,8 @@ export const joinTeamSession = async (req, res, next) => {
     const teamSession = await prisma.teamSession.findUnique({
       where: { code: code.toUpperCase() },
       include: {
-        participants: true
-      }
+        participants: true,
+      },
     });
 
     if (!teamSession) {
@@ -142,7 +142,7 @@ export const joinTeamSession = async (req, res, next) => {
 
     // Check if already a participant
     const existingParticipant = teamSession.participants.find(
-      p => p.userId === userId
+      p => p.userId === userId,
     );
 
     if (existingParticipant) {
@@ -159,8 +159,8 @@ export const joinTeamSession = async (req, res, next) => {
       data: {
         teamSessionId: teamSession.id,
         userId,
-        role: 'participant'
-      }
+        role: 'participant',
+      },
     });
 
     // Return updated session
@@ -174,17 +174,17 @@ export const joinTeamSession = async (req, res, next) => {
                 id: true,
                 displayName: true,
                 photoURL: true,
-                level: true
-              }
-            }
-          }
-        }
-      }
+                level: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     res.json({
       message: 'Joined team session',
-      teamSession: updatedSession
+      teamSession: updatedSession,
     });
   } catch (error) {
     next(error);
@@ -201,8 +201,8 @@ export const leaveTeamSession = async (req, res, next) => {
     const participant = await prisma.teamSessionParticipant.findFirst({
       where: {
         teamSessionId: sessionId,
-        userId
-      }
+        userId,
+      },
     });
 
     if (!participant) {
@@ -214,20 +214,20 @@ export const leaveTeamSession = async (req, res, next) => {
       const otherParticipants = await prisma.teamSessionParticipant.findMany({
         where: {
           teamSessionId: sessionId,
-          userId: { not: userId }
-        }
+          userId: { not: userId },
+        },
       });
 
       if (otherParticipants.length > 0) {
         // Transfer host role
         await prisma.teamSessionParticipant.update({
           where: { id: otherParticipants[0].id },
-          data: { role: 'host' }
+          data: { role: 'host' },
         });
       } else {
         // Delete session if no other participants
         await prisma.teamSession.delete({
-          where: { id: sessionId }
+          where: { id: sessionId },
         });
         return res.json({ message: 'Team session deleted' });
       }
@@ -235,7 +235,7 @@ export const leaveTeamSession = async (req, res, next) => {
 
     // Remove participant
     await prisma.teamSessionParticipant.delete({
-      where: { id: participant.id }
+      where: { id: participant.id },
     });
 
     res.json({ message: 'Left team session' });
@@ -261,8 +261,8 @@ export const updateTeamSessionStatus = async (req, res, next) => {
       where: {
         teamSessionId: sessionId,
         userId,
-        role: 'host'
-      }
+        role: 'host',
+      },
     });
 
     if (!participant) {
@@ -295,17 +295,17 @@ export const updateTeamSessionStatus = async (req, res, next) => {
                 id: true,
                 displayName: true,
                 photoURL: true,
-                level: true
-              }
-            }
-          }
-        }
-      }
+                level: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     res.json({
       message: 'Session status updated',
-      teamSession: updatedSession
+      teamSession: updatedSession,
     });
   } catch (error) {
     next(error);
@@ -327,8 +327,8 @@ export const sendTeamMessage = async (req, res, next) => {
     const participant = await prisma.teamSessionParticipant.findFirst({
       where: {
         teamSessionId: sessionId,
-        userId
-      }
+        userId,
+      },
     });
 
     if (!participant) {
@@ -340,22 +340,22 @@ export const sendTeamMessage = async (req, res, next) => {
       data: {
         teamSessionId: sessionId,
         userId,
-        message: message.trim()
+        message: message.trim(),
       },
       include: {
         user: {
           select: {
             id: true,
             displayName: true,
-            photoURL: true
-          }
-        }
-      }
+            photoURL: true,
+          },
+        },
+      },
     });
 
     res.json({
       message: 'Message sent',
-      data: newMessage
+      data: newMessage,
     });
   } catch (error) {
     next(error);
@@ -373,8 +373,8 @@ export const deleteTeamSession = async (req, res, next) => {
       where: {
         teamSessionId: sessionId,
         userId,
-        role: 'host'
-      }
+        role: 'host',
+      },
     });
 
     if (!participant) {
@@ -383,7 +383,7 @@ export const deleteTeamSession = async (req, res, next) => {
 
     // Delete session (cascades to participants and messages)
     await prisma.teamSession.delete({
-      where: { id: sessionId }
+      where: { id: sessionId },
     });
 
     res.json({ message: 'Team session deleted' });

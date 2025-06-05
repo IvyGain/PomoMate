@@ -13,8 +13,8 @@ export const getSettings = async (req, res, next) => {
         autoStartFocus: true,
         soundEnabled: true,
         vibrationEnabled: true,
-        theme: true
-      }
+        theme: true,
+      },
     });
 
     res.json({ settings: user });
@@ -34,7 +34,7 @@ export const updateSettings = async (req, res, next) => {
       autoStartFocus,
       soundEnabled,
       vibrationEnabled,
-      theme
+      theme,
     } = req.body;
 
     // Validate durations
@@ -75,13 +75,13 @@ export const updateSettings = async (req, res, next) => {
         autoStartFocus: true,
         soundEnabled: true,
         vibrationEnabled: true,
-        theme: true
-      }
+        theme: true,
+      },
     });
 
     res.json({ 
       message: 'Settings updated',
-      settings: updatedUser 
+      settings: updatedUser, 
     });
   } catch (error) {
     next(error);

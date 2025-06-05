@@ -5,7 +5,7 @@ import {
   getUserAchievements,
   updateCharacter,
   getActiveDays,
-  getLeaderboard
+  getLeaderboard,
 } from '../controllers/userController.js';
 
 const router = Router();

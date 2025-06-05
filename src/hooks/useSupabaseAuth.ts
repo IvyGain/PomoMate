@@ -35,7 +35,7 @@ export const useSupabaseAuth = () => {
           console.log('💭 User signed out');
           setUser(null);
         }
-      }
+      },
     );
 
     return () => {

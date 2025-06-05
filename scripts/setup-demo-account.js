@@ -12,8 +12,8 @@ if (!supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });
 
 async function setupDemoAccount() {
@@ -66,7 +66,7 @@ async function setupDemoAccount() {
       user_metadata: {
         username: demoUsername,
         display_name: demoUsername,
-      }
+      },
     });
     
     if (authError) throw authError;

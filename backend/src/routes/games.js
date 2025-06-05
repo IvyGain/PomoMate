@@ -4,7 +4,7 @@ import {
   getGames,
   getGameScores,
   submitScore,
-  unlockGame
+  unlockGame,
 } from '../controllers/gameController.js';
 
 const router = Router();

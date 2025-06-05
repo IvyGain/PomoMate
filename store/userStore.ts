@@ -64,7 +64,7 @@ interface UserState extends UserStats {
 // XP required for each level (index is level - 1)
 const XP_REQUIREMENTS = [
   100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 
-  1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000
+  1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000,
 ];
 
 // Get XP required for a specific level
@@ -130,7 +130,7 @@ export const useUserStore = create<UserState>()(
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         
         let newStreak = streak;
-        let newActiveDays = [...activeDays];
+        const newActiveDays = [...activeDays];
         let newTotalDays = totalDays;
         
         // Update active days
@@ -147,7 +147,7 @@ export const useUserStore = create<UserState>()(
           // Check for streak protection ability
           const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
           const hasStreakProtection = character.abilities.some(
-            ability => ability.type === 'streakProtection' && ability.isActive
+            ability => ability.type === 'streakProtection' && ability.isActive,
           );
           
           if (hasStreakProtection && lastSessionDate && 
@@ -172,7 +172,7 @@ export const useUserStore = create<UserState>()(
         // Apply XP boost from character abilities if any
         const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
         const xpBoostAbility = character.abilities.find(
-          ability => ability.type === 'xpBoost' && ability.isActive
+          ability => ability.type === 'xpBoost' && ability.isActive,
         );
         
         if (xpBoostAbility) {
@@ -322,7 +322,7 @@ export const useUserStore = create<UserState>()(
             let achievementReward = achievement.reward;
             const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
             const achievementBoostAbility = character.abilities.find(
-              ability => ability.type === 'achievementBoost' && ability.isActive
+              ability => ability.type === 'achievementBoost' && ability.isActive,
             );
             
             if (achievementBoostAbility) {
@@ -488,12 +488,12 @@ export const useUserStore = create<UserState>()(
         if (activeAbilities.includes(abilityId)) {
           // Deactivate ability
           set({
-            activeAbilities: activeAbilities.filter(id => id !== abilityId)
+            activeAbilities: activeAbilities.filter(id => id !== abilityId),
           });
         } else {
           // Activate ability
           set({
-            activeAbilities: [...activeAbilities, abilityId]
+            activeAbilities: [...activeAbilities, abilityId],
           });
         }
       },
@@ -531,7 +531,7 @@ export const useUserStore = create<UserState>()(
         const { playedGames, gamePlayCount } = get();
         
         // Add game to played games if not already there
-        let newPlayedGames = [...playedGames];
+        const newPlayedGames = [...playedGames];
         if (!playedGames.includes(gameId)) {
           newPlayedGames.push(gameId);
         }
@@ -541,7 +541,7 @@ export const useUserStore = create<UserState>()(
         
         set({
           playedGames: newPlayedGames,
-          gamePlayCount: newGamePlayCount
+          gamePlayCount: newGamePlayCount,
         });
         
         // Check for game-related achievements
@@ -842,6 +842,6 @@ export const useUserStore = create<UserState>()(
     {
       name: 'user-storage',
       storage: createJSONStorage(() => getStorageInterface()),
-    }
-  )
+    },
+  ),
 );

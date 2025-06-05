@@ -15,7 +15,7 @@ async function createDemoUser() {
     console.log('1️⃣ 既存のデモユーザーでログイン中...');
     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
       email: 'romancemorio+test@gmail.com',
-      password: 'Po8silba8'
+      password: 'Po8silba8',
     });
 
     if (loginError) {
@@ -47,7 +47,7 @@ async function createDemoUser() {
             id: user.id,
             email: 'romancemorio+test@gmail.com',
             username: 'demo_user',
-            display_name: 'デモユーザー'
+            display_name: 'デモユーザー',
           });
 
         if (createError) {
@@ -75,7 +75,7 @@ async function createDemoUser() {
         .insert({
           user_id: user.id,
           character_id: 'balanced_1',
-          is_active: true
+          is_active: true,
         })
         .select();
 

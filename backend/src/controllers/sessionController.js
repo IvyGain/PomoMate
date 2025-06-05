@@ -3,7 +3,7 @@ import {
   calculateSessionXP, 
   checkLevelUp, 
   calculateStreak,
-  determineCharacterEvolution 
+  determineCharacterEvolution, 
 } from '../utils/helpers.js';
 import dayjs from 'dayjs';
 
@@ -35,8 +35,8 @@ export const createSession = async (req, res, next) => {
         totalMinutes: true,
         characterType: true,
         characterLevel: true,
-        evolutionPath: true
-      }
+        evolutionPath: true,
+      },
     });
 
     // Calculate streak
@@ -58,24 +58,24 @@ export const createSession = async (req, res, next) => {
       where: {
         userId_date: {
           userId,
-          date: today
-        }
+          date: today,
+        },
       },
       create: {
         userId,
         date: today,
         sessionsCount: 1,
-        totalMinutes: duration
+        totalMinutes: duration,
       },
       update: {
         sessionsCount: { increment: 1 },
-        totalMinutes: { increment: duration }
-      }
+        totalMinutes: { increment: duration },
+      },
     });
 
     // Get total active days count
     const activeDaysCount = await prisma.activeDay.count({
-      where: { userId }
+      where: { userId },
     });
 
     // Check for character evolution
@@ -83,7 +83,7 @@ export const createSession = async (req, res, next) => {
     const characterType = determineCharacterEvolution(
       newTotalSessions,
       newStreak,
-      activeDaysCount
+      activeDaysCount,
     );
 
     // Update character evolution path if type changed
@@ -99,8 +99,8 @@ export const createSession = async (req, res, next) => {
         type,
         duration,
         xpEarned,
-        teamSessionId
-      }
+        teamSessionId,
+      },
     });
 
     // Update user stats
@@ -115,8 +115,8 @@ export const createSession = async (req, res, next) => {
         longestStreak,
         lastActiveDate: new Date(),
         characterType,
-        evolutionPath
-      }
+        evolutionPath,
+      },
     });
 
     // Check achievements (simplified)
@@ -124,7 +124,7 @@ export const createSession = async (req, res, next) => {
       totalSessions: newTotalSessions,
       totalMinutes: user.totalMinutes + duration,
       currentStreak: newStreak,
-      level: newLevel
+      level: newLevel,
     });
 
     res.json({
@@ -135,8 +135,8 @@ export const createSession = async (req, res, next) => {
         newLevel,
         currentXP,
         streak: newStreak,
-        achievements
-      }
+        achievements,
+      },
     });
   } catch (error) {
     next(error);
@@ -159,21 +159,21 @@ export const getUserSessions = async (req, res, next) => {
           select: {
             id: true,
             name: true,
-            code: true
-          }
-        }
-      }
+            code: true,
+          },
+        },
+      },
     });
 
     const total = await prisma.session.count({
-      where: { userId }
+      where: { userId },
     });
 
     res.json({
       sessions,
       total,
       limit: parseInt(limit),
-      offset: parseInt(offset)
+      offset: parseInt(offset),
     });
   } catch (error) {
     next(error);
@@ -210,10 +210,10 @@ export const getSessionStats = async (req, res, next) => {
       where: {
         userId,
         completedAt: {
-          gte: startDate.toDate()
-        }
+          gte: startDate.toDate(),
+        },
       },
-      orderBy: { completedAt: 'asc' }
+      orderBy: { completedAt: 'asc' },
     });
 
     // Get active days
@@ -221,10 +221,10 @@ export const getSessionStats = async (req, res, next) => {
       where: {
         userId,
         date: {
-          gte: startDate.toDate()
-        }
+          gte: startDate.toDate(),
+        },
       },
-      orderBy: { date: 'asc' }
+      orderBy: { date: 'asc' },
     });
 
     // Calculate stats
@@ -238,7 +238,7 @@ export const getSessionStats = async (req, res, next) => {
         ? Math.round(sessions.reduce((sum, s) => sum + s.duration, 0) / sessions.length)
         : 0,
       activeDays: activeDays.length,
-      sessionsPerDay: []
+      sessionsPerDay: [],
     };
 
     // Group sessions by day
@@ -250,7 +250,7 @@ export const getSessionStats = async (req, res, next) => {
           date: day,
           sessions: 0,
           minutes: 0,
-          xp: 0
+          xp: 0,
         };
       }
       sessionsByDay[day].sessions++;
@@ -276,7 +276,7 @@ async function checkAchievements(userId, stats) {
   // Get user's unlocked achievements
   const userAchievements = await prisma.userAchievement.findMany({
     where: { userId },
-    select: { achievementId: true }
+    select: { achievementId: true },
   });
   
   const unlockedIds = new Set(userAchievements.map(ua => ua.achievementId));
@@ -313,8 +313,8 @@ async function checkAchievements(userId, stats) {
       await prisma.userAchievement.create({
         data: {
           userId,
-          achievementId: achievement.id
-        }
+          achievementId: achievement.id,
+        },
       });
       unlockedAchievements.push(achievement);
     }

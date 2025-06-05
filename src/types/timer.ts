@@ -1,7 +1,7 @@
 // Timer types
 export type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
-export const TimerMode = {
+export const TimerModeConstants = {
   FOCUS: 'focus' as TimerMode,
   SHORT_BREAK: 'shortBreak' as TimerMode,
   LONG_BREAK: 'longBreak' as TimerMode,

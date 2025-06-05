@@ -13,8 +13,8 @@ if (!supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });
 
 async function checkSupabaseUsers() {
@@ -78,8 +78,8 @@ async function checkSupabaseUsers() {
         console.log('\n🔧 デモユーザーのメール確認を手動で有効化:');
         console.log('   Supabase SQL Editorで以下を実行:');
         console.log('');
-        console.log(`   UPDATE auth.users `);
-        console.log(`   SET email_confirmed_at = NOW()`);
+        console.log('   UPDATE auth.users ');
+        console.log('   SET email_confirmed_at = NOW()');
         console.log(`   WHERE email = '${demoUser.email}';`);
       }
     }

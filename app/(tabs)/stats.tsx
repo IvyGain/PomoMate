@@ -200,7 +200,7 @@ export default function StatsScreen() {
                     style={[
                       styles.bar, 
                       day.active ? [styles.activeBar, { backgroundColor: theme.primary }] : 
-                                  [styles.inactiveBar, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]
+                        [styles.inactiveBar, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }],
                     ]} 
                   />
                 </View>

@@ -79,7 +79,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
       teamLogger.error('Failed to create session', error);
       set({ 
         isLoading: false, 
-        error: error.message || 'セッションの作成に失敗しました' 
+        error: error.message || 'セッションの作成に失敗しました', 
       });
       throw error;
     }
@@ -143,13 +143,13 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
         
       set({ 
         currentSession: updatedSession, 
-        isLoading: false 
+        isLoading: false, 
       });
     } catch (error: any) {
       teamLogger.error('Failed to join session', error);
       set({ 
         isLoading: false, 
-        error: error.message || 'セッションへの参加に失敗しました' 
+        error: error.message || 'セッションへの参加に失敗しました', 
       });
       throw error;
     }
@@ -170,7 +170,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
         .from('team_participants')
         .update({ 
           is_active: false, 
-          left_at: new Date().toISOString() 
+          left_at: new Date().toISOString(), 
         })
         .eq('team_session_id', currentSession.id)
         .eq('user_id', user.id);
@@ -179,13 +179,13 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
       
       set({ 
         currentSession: null, 
-        isLoading: false 
+        isLoading: false, 
       });
     } catch (error: any) {
       teamLogger.error('Failed to leave session', error);
       set({ 
         isLoading: false, 
-        error: error.message || 'セッションからの退出に失敗しました' 
+        error: error.message || 'セッションからの退出に失敗しました', 
       });
     }
   },
@@ -210,7 +210,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
     } catch (error: any) {
       teamLogger.error('Failed to update ready status', error);
       set({ 
-        error: error.message || '準備状態の更新に失敗しました' 
+        error: error.message || '準備状態の更新に失敗しました', 
       });
     }
   },
@@ -235,7 +235,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
         .from('team_sessions')
         .update({ 
           status: 'in_progress',
-          started_at: new Date().toISOString()
+          started_at: new Date().toISOString(),
         })
         .eq('id', currentSession.id);
         
@@ -246,7 +246,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
       teamLogger.error('Failed to start session', error);
       set({ 
         isLoading: false, 
-        error: error.message || 'セッションの開始に失敗しました' 
+        error: error.message || 'セッションの開始に失敗しました', 
       });
       throw error;
     }
@@ -272,13 +272,13 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
       
       set({ 
         availableSessions: sessions || [], 
-        isLoading: false 
+        isLoading: false, 
       });
     } catch (error: any) {
       teamLogger.error('Failed to fetch sessions', error);
       set({ 
         isLoading: false, 
-        error: error.message || 'セッションの取得に失敗しました' 
+        error: error.message || 'セッションの取得に失敗しました', 
       });
     }
   },
@@ -315,7 +315,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
           if (session) {
             set({ currentSession: session });
           }
-        }
+        },
       )
       .on(
         'postgres_changes',
@@ -342,7 +342,7 @@ export const useTeamSessionStore = create<TeamSessionState>((set, get) => ({
           if (session) {
             set({ currentSession: session });
           }
-        }
+        },
       )
       .subscribe();
       

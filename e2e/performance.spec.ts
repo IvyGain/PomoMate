@@ -45,7 +45,7 @@ test.describe('パフォーマンステスト', () => {
       if (performance.memory) {
         return {
           usedJSHeapSize: performance.memory.usedJSHeapSize,
-          totalJSHeapSize: performance.memory.totalJSHeapSize
+          totalJSHeapSize: performance.memory.totalJSHeapSize,
         };
       }
       return null;
@@ -64,7 +64,7 @@ test.describe('パフォーマンステスト', () => {
       if (performance.memory) {
         return {
           usedJSHeapSize: performance.memory.usedJSHeapSize,
-          totalJSHeapSize: performance.memory.totalJSHeapSize
+          totalJSHeapSize: performance.memory.totalJSHeapSize,
         };
       }
       return null;

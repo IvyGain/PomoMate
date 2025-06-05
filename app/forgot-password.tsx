@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView, 
   Platform,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
@@ -27,7 +27,7 @@ export default function ForgotPasswordScreen() {
   React.useEffect(() => {
     if (error) {
       Alert.alert('エラー', error, [
-        { text: 'OK', onPress: clearError }
+        { text: 'OK', onPress: clearError },
       ]);
     }
   }, [error, clearError]);
@@ -44,7 +44,7 @@ export default function ForgotPasswordScreen() {
       Alert.alert(
         'パスワードリセット',
         'パスワードリセットの手順をメールで送信しました。メールをご確認ください。',
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
     } catch (error) {
       // Error is handled by the store
@@ -93,8 +93,8 @@ export default function ForgotPasswordScreen() {
                 styles.resetButton, 
                 { 
                   backgroundColor: resetSent ? theme.success : theme.primary,
-                  opacity: resetSent ? 0.8 : 1
-                }
+                  opacity: resetSent ? 0.8 : 1,
+                },
               ]}
               onPress={handleResetPassword}
               disabled={isLoading || resetSent}

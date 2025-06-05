@@ -3,7 +3,7 @@ const readline = require('readline');
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 const question = (query) => new Promise((resolve) => rl.question(query, resolve));
@@ -23,8 +23,8 @@ async function createDemoUser() {
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
-        persistSession: false
-      }
+        persistSession: false,
+      },
     });
 
     console.log('📝 デモユーザーを作成中...\n');
@@ -36,8 +36,8 @@ async function createDemoUser() {
       email_confirm: true,
       user_metadata: {
         username: 'DemoUser',
-        display_name: 'デモユーザー'
-      }
+        display_name: 'デモユーザー',
+      },
     });
 
     if (authError) {
@@ -46,7 +46,7 @@ async function createDemoUser() {
         
         // 既存ユーザーの情報を取得
         const { data: { users }, error: listError } = await supabase.auth.admin.listUsers({
-          filter: 'email.eq.demo@example.com'
+          filter: 'email.eq.demo@example.com',
         });
         
         if (!listError && users.length > 0) {
@@ -76,7 +76,7 @@ async function createDemoUser() {
           coins: 100,
           streak_days: 0,
           focus_time_today: 0,
-          total_focus_time: 0
+          total_focus_time: 0,
         });
 
       if (profileError && profileError.code !== '23505') {
@@ -93,7 +93,7 @@ async function createDemoUser() {
           work_duration: 25,
           break_duration: 5,
           long_break_duration: 15,
-          sessions_before_long_break: 4
+          sessions_before_long_break: 4,
         });
 
       if (settingsError && settingsError.code !== '23505') {

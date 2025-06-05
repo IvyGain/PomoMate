@@ -86,7 +86,7 @@ export class UnifiedAuthService {
   private static async createUserProfile(
     userId: string,
     email: string,
-    username: string
+    username: string,
   ): Promise<UserProfile> {
     authLogger.info('Creating user profile', { userId });
 
@@ -147,7 +147,7 @@ export class UnifiedAuthService {
   static async register(
     email: string,
     password: string,
-    username: string
+    username: string,
   ): Promise<AuthResult> {
     try {
       authLogger.info('Starting user registration', { email });

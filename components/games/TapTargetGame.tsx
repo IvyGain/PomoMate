@@ -111,8 +111,8 @@ export const TapTargetGame: React.FC<{ onClose: () => void }> = ({ onClose }) =>
               { 
                 left: `${targetPosition.x}%`, 
                 top: `${targetPosition.y}%`,
-                transform: [{ scale: targetSize }]
-              }
+                transform: [{ scale: targetSize }],
+              },
             ]}
           >
             <TouchableOpacity

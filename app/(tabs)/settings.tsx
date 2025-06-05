@@ -7,7 +7,7 @@ import {
   Switch, 
   ScrollView,
   Alert,
-  Platform
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '@/store/themeStore';
@@ -31,7 +31,7 @@ import {
   Zap,
   Vibrate,
   PlayCircle,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react-native';
 
 export default function SettingsScreen() {
@@ -47,7 +47,7 @@ export default function SettingsScreen() {
     autoStartFocus,
     soundEnabled,
     vibrationEnabled,
-    updateSettings
+    updateSettings,
   } = useTimerStore();
   
   const isDarkMode = currentTheme === 'dark';
@@ -78,9 +78,9 @@ export default function SettingsScreen() {
           onPress: () => {
             resetProgress();
             Alert.alert('リセット完了', 'すべてのデータがリセットされました。');
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
   
@@ -92,9 +92,9 @@ export default function SettingsScreen() {
         { text: 'キャンセル', style: 'cancel' },
         { 
           text: 'ログアウト', 
-          onPress: logout
-        }
-      ]
+          onPress: logout,
+        },
+      ],
     );
   };
   
@@ -110,7 +110,7 @@ export default function SettingsScreen() {
       focusDuration: focusMinutes,
       shortBreakDuration: shortBreakMinutes,
       longBreakDuration: longBreakMinutes,
-      sessionsUntilLongBreak: sessionsCount
+      sessionsUntilLongBreak: sessionsCount,
     });
     
     Alert.alert('設定を保存しました', 'タイマー設定が更新されました');
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
     icon: React.ReactNode,
     title: string,
     rightElement?: React.ReactNode,
-    onPress?: () => void
+    onPress?: () => void,
   ) => (
     <TouchableOpacity 
       style={[styles.settingItem, { backgroundColor: theme.card }]}
@@ -153,7 +153,7 @@ export default function SettingsScreen() {
     min: number = 1,
     max: number = 60,
     step: number = 1,
-    suffix: string = '分'
+    suffix: string = '分',
   ) => (
     <View style={[styles.settingItem, { backgroundColor: theme.card }]}>
       <View style={styles.settingIconTitle}>
@@ -199,7 +199,7 @@ export default function SettingsScreen() {
               onValueChange={toggleTheme}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
           
           {renderSettingItem(
@@ -210,7 +210,7 @@ export default function SettingsScreen() {
               onValueChange={setNotificationsEnabled}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
           
           {renderSettingItem(
@@ -221,7 +221,7 @@ export default function SettingsScreen() {
               onValueChange={setAppSoundEnabled}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
         </View>
         
@@ -237,7 +237,7 @@ export default function SettingsScreen() {
             focusMinutes,
             setFocusMinutes,
             1,
-            60
+            60,
           )}
           
           {renderTimerSlider(
@@ -246,7 +246,7 @@ export default function SettingsScreen() {
             shortBreakMinutes,
             setShortBreakMinutes,
             1,
-            30
+            30,
           )}
           
           {renderTimerSlider(
@@ -255,7 +255,7 @@ export default function SettingsScreen() {
             longBreakMinutes,
             setLongBreakMinutes,
             5,
-            60
+            60,
           )}
           
           {renderTimerSlider(
@@ -266,7 +266,7 @@ export default function SettingsScreen() {
             1,
             10,
             1,
-            '回'
+            '回',
           )}
           
           <View style={styles.buttonContainer}>
@@ -301,7 +301,7 @@ export default function SettingsScreen() {
               onValueChange={(value) => updateSettings({ autoStartBreaks: value })}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
           
           {renderSettingItem(
@@ -312,7 +312,7 @@ export default function SettingsScreen() {
               onValueChange={(value) => updateSettings({ autoStartFocus: value })}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
         </View>
         
@@ -330,7 +330,7 @@ export default function SettingsScreen() {
               onValueChange={(value) => updateSettings({ soundEnabled: value })}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
           
           {renderSettingItem(
@@ -341,7 +341,7 @@ export default function SettingsScreen() {
               onValueChange={(value) => updateSettings({ vibrationEnabled: value })}
               trackColor={{ false: '#767577', true: theme.primary }}
               thumbColor="#f4f3f4"
-            />
+            />,
           )}
         </View>
         
@@ -354,14 +354,14 @@ export default function SettingsScreen() {
             <Shield size={22} color={theme.text} style={styles.settingIcon} />,
             'プライバシー設定',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            () => Alert.alert('プライバシー設定', '準備中です')
+            () => Alert.alert('プライバシー設定', '準備中です'),
           )}
           
           {renderSettingItem(
             <Trash2 size={22} color={theme.error} style={styles.settingIcon} />,
             'データをリセット',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            handleResetProgress
+            handleResetProgress,
           )}
         </View>
         
@@ -374,14 +374,14 @@ export default function SettingsScreen() {
             <HelpCircle size={22} color={theme.text} style={styles.settingIcon} />,
             'ヘルプ',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            () => Alert.alert('ヘルプ', '準備中です')
+            () => Alert.alert('ヘルプ', '準備中です'),
           )}
           
           {renderSettingItem(
             <Info size={22} color={theme.text} style={styles.settingIcon} />,
             'アプリについて',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            () => Alert.alert('PomoMate', 'バージョン 1.0.0\n© 2023 PomoMate Team')
+            () => Alert.alert('PomoMate', 'バージョン 1.0.0\n© 2023 PomoMate Team'),
           )}
         </View>
         

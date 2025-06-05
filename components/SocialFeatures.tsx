@@ -218,7 +218,7 @@ export const SocialFeatures: React.FC = () => {
     rejectFriendRequest,
     notifications,
     markNotificationAsRead,
-    sendFriendRequest
+    sendFriendRequest,
   } = useSocialStore();
   
   const {
@@ -257,12 +257,12 @@ export const SocialFeatures: React.FC = () => {
     if (likedPosts.includes(postId)) {
       setLikedPosts(likedPosts.filter(id => id !== postId));
       setPosts(posts.map(post => 
-        post.id === postId ? { ...post, likes: post.likes - 1 } : post
+        post.id === postId ? { ...post, likes: post.likes - 1 } : post,
       ));
     } else {
       setLikedPosts([...likedPosts, postId]);
       setPosts(posts.map(post => 
-        post.id === postId ? { ...post, likes: post.likes + 1 } : post
+        post.id === postId ? { ...post, likes: post.likes + 1 } : post,
       ));
     }
   };
@@ -357,8 +357,8 @@ export const SocialFeatures: React.FC = () => {
           'フレンドコード', 
           friendCode,
           [
-            { text: 'OK', onPress: () => console.log('OK Pressed') }
-          ]
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ],
         );
       }
     } catch (error) {
@@ -436,7 +436,7 @@ export const SocialFeatures: React.FC = () => {
   // Filter friends by search query
   const filteredFriends = friends.filter(friend => 
     friend.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    friend.username.toLowerCase().includes(searchQuery.toLowerCase())
+    friend.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
   
   // Local state for posts
@@ -463,7 +463,7 @@ export const SocialFeatures: React.FC = () => {
       <View style={styles.friendActions}>
         <View style={[
           styles.statusIndicator, 
-          { backgroundColor: item.status === 'オンライン' ? theme.success : theme.inactive }
+          { backgroundColor: item.status === 'オンライン' ? theme.success : theme.inactive },
         ]} />
         <Text style={[styles.lastActiveText, { color: theme.textSecondary }]}>{item.lastActive}</Text>
         
@@ -563,7 +563,7 @@ export const SocialFeatures: React.FC = () => {
     <TouchableOpacity 
       style={[
         styles.notificationItem, 
-        { backgroundColor: item.read ? 'transparent' : 'rgba(255, 255, 255, 0.05)' }
+        { backgroundColor: item.read ? 'transparent' : 'rgba(255, 255, 255, 0.05)' },
       ]}
       onPress={() => markNotificationAsRead(item.id)}
     >
@@ -615,17 +615,17 @@ export const SocialFeatures: React.FC = () => {
     <View style={[
       styles.messageItem,
       item.sender === 'me' ? styles.myMessage : styles.friendMessage,
-      { backgroundColor: item.sender === 'me' ? theme.primary : 'rgba(255, 255, 255, 0.1)' }
+      { backgroundColor: item.sender === 'me' ? theme.primary : 'rgba(255, 255, 255, 0.1)' },
     ]}>
       <Text style={[
         styles.messageText,
-        { color: item.sender === 'me' ? theme.text : theme.text }
+        { color: item.sender === 'me' ? theme.text : theme.text },
       ]}>
         {item.text}
       </Text>
       <Text style={[
         styles.messageTime,
-        { color: item.sender === 'me' ? 'rgba(255, 255, 255, 0.7)' : theme.textSecondary }
+        { color: item.sender === 'me' ? 'rgba(255, 255, 255, 0.7)' : theme.textSecondary },
       ]}>
         {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </Text>
@@ -639,11 +639,11 @@ export const SocialFeatures: React.FC = () => {
         <Text style={[styles.teamSessionName, { color: theme.text }]}>{item.name}</Text>
         <View style={[
           styles.teamSessionStatus, 
-          { backgroundColor: item.isRunning ? theme.success + '40' : theme.warning + '40' }
+          { backgroundColor: item.isRunning ? theme.success + '40' : theme.warning + '40' },
         ]}>
           <Text style={[
             styles.teamSessionStatusText, 
-            { color: item.isRunning ? theme.success : theme.warning }
+            { color: item.isRunning ? theme.success : theme.warning },
           ]}>
             {item.isRunning ? '進行中' : '一時停止'}
           </Text>
@@ -679,7 +679,7 @@ export const SocialFeatures: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.teamSessionControl,
-                { backgroundColor: item.isRunning ? theme.warning : theme.success }
+                { backgroundColor: item.isRunning ? theme.warning : theme.success },
               ]}
               onPress={() => {
                 if (item.isRunning) {
@@ -705,14 +705,14 @@ export const SocialFeatures: React.FC = () => {
                   [
                     {
                       text: 'キャンセル',
-                      style: 'cancel'
+                      style: 'cancel',
                     },
                     {
                       text: '退出',
                       style: 'destructive',
-                      onPress: () => leaveTeamSession(item.id, 'user_id')
-                    }
-                  ]
+                      onPress: () => leaveTeamSession(item.id, 'user_id'),
+                    },
+                  ],
                 );
               }}
             >
@@ -722,7 +722,7 @@ export const SocialFeatures: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.teamSessionControl,
-                { backgroundColor: micEnabled ? theme.primary : 'rgba(255, 255, 255, 0.1)' }
+                { backgroundColor: micEnabled ? theme.primary : 'rgba(255, 255, 255, 0.1)' },
               ]}
               onPress={handleToggleMic}
             >
@@ -741,7 +741,7 @@ export const SocialFeatures: React.FC = () => {
                 item.id,
                 'user_id', // In a real app, this would be the user's ID
                 'あなた', // In a real app, this would be the user's name
-                'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop' // In a real app, this would be the user's avatar
+                'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop', // In a real app, this would be the user's avatar
               );
             }}
           >
@@ -798,14 +798,14 @@ export const SocialFeatures: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.tab,
-            activeTab === 'friends' && [styles.activeTab, { borderBottomColor: theme.primary }]
+            activeTab === 'friends' && [styles.activeTab, { borderBottomColor: theme.primary }],
           ]}
           onPress={() => setActiveTab('friends')}
         >
           <Users size={20} color={activeTab === 'friends' ? theme.primary : theme.textSecondary} />
           <Text style={[
             styles.tabText,
-            { color: activeTab === 'friends' ? theme.primary : theme.textSecondary }
+            { color: activeTab === 'friends' ? theme.primary : theme.textSecondary },
           ]}>
             フレンド
           </Text>
@@ -814,14 +814,14 @@ export const SocialFeatures: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.tab,
-            activeTab === 'community' && [styles.activeTab, { borderBottomColor: theme.primary }]
+            activeTab === 'community' && [styles.activeTab, { borderBottomColor: theme.primary }],
           ]}
           onPress={() => setActiveTab('community')}
         >
           <Globe size={20} color={activeTab === 'community' ? theme.primary : theme.textSecondary} />
           <Text style={[
             styles.tabText,
-            { color: activeTab === 'community' ? theme.primary : theme.textSecondary }
+            { color: activeTab === 'community' ? theme.primary : theme.textSecondary },
           ]}>
             コミュニティ
           </Text>
@@ -1135,7 +1135,7 @@ export const SocialFeatures: React.FC = () => {
               <TouchableOpacity
                 style={[
                   styles.createPostButton2,
-                  { backgroundColor: postContent.trim() ? theme.primary : theme.inactive }
+                  { backgroundColor: postContent.trim() ? theme.primary : theme.inactive },
                 ]}
                 onPress={handleCreatePost}
                 disabled={!postContent.trim()}
@@ -1342,7 +1342,7 @@ export const SocialFeatures: React.FC = () => {
                   <TouchableOpacity
                     style={[
                       styles.sendMessageButton,
-                      { backgroundColor: messageText.trim() ? theme.primary : theme.inactive }
+                      { backgroundColor: messageText.trim() ? theme.primary : theme.inactive },
                     ]}
                     onPress={handleSendMessage}
                     disabled={!messageText.trim()}

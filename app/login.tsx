@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
-  Alert
+  Alert,
 } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
@@ -39,7 +39,7 @@ export default function LoginScreen() {
   React.useEffect(() => {
     if (error) {
       Alert.alert('エラー', error, [
-        { text: 'OK', onPress: clearError }
+        { text: 'OK', onPress: clearError },
       ]);
     }
   }, [error, clearError]);
@@ -68,13 +68,13 @@ export default function LoginScreen() {
       console.error('❌ Error details:', {
         message: error.message,
         code: error.code,
-        stack: error.stack
+        stack: error.stack,
       });
       
       Alert.alert(
         'ログインエラー', 
         `ログインに失敗しました: ${error.message || 'Unknown error'}`,
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
     }
   };
@@ -98,7 +98,7 @@ export default function LoginScreen() {
       Alert.alert(
         'デモログインエラー', 
         'デモユーザーでのログインに失敗しました。管理者にお問い合わせください。',
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
     }
   };

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { 
   createSession,
   getUserSessions,
-  getSessionStats
+  getSessionStats,
 } from '../controllers/sessionController.js';
 import {
   createTeamSession,
@@ -11,7 +11,7 @@ import {
   leaveTeamSession,
   updateTeamSessionStatus,
   sendTeamMessage,
-  deleteTeamSession
+  deleteTeamSession,
 } from '../controllers/teamSessionController.js';
 import { authenticate } from '../middleware/auth.js';
 

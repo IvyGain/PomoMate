@@ -30,7 +30,7 @@ class OfflineService {
       
       await AsyncStorage.setItem(
         this.OFFLINE_SESSIONS_KEY,
-        JSON.stringify([...existingSessions, newSession])
+        JSON.stringify([...existingSessions, newSession]),
       );
     } catch (error) {
       console.error('Error storing offline session:', error);
@@ -72,12 +72,12 @@ class OfflineService {
       // Remove successfully synced sessions
       if (successfulSyncs.length > 0) {
         const remainingSessions = offlineSessions.filter(
-          session => !successfulSyncs.includes(session.id)
+          session => !successfulSyncs.includes(session.id),
         );
         
         await AsyncStorage.setItem(
           this.OFFLINE_SESSIONS_KEY,
-          JSON.stringify(remainingSessions)
+          JSON.stringify(remainingSessions),
         );
       }
 

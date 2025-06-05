@@ -20,7 +20,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
       hasError: false, 
       error: null, 
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     };
   }
 
@@ -28,7 +28,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return { 
       hasError: true, 
       error,
-      errorId: Date.now().toString()
+      errorId: Date.now().toString(),
     };
   }
 
@@ -58,7 +58,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         hasError: false, 
         error: null, 
         errorInfo: null,
-        errorId: ''
+        errorId: '',
       });
     }
   };
@@ -68,7 +68,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
       hasError: false, 
       error: null, 
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     });
   };
 

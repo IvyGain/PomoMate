@@ -6,7 +6,7 @@ import {
   TouchableOpacity, 
   ScrollView, 
   Image,
-  Animated
+  Animated,
 } from 'react-native';
 import { useThemeStore } from '@/store/themeStore';
 import { spacing, fontSizes, borderRadius } from '@/constants/theme';
@@ -50,7 +50,7 @@ export const GameSelector: React.FC<GameSelectorProps> = ({ onSelectGame }) => {
       <Animated.View 
         style={[
           styles.gameCard,
-          { backgroundColor: theme.card, transform: [{ scale: scaleAnim }] }
+          { backgroundColor: theme.card, transform: [{ scale: scaleAnim }] },
         ]}
       >
         <View style={styles.gameHeader}>

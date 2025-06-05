@@ -36,14 +36,14 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
     <TouchableOpacity 
       style={[
         styles.container,
-        isUnlocked ? styles.unlockedContainer : styles.lockedContainer
+        isUnlocked ? styles.unlockedContainer : styles.lockedContainer,
       ]}
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={[
         styles.iconContainer,
-        { backgroundColor: isUnlocked ? achievement.iconColor : colors.inactive }
+        { backgroundColor: isUnlocked ? achievement.iconColor : colors.inactive },
       ]}>
         {isUnlocked ? (
           <Icon size={24} color={colors.text} />
@@ -55,7 +55,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
       <View style={styles.content}>
         <Text style={[
           styles.title,
-          isUnlocked ? styles.unlockedTitle : styles.lockedTitle
+          isUnlocked ? styles.unlockedTitle : styles.lockedTitle,
         ]}>
           {isSecret ? '???' : achievement.title}
         </Text>

@@ -128,13 +128,13 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
         if (chatListRef.current && activeSession?.messages?.length) {
           chatListRef.current.scrollToEnd({ animated: true });
         }
-      }
+      },
     );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
         setKeyboardVisible(false);
-      }
+      },
     );
 
     return () => {
@@ -169,13 +169,13 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   const getModeName = (mode: 'focus' | 'shortBreak' | 'longBreak'): string => {
     switch (mode) {
       case 'focus':
-        return "フォーカス";
+        return 'フォーカス';
       case 'shortBreak':
-        return "小休憩";
+        return '小休憩';
       case 'longBreak':
-        return "長休憩";
+        return '長休憩';
       default:
-        return "フォーカス";
+        return 'フォーカス';
     }
   };
   
@@ -196,16 +196,16 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   // Handle create session
   const handleCreateSession = () => {
     if (!sessionName.trim()) {
-      Alert.alert("エラー", "セッション名を入力してください");
+      Alert.alert('エラー', 'セッション名を入力してください');
       return;
     }
     
     // Create a new team session
     const sessionId = createTeamSession(
       sessionName,
-      "user_id", // In a real app, this would be the user's ID
-      "You", // In a real app, this would be the user's name
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop" // In a real app, this would be the user's avatar
+      'user_id', // In a real app, this would be the user's ID
+      'You', // In a real app, this would be the user's name
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop', // In a real app, this would be the user's avatar
     );
     
     // Invite selected friends (in a real app, this would send invitations)
@@ -244,7 +244,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   // Handle join session
   const handleJoinSession = () => {
     if (!sessionCode.trim()) {
-      Alert.alert("エラー", "セッションコードを入力してください");
+      Alert.alert('エラー', 'セッションコードを入力してください');
       return;
     }
     
@@ -267,8 +267,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             avatar: hostFriend.avatar,
             isReady: true,
             isActive: true,
-            joinedAt: new Date().toISOString()
-          }
+            joinedAt: new Date().toISOString(),
+          },
         ],
         currentMode: 'focus',
         timeRemaining: focusDuration * 60,
@@ -282,9 +282,9 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             senderName: 'システム',
             senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
             text: `${hostFriend.name}さんがセッションを作成しました。`,
-            timestamp: new Date().toISOString()
-          }
-        ]
+            timestamp: new Date().toISOString(),
+          },
+        ],
       };
       
       // Add fake session to store
@@ -293,9 +293,9 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
       // Join the fake session
       joinTeamSession(
         fakeSessionId,
-        "user_id", // In a real app, this would be the user's ID
-        "You", // In a real app, this would be the user's name
-        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop" // In a real app, this would be the user's avatar
+        'user_id', // In a real app, this would be the user's ID
+        'You', // In a real app, this would be the user's name
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop', // In a real app, this would be the user's avatar
       );
       
       // Reset form
@@ -319,9 +319,9 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     // Join the session
     joinTeamSession(
       sessionCode.trim(),
-      "user_id", // In a real app, this would be the user's ID
-      "You", // In a real app, this would be the user's name
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop" // In a real app, this would be the user's avatar
+      'user_id', // In a real app, this would be the user's ID
+      'You', // In a real app, this would be the user's name
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop', // In a real app, this would be the user's avatar
     );
     
     // Reset form
@@ -345,24 +345,24 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     if (!activeSession) return;
     
     Alert.alert(
-      "セッションを退出",
-      "このセッションから退出しますか？",
+      'セッションを退出',
+      'このセッションから退出しますか？',
       [
         {
-          text: "キャンセル",
-          style: 'cancel'
+          text: 'キャンセル',
+          style: 'cancel',
         },
         {
-          text: "退出",
+          text: '退出',
           style: 'destructive',
           onPress: () => {
-            leaveTeamSession(activeSession.id, "user_id"); // In a real app, this would be the user's ID
+            leaveTeamSession(activeSession.id, 'user_id'); // In a real app, this would be the user's ID
             setActiveSession(null);
             setActiveTab('create');
             onClose();
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
   
@@ -400,11 +400,11 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     if (!activeSession) return;
     
     // Find current user in participants
-    const currentUser = activeSession.participants.find(p => p.id === "user_id"); // In a real app, this would be the user's ID
+    const currentUser = activeSession.participants.find(p => p.id === 'user_id'); // In a real app, this would be the user's ID
     if (!currentUser) return;
     
     // Toggle ready state
-    setParticipantReady(activeSession.id, "user_id", !currentUser.isReady); // In a real app, this would be the user's ID
+    setParticipantReady(activeSession.id, 'user_id', !currentUser.isReady); // In a real app, this would be the user's ID
     
     // Vibrate if not on web
     if (Platform.OS !== 'web') {
@@ -429,7 +429,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     if (!activeSession) return;
     
     // In a real app, this would copy the session code to clipboard
-    Alert.alert("コピー完了", `セッションコード「${activeSession.id}」がコピーされました`);
+    Alert.alert('コピー完了', `セッションコード「${activeSession.id}」がコピーされました`);
     
     // Vibrate if not on web
     if (Platform.OS !== 'web') {
@@ -442,7 +442,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     if (!activeSession) return;
     
     // In a real app, this would open the share dialog
-    Alert.alert("共有", `セッション「${activeSession.name}」を共有します`);
+    Alert.alert('共有', `セッション「${activeSession.name}」を共有します`);
     
     // Vibrate if not on web
     if (Platform.OS !== 'web') {
@@ -455,15 +455,15 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     if (!activeSession) return;
     
     Alert.alert(
-      "セッションを削除",
-      "このセッションを削除しますか？この操作は元に戻せません。",
+      'セッションを削除',
+      'このセッションを削除しますか？この操作は元に戻せません。',
       [
         {
-          text: "キャンセル",
-          style: 'cancel'
+          text: 'キャンセル',
+          style: 'cancel',
         },
         {
-          text: "削除",
+          text: '削除',
           style: 'destructive',
           onPress: () => {
             deleteTeamSession(activeSession.id);
@@ -475,9 +475,9 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             if (Platform.OS !== 'web') {
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
             }
-          }
-        }
-      ]
+          },
+        },
+      ],
     );
   };
   
@@ -487,10 +487,10 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     
     sendMessage(
       activeSession.id,
-      "user_id", // In a real app, this would be the user's ID
-      "You", // In a real app, this would be the user's name
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop", // In a real app, this would be the user's avatar
-      messageText
+      'user_id', // In a real app, this would be the user's ID
+      'You', // In a real app, this would be the user's name
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop', // In a real app, this would be the user's avatar
+      messageText,
     );
     
     setMessageText('');
@@ -512,7 +512,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   const playSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('@/assets/sounds/complete.mp3')
+        require('@/assets/sounds/complete.mp3'),
       );
       setSound(sound);
       await sound.playAsync();
@@ -525,8 +525,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   useEffect(() => {
     return sound
       ? () => {
-          sound.unloadAsync();
-        }
+        sound.unloadAsync();
+      }
       : undefined;
   }, [sound]);
   
@@ -535,7 +535,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     <TouchableOpacity
       style={[
         styles.friendItem,
-        selectedFriends.includes(item.id) && { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
+        selectedFriends.includes(item.id) && { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
       ]}
       onPress={() => {
         if (selectedFriends.includes(item.id)) {
@@ -565,7 +565,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           )}
         </Text>
         <Text style={[styles.participantStatus, { color: item.isActive ? theme.success : theme.error }]}>
-          {item.isActive ? "オンライン" : "オフライン"}
+          {item.isActive ? 'オンライン' : 'オフライン'}
         </Text>
       </View>
       {item.isReady ? (
@@ -599,7 +599,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     return (
       <View style={[
         styles.messageContainer,
-        isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage
+        isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage,
       ]}>
         {!isCurrentUser && (
           <Image source={{ uri: item.senderAvatar }} style={styles.messageAvatar} />
@@ -610,7 +610,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             backgroundColor: isCurrentUser ? theme.primary : 'rgba(255, 255, 255, 0.1)',
             borderBottomLeftRadius: isCurrentUser ? borderRadius.md : 0,
             borderBottomRightRadius: isCurrentUser ? 0 : borderRadius.md,
-          }
+          },
         ]}>
           {!isCurrentUser && (
             <Text style={[styles.messageSender, { color: theme.textSecondary }]}>
@@ -622,7 +622,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           </Text>
           <Text style={[
             styles.messageTime, 
-            { color: isCurrentUser ? 'rgba(255, 255, 255, 0.7)' : theme.textSecondary }
+            { color: isCurrentUser ? 'rgba(255, 255, 255, 0.7)' : theme.textSecondary },
           ]}>
             {formatMessageTime(item.timestamp)}
           </Text>
@@ -651,8 +651,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             { 
               backgroundColor: theme.card,
               color: theme.text,
-              borderColor: theme.inactive
-            }
+              borderColor: theme.inactive,
+            },
           ]}
           placeholder="例: 朝の集中タイム"
           placeholderTextColor={theme.textSecondary}
@@ -701,8 +701,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             { 
               backgroundColor: theme.card,
               color: theme.text,
-              borderColor: theme.inactive
-            }
+              borderColor: theme.inactive,
+            },
           ]}
           placeholder="例: ABC123"
           placeholderTextColor={theme.textSecondary}
@@ -726,8 +726,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
   const renderActiveTab = () => {
     if (!activeSession) return null;
     
-    const isHost = activeSession.hostId === "user_id"; // In a real app, this would be the user's ID
-    const currentUser = activeSession.participants.find(p => p.id === "user_id"); // In a real app, this would be the user's ID
+    const isHost = activeSession.hostId === 'user_id'; // In a real app, this would be the user's ID
+    const currentUser = activeSession.participants.find(p => p.id === 'user_id'); // In a real app, this would be the user's ID
     const isReady = currentUser?.isReady || false;
     const allReady = activeSession.participants.every(p => p.isReady);
     
@@ -744,14 +744,14 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           <TouchableOpacity
             style={[
               styles.viewTab,
-              activeView === 'timer' && { borderBottomColor: getModeColor(activeSession.currentMode) }
+              activeView === 'timer' && { borderBottomColor: getModeColor(activeSession.currentMode) },
             ]}
             onPress={() => setActiveView('timer')}
           >
             <Clock size={20} color={activeView === 'timer' ? getModeColor(activeSession.currentMode) : theme.textSecondary} />
             <Text style={[
               styles.viewTabText,
-              { color: activeView === 'timer' ? getModeColor(activeSession.currentMode) : theme.textSecondary }
+              { color: activeView === 'timer' ? getModeColor(activeSession.currentMode) : theme.textSecondary },
             ]}>
               タイマー
             </Text>
@@ -760,14 +760,14 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           <TouchableOpacity
             style={[
               styles.viewTab,
-              activeView === 'chat' && { borderBottomColor: getModeColor(activeSession.currentMode) }
+              activeView === 'chat' && { borderBottomColor: getModeColor(activeSession.currentMode) },
             ]}
             onPress={() => setActiveView('chat')}
           >
             <MessageCircle size={20} color={activeView === 'chat' ? getModeColor(activeSession.currentMode) : theme.textSecondary} />
             <Text style={[
               styles.viewTabText,
-              { color: activeView === 'chat' ? getModeColor(activeSession.currentMode) : theme.textSecondary }
+              { color: activeView === 'chat' ? getModeColor(activeSession.currentMode) : theme.textSecondary },
             ]}>
               チャット
             </Text>
@@ -776,14 +776,14 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           <TouchableOpacity
             style={[
               styles.viewTab,
-              activeView === 'participants' && { borderBottomColor: getModeColor(activeSession.currentMode) }
+              activeView === 'participants' && { borderBottomColor: getModeColor(activeSession.currentMode) },
             ]}
             onPress={() => setActiveView('participants')}
           >
             <Users size={20} color={activeView === 'participants' ? getModeColor(activeSession.currentMode) : theme.textSecondary} />
             <Text style={[
               styles.viewTabText,
-              { color: activeView === 'participants' ? getModeColor(activeSession.currentMode) : theme.textSecondary }
+              { color: activeView === 'participants' ? getModeColor(activeSession.currentMode) : theme.textSecondary },
             ]}>
               参加者
             </Text>
@@ -822,7 +822,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
         <Animated.View 
           style={[
             styles.slidingContent,
-            { transform: [{ translateX }] }
+            { transform: [{ translateX }] },
           ]}
         >
           {/* Timer View */}
@@ -830,7 +830,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             <View style={styles.timerContainer}>
               <View style={[
                 styles.timerCircle,
-                { borderColor: getModeColor(activeSession.currentMode) }
+                { borderColor: getModeColor(activeSession.currentMode) },
               ]}>
                 <Text style={[styles.timerText, { color: theme.text }]}>
                   {formatTime(activeSession.timeRemaining)}
@@ -846,7 +846,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     <TouchableOpacity
                       style={[
                         styles.modeButton,
-                        activeSession.currentMode === 'focus' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
+                        activeSession.currentMode === 'focus' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
                       ]}
                       onPress={() => handleChangeMode('focus')}
                     >
@@ -859,7 +859,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     <TouchableOpacity
                       style={[
                         styles.modeButton,
-                        activeSession.currentMode === 'shortBreak' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
+                        activeSession.currentMode === 'shortBreak' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
                       ]}
                       onPress={() => handleChangeMode('shortBreak')}
                     >
@@ -872,7 +872,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     <TouchableOpacity
                       style={[
                         styles.modeButton,
-                        activeSession.currentMode === 'longBreak' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
+                        activeSession.currentMode === 'longBreak' && { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
                       ]}
                       onPress={() => handleChangeMode('longBreak')}
                     >
@@ -889,7 +889,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     <TouchableOpacity
                       style={[
                         styles.startButton,
-                        { backgroundColor: activeSession.isRunning ? theme.error : theme.success }
+                        { backgroundColor: activeSession.isRunning ? theme.error : theme.success },
                       ]}
                       onPress={handleToggleSession}
                     >
@@ -904,15 +904,15 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                   <TouchableOpacity
                     style={[
                       styles.readyButton,
-                      { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' }
+                      { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' },
                     ]}
                     onPress={handleSetReady}
                   >
                     <Text style={[
                       styles.readyButtonText,
-                      { color: isReady ? theme.success : theme.textSecondary }
+                      { color: isReady ? theme.success : theme.textSecondary },
                     ]}>
-                      {isReady ? "準備完了" : "準備する"}
+                      {isReady ? '準備完了' : '準備する'}
                     </Text>
                     {isReady && (
                       <Check size={16} color={theme.success} />
@@ -991,7 +991,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
               
               <View style={[
                 styles.chatInputContainer,
-                { borderTopColor: 'rgba(255, 255, 255, 0.1)' }
+                { borderTopColor: 'rgba(255, 255, 255, 0.1)' },
               ]}>
                 <TextInput
                   ref={messageInputRef}
@@ -1000,7 +1000,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     { 
                       backgroundColor: theme.card,
                       color: theme.text,
-                    }
+                    },
                   ]}
                   placeholder="メッセージを入力..."
                   placeholderTextColor={theme.textSecondary}
@@ -1012,7 +1012,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                 <TouchableOpacity
                   style={[
                     styles.sendButton,
-                    { backgroundColor: messageText.trim() ? theme.primary : 'rgba(255, 255, 255, 0.1)' }
+                    { backgroundColor: messageText.trim() ? theme.primary : 'rgba(255, 255, 255, 0.1)' },
                   ]}
                   onPress={handleSendMessage}
                   disabled={!messageText.trim()}
@@ -1091,8 +1091,8 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           { 
             backgroundColor: theme.background,
             paddingTop: insets.top,
-            paddingBottom: insets.bottom
-          }
+            paddingBottom: insets.bottom,
+          },
         ]}
       >
         <View style={styles.modalHeader}>
@@ -1109,13 +1109,13 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             <TouchableOpacity
               style={[
                 styles.tabButton,
-                activeTab === 'create' && { borderBottomColor: theme.primary }
+                activeTab === 'create' && { borderBottomColor: theme.primary },
               ]}
               onPress={() => setActiveTab('create')}
             >
               <Text style={[
                 styles.tabButtonText,
-                { color: activeTab === 'create' ? theme.primary : theme.textSecondary }
+                { color: activeTab === 'create' ? theme.primary : theme.textSecondary },
               ]}>
                 作成
               </Text>
@@ -1124,13 +1124,13 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
             <TouchableOpacity
               style={[
                 styles.tabButton,
-                activeTab === 'join' && { borderBottomColor: theme.primary }
+                activeTab === 'join' && { borderBottomColor: theme.primary },
               ]}
               onPress={() => setActiveTab('join')}
             >
               <Text style={[
                 styles.tabButtonText,
-                { color: activeTab === 'join' ? theme.primary : theme.textSecondary }
+                { color: activeTab === 'join' ? theme.primary : theme.textSecondary },
               ]}>
                 参加
               </Text>

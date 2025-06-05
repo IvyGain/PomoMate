@@ -8,7 +8,7 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
@@ -86,8 +86,8 @@ export default function RegisterScreen() {
           'アカウントが作成されました。メールアドレスに確認メールが送信されます。\n\n⚠️ 現在メール送信に問題が発生している場合があります。デモユーザーでログインしてお試しください。',
           [
             { text: 'デモログインする', onPress: () => router.replace('/login') },
-            { text: 'メール確認を待つ', onPress: () => router.replace('/email-sent') }
-          ]
+            { text: 'メール確認を待つ', onPress: () => router.replace('/email-sent') },
+          ],
         );
       }
       // Otherwise navigation is handled by _layout.tsx
@@ -135,7 +135,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
-                  borderColor: theme.border || 'transparent'
+                  borderColor: theme.border || 'transparent',
                 }]}
                 placeholder="ユーザー名"
                 placeholderTextColor={theme.textSecondary}
@@ -150,7 +150,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
-                  borderColor: theme.border || 'transparent'
+                  borderColor: theme.border || 'transparent',
                 }]}
                 placeholder="メールアドレス"
                 placeholderTextColor={theme.textSecondary}
@@ -166,7 +166,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
-                  borderColor: theme.border || 'transparent'
+                  borderColor: theme.border || 'transparent',
                 }]}
                 placeholder="パスワード（6文字以上）"
                 placeholderTextColor={theme.textSecondary}
@@ -182,7 +182,7 @@ export default function RegisterScreen() {
                 style={[styles.input, { 
                   backgroundColor: theme.card, 
                   color: theme.text,
-                  borderColor: theme.border || 'transparent'
+                  borderColor: theme.border || 'transparent',
                 }]}
                 placeholder="パスワード確認"
                 placeholderTextColor={theme.textSecondary}
@@ -197,7 +197,7 @@ export default function RegisterScreen() {
               <TouchableOpacity 
                 style={[styles.button, { 
                   backgroundColor: theme.primary,
-                  opacity: isLoading ? 0.7 : 1
+                  opacity: isLoading ? 0.7 : 1,
                 }]}
                 onPress={handleRegister}
                 disabled={isLoading}

@@ -27,10 +27,10 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: process.env.CORS_ORIGIN?.split(',') || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },
   pingInterval: Number(process.env.SOCKET_PING_INTERVAL) || 25000,
-  pingTimeout: Number(process.env.SOCKET_PING_TIMEOUT) || 60000
+  pingTimeout: Number(process.env.SOCKET_PING_TIMEOUT) || 60000,
 });
 
 // Middleware
@@ -38,7 +38,7 @@ app.use(helmet());
 app.use(compression());
 app.use(cors({
   origin: process.env.CORS_ORIGIN?.split(',') || '*',
-  credentials: true
+  credentials: true,
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -52,7 +52,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
@@ -66,13 +66,13 @@ app.get('/api/health/db', async (req, res) => {
     
     res.json({ 
       status: 'ok',
-      database: 'connected'
+      database: 'connected',
     });
   } catch (error) {
     res.status(503).json({ 
       status: 'error',
       database: 'disconnected',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -80,7 +80,7 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
   });
 });
 

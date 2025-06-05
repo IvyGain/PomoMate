@@ -61,7 +61,7 @@ if (typeof window !== 'undefined' && window.document) {
         }
       },
       writable: true,
-      configurable: true
+      configurable: true,
     });
     
     // Mark as patched
@@ -121,6 +121,6 @@ if (typeof module !== 'undefined' && module.exports) {
       if (typeof window !== 'undefined' && window.document) {
         console.log('Web compatibility patches initialized');
       }
-    }
+    },
   };
 }

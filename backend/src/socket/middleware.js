@@ -16,8 +16,8 @@ export const authenticate = async (socket, next) => {
       select: {
         id: true,
         displayName: true,
-        photoURL: true
-      }
+        photoURL: true,
+      },
     });
 
     if (!user) {

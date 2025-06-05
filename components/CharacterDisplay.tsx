@@ -19,7 +19,7 @@ export const CharacterDisplay: React.FC = () => {
     streak,
     totalMinutes,
     applyCharacterAbility,
-    activeAbilities
+    activeAbilities,
   } = useUserStore();
   
   const { theme } = useThemeStore();
@@ -146,7 +146,7 @@ export const CharacterDisplay: React.FC = () => {
                     onPress={() => toggleAbility(ability.id)}
                     style={[
                       styles.abilityStatus, 
-                      activeAbilities.includes(ability.id) ? styles.abilityActive : styles.abilityInactive
+                      activeAbilities.includes(ability.id) ? styles.abilityActive : styles.abilityInactive,
                     ]}
                   >
                     <Text style={[styles.abilityStatusText, { color: theme.text }]}>
@@ -179,7 +179,7 @@ export const CharacterDisplay: React.FC = () => {
               // Get the character at each evolution level
               const historyChar = getCharacterByEvolutionPath(
                 characterEvolutionPath.slice(0, index + 1), 
-                index + 1
+                index + 1,
               );
               
               return (
@@ -198,7 +198,7 @@ export const CharacterDisplay: React.FC = () => {
                       <Text style={[styles.evolutionStepDesc, { color: theme.textSecondary }]}>{historyChar.description}</Text>
                       <Text style={[styles.evolutionStepType, { color: theme.textSecondary }]}>
                         タイプ: {type === 'balanced' ? 'バランス型' : 
-                                type === 'focused' ? '集中型' : '継続型'}
+                          type === 'focused' ? '集中型' : '継続型'}
                       </Text>
                     </View>
                   </View>

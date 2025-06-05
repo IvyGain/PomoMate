@@ -33,7 +33,7 @@ export class AuthService {
     
     authLogger.info('Sign up successful', { 
       userId: data.user?.id,
-      hasSession: !!data.session 
+      hasSession: !!data.session, 
     });
     
     return data;

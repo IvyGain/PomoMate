@@ -15,7 +15,7 @@ async function seed() {
         icon: '🎯',
         category: 'sessions',
         requirement: { totalSessions: 1 },
-        xpReward: 50
+        xpReward: 50,
       },
       {
         name: 'ポモドーロ愛好家',
@@ -23,7 +23,7 @@ async function seed() {
         icon: '🍅',
         category: 'sessions',
         requirement: { totalSessions: 10 },
-        xpReward: 100
+        xpReward: 100,
       },
       {
         name: 'ポモドーロマスター',
@@ -31,7 +31,7 @@ async function seed() {
         icon: '🏆',
         category: 'sessions',
         requirement: { totalSessions: 100 },
-        xpReward: 500
+        xpReward: 500,
       },
       {
         name: '時間の守護者',
@@ -39,7 +39,7 @@ async function seed() {
         icon: '⏰',
         category: 'sessions',
         requirement: { totalMinutes: 1000 },
-        xpReward: 300
+        xpReward: 300,
       },
       
       // Streak achievements
@@ -49,7 +49,7 @@ async function seed() {
         icon: '🌱',
         category: 'streak',
         requirement: { streak: 3 },
-        xpReward: 75
+        xpReward: 75,
       },
       {
         name: '週間戦士',
@@ -57,7 +57,7 @@ async function seed() {
         icon: '🔥',
         category: 'streak',
         requirement: { streak: 7 },
-        xpReward: 150
+        xpReward: 150,
       },
       {
         name: '月間チャンピオン',
@@ -65,7 +65,7 @@ async function seed() {
         icon: '🌟',
         category: 'streak',
         requirement: { streak: 30 },
-        xpReward: 500
+        xpReward: 500,
       },
       
       // Level achievements
@@ -75,7 +75,7 @@ async function seed() {
         icon: '📈',
         category: 'level',
         requirement: { level: 5 },
-        xpReward: 100
+        xpReward: 100,
       },
       {
         name: '経験豊富',
@@ -83,7 +83,7 @@ async function seed() {
         icon: '🎖️',
         category: 'level',
         requirement: { level: 10 },
-        xpReward: 200
+        xpReward: 200,
       },
       {
         name: 'レジェンド',
@@ -91,7 +91,7 @@ async function seed() {
         icon: '👑',
         category: 'level',
         requirement: { level: 20 },
-        xpReward: 1000
+        xpReward: 1000,
       },
       
       // Social achievements
@@ -101,7 +101,7 @@ async function seed() {
         icon: '🤝',
         category: 'social',
         requirement: { friends: 1 },
-        xpReward: 50
+        xpReward: 50,
       },
       {
         name: 'ソーシャルバタフライ',
@@ -109,7 +109,7 @@ async function seed() {
         icon: '🦋',
         category: 'social',
         requirement: { friends: 10 },
-        xpReward: 200
+        xpReward: 200,
       },
       {
         name: 'チームプレイヤー',
@@ -117,15 +117,15 @@ async function seed() {
         icon: '👥',
         category: 'social',
         requirement: { teamSessions: 1 },
-        xpReward: 100
-      }
+        xpReward: 100,
+      },
     ];
 
     for (const achievement of achievements) {
       await prisma.achievement.upsert({
         where: { name: achievement.name },
         update: achievement,
-        create: achievement
+        create: achievement,
       });
     }
 
@@ -137,51 +137,51 @@ async function seed() {
         name: 'Memory Match',
         description: 'カードをめくって同じペアを見つけよう',
         type: 'memory',
-        unlockLevel: 1
+        unlockLevel: 1,
       },
       {
         name: 'Math Challenge',
         description: '素早く計算問題を解こう',
         type: 'math',
-        unlockLevel: 1
+        unlockLevel: 1,
       },
       {
         name: 'Word Scramble',
         description: 'バラバラになった文字を並び替えよう',
         type: 'word',
-        unlockLevel: 3
+        unlockLevel: 3,
       },
       {
         name: 'Color Match',
         description: '色と文字が一致するものを選ぼう',
         type: 'color',
-        unlockLevel: 5
+        unlockLevel: 5,
       },
       {
         name: 'Pattern Memory',
         description: 'パターンを覚えて再現しよう',
         type: 'pattern',
-        unlockLevel: 7
+        unlockLevel: 7,
       },
       {
         name: 'Number Puzzle',
         description: '数字を正しい順番に並べよう',
         type: 'puzzle',
-        unlockLevel: 10
+        unlockLevel: 10,
       },
       {
         name: 'Tap Target',
         description: '動くターゲットを素早くタップしよう',
         type: 'reaction',
-        unlockLevel: 15
-      }
+        unlockLevel: 15,
+      },
     ];
 
     for (const game of games) {
       await prisma.game.upsert({
         where: { name: game.name },
         update: game,
-        create: game
+        create: game,
       });
     }
 
@@ -198,7 +198,7 @@ async function seed() {
           xp: 450,
           totalSessions: 25,
           totalMinutes: 625,
-          currentStreak: 3
+          currentStreak: 3,
         },
         {
           email: 'test@example.com',
@@ -208,15 +208,15 @@ async function seed() {
           xp: 200,
           totalSessions: 10,
           totalMinutes: 250,
-          currentStreak: 1
-        }
+          currentStreak: 1,
+        },
       ];
 
       for (const user of demoUsers) {
         await prisma.user.upsert({
           where: { email: user.email },
           update: user,
-          create: user
+          create: user,
         });
       }
 

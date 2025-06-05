@@ -18,8 +18,8 @@ export const authenticate = async (req, res, next) => {
         email: true,
         displayName: true,
         level: true,
-        xp: true
-      }
+        xp: true,
+      },
     });
 
     if (!user) {
@@ -57,8 +57,8 @@ export const optionalAuth = async (req, res, next) => {
         email: true,
         displayName: true,
         level: true,
-        xp: true
-      }
+        xp: true,
+      },
     });
 
     if (user) {

@@ -35,7 +35,7 @@ export const initializeSocketHandlers = (io) => {
         io.to(`session:${sessionId}`).emit('team_session:created', {
           sessionId,
           hostId: socket.userId,
-          ...data
+          ...data,
         });
       } catch (error) {
         socket.emit('error', { message: error.message });
@@ -51,7 +51,7 @@ export const initializeSocketHandlers = (io) => {
         io.to(`session:${sessionId}`).emit('team_session:joined', {
           sessionId,
           userId: socket.userId,
-          ...data
+          ...data,
         });
       } catch (error) {
         socket.emit('error', { message: error.message });
@@ -66,7 +66,7 @@ export const initializeSocketHandlers = (io) => {
         // Notify remaining participants
         io.to(`session:${sessionId}`).emit('team_session:left', {
           sessionId,
-          userId: socket.userId
+          userId: socket.userId,
         });
       } catch (error) {
         socket.emit('error', { message: error.message });
@@ -93,7 +93,7 @@ export const initializeSocketHandlers = (io) => {
           sessionId,
           userId: socket.userId,
           message,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       } catch (error) {
         socket.emit('error', { message: error.message });
@@ -107,7 +107,7 @@ export const initializeSocketHandlers = (io) => {
         // This would normally fetch from database
         socket.broadcast.emit('friend:status_changed', {
           userId: socket.userId,
-          status
+          status,
         });
       } catch (error) {
         socket.emit('error', { message: error.message });
@@ -119,7 +119,7 @@ export const initializeSocketHandlers = (io) => {
       
       // Notify friends that user is offline
       socket.broadcast.emit('friend:offline', {
-        userId: socket.userId
+        userId: socket.userId,
       });
     });
   });

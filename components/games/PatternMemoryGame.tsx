@@ -133,7 +133,7 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     
     // Check if the player's pattern matches the original pattern so far
     const isCorrectSoFar = newPlayerPattern.every(
-      (tile, index) => tile === pattern[index]
+      (tile, index) => tile === pattern[index],
     );
     
     if (!isCorrectSoFar) {
@@ -190,8 +190,8 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
           styles.tile,
           { 
             backgroundColor: isActive ? baseColor : `${baseColor}80`,
-            transform: [{ scale: tileAnimations[index] }]
-          }
+            transform: [{ scale: tileAnimations[index] }],
+          },
         ]}
       >
         <TouchableOpacity
@@ -258,8 +258,8 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
                   styles.progressFill, 
                   { 
                     width: `${(playerPattern.length / pattern.length) * 100}%`,
-                    backgroundColor: theme.primary 
-                  }
+                    backgroundColor: theme.primary, 
+                  },
                 ]} 
               />
             </View>

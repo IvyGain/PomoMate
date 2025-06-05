@@ -8,7 +8,7 @@ import {
   removeFriend,
   getNotifications,
   markNotificationRead,
-  markAllNotificationsRead
+  markAllNotificationsRead,
 } from '../controllers/socialController.js';
 
 const router = Router();

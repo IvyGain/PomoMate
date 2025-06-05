@@ -19,7 +19,7 @@
       'removeProperty', 
       'getPropertyValue', 
       'getPropertyPriority', 
-      'item'
+      'item',
     ];
     
     cssMethods.forEach(methodName => {
@@ -44,7 +44,7 @@
             }
           },
           writable: true,
-          configurable: true
+          configurable: true,
         });
       }
     });
@@ -59,7 +59,7 @@
       'createTextNode', 
       'getElementById',
       'querySelector',
-      'querySelectorAll'
+      'querySelectorAll',
     ];
     
     documentMethods.forEach(methodName => {
@@ -79,7 +79,7 @@
       'getAttribute', 
       'removeAttribute',
       'addEventListener',
-      'removeEventListener'
+      'removeEventListener',
     ];
     
     elementMethods.forEach(methodName => {
@@ -122,7 +122,7 @@
       'requestAnimationFrame',
       'cancelAnimationFrame',
       'requestIdleCallback',
-      'cancelIdleCallback'
+      'cancelIdleCallback',
     ];
     
     animationMethods.forEach(methodName => {
@@ -161,7 +161,7 @@
         message: msg,
         url: url,
         line: lineNo,
-        column: columnNo
+        column: columnNo,
       });
       return true; // Prevent default error handling
     }

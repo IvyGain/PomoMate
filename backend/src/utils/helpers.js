@@ -51,7 +51,7 @@ export const checkLevelUp = (currentXP, currentLevel) => {
     return {
       shouldLevelUp: true,
       newLevel: currentLevel + 1,
-      remainingXP: currentXP - xpForNextLevel
+      remainingXP: currentXP - xpForNextLevel,
     };
   }
   return { shouldLevelUp: false };

@@ -11,21 +11,21 @@ interface WordScrambleGameProps {
 
 // Word pairs for the game (Japanese word and its meaning)
 const wordPairs = [
-  { word: "集中力", meaning: "物事に注意を向ける能力" },
-  { word: "効率的", meaning: "無駄なく最大の効果を得る" },
-  { word: "時間管理", meaning: "時間を有効に使うこと" },
-  { word: "生産性", meaning: "効率よく成果を出すこと" },
-  { word: "目標設定", meaning: "達成したい成果を決めること" },
-  { word: "習慣化", meaning: "行動を自然に行えるようにすること" },
-  { word: "優先順位", meaning: "重要度に基づいて順序をつけること" },
-  { word: "タスク分割", meaning: "大きな仕事を小さく分けること" },
-  { word: "休息時間", meaning: "疲れを回復するための時間" },
-  { word: "自己管理", meaning: "自分自身をコントロールすること" },
-  { word: "継続力", meaning: "物事を続ける能力" },
-  { word: "達成感", meaning: "目標を達成した時の満足感" },
-  { word: "集中モード", meaning: "邪魔されずに作業に取り組む状態" },
-  { word: "作業環境", meaning: "仕事をする場所の状態" },
-  { word: "締め切り", meaning: "完了すべき期限" },
+  { word: '集中力', meaning: '物事に注意を向ける能力' },
+  { word: '効率的', meaning: '無駄なく最大の効果を得る' },
+  { word: '時間管理', meaning: '時間を有効に使うこと' },
+  { word: '生産性', meaning: '効率よく成果を出すこと' },
+  { word: '目標設定', meaning: '達成したい成果を決めること' },
+  { word: '習慣化', meaning: '行動を自然に行えるようにすること' },
+  { word: '優先順位', meaning: '重要度に基づいて順序をつけること' },
+  { word: 'タスク分割', meaning: '大きな仕事を小さく分けること' },
+  { word: '休息時間', meaning: '疲れを回復するための時間' },
+  { word: '自己管理', meaning: '自分自身をコントロールすること' },
+  { word: '継続力', meaning: '物事を続ける能力' },
+  { word: '達成感', meaning: '目標を達成した時の満足感' },
+  { word: '集中モード', meaning: '邪魔されずに作業に取り組む状態' },
+  { word: '作業環境', meaning: '仕事をする場所の状態' },
+  { word: '締め切り', meaning: '完了すべき期限' },
 ];
 
 // Fisher-Yates shuffle algorithm
@@ -228,8 +228,8 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
                     styles.progressFill, 
                     { 
                       width: `${((currentRound + 1) / totalRounds) * 100}%`,
-                      backgroundColor: theme.primary 
-                    }
+                      backgroundColor: theme.primary, 
+                    },
                   ]} 
                 />
               </View>
@@ -239,7 +239,7 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
               <Clock size={16} color={timeLeft < 5 ? theme.error : theme.textSecondary} />
               <Text style={[
                 styles.timerText, 
-                { color: timeLeft < 5 ? theme.error : theme.textSecondary }
+                { color: timeLeft < 5 ? theme.error : theme.textSecondary },
               ]}>
                 {timeLeft}
               </Text>
@@ -264,9 +264,9 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
                   { backgroundColor: theme.card },
                   selectedOption === option && (
                     isCorrect ? { backgroundColor: 'rgba(107, 203, 119, 0.3)' } : 
-                    { backgroundColor: 'rgba(239, 71, 111, 0.3)' }
+                      { backgroundColor: 'rgba(239, 71, 111, 0.3)' }
                   ),
-                  option === correctMeaning && selectedOption !== null && { backgroundColor: 'rgba(107, 203, 119, 0.3)' }
+                  option === correctMeaning && selectedOption !== null && { backgroundColor: 'rgba(107, 203, 119, 0.3)' },
                 ]}
                 onPress={() => handleSelectOption(option)}
                 disabled={selectedOption !== null}
@@ -294,9 +294,9 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
             <View style={styles.feedbackContainer}>
               <Text style={[
                 styles.feedbackText, 
-                { color: isCorrect ? theme.success : theme.error }
+                { color: isCorrect ? theme.success : theme.error },
               ]}>
-                {isCorrect ? "正解！" : "不正解..."}
+                {isCorrect ? '正解！' : '不正解...'}
               </Text>
             </View>
           )}

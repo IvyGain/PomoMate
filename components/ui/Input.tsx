@@ -36,7 +36,7 @@ export const Input: React.FC<InputProps> = ({
 
   const isPassword = type === 'password';
   const keyboardType = type === 'email' ? 'email-address' : 
-                       type === 'number' ? 'numeric' : 'default';
+    type === 'number' ? 'numeric' : 'default';
 
   return (
     <View style={[styles.container, containerStyle]}>

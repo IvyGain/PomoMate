@@ -129,7 +129,7 @@ export const userService = {
   },
 
   async getLeaderboard(timeframe: 'daily' | 'weekly' | 'all' = 'weekly') {
-    let query = supabase
+    const query = supabase
       .from('users')
       .select('id, username, display_name, avatar_url, level, experience, total_focus_time')
       .order('experience', { ascending: false })

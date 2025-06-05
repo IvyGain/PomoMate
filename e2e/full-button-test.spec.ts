@@ -221,7 +221,7 @@ test.afterEach(async ({ page }, testInfo) => {
     // 失敗時はスクリーンショットを保存
     await page.screenshot({ 
       path: `test-results/button-test-${Date.now()}.png`,
-      fullPage: true 
+      fullPage: true, 
     });
   }
 });

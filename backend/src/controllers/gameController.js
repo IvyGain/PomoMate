@@ -7,9 +7,9 @@ export const getGames = async (req, res, next) => {
     const games = await db.game.findMany({
       include: {
         _count: {
-          select: { userGames: true }
-        }
-      }
+          select: { userGames: true },
+        },
+      },
     });
 
     res.json(games);
@@ -27,9 +27,9 @@ export const getGameById = async (req, res, next) => {
       where: { id },
       include: {
         _count: {
-          select: { userGames: true }
-        }
-      }
+          select: { userGames: true },
+        },
+      },
     });
 
     if (!game) {
@@ -50,8 +50,8 @@ export const getUserGameStats = async (req, res, next) => {
     const userGames = await db.userGame.findMany({
       where: { userId },
       include: {
-        game: true
-      }
+        game: true,
+      },
     });
 
     const stats = userGames.map(userGame => ({
@@ -60,7 +60,7 @@ export const getUserGameStats = async (req, res, next) => {
       highScore: userGame.highScore,
       totalScore: userGame.totalScore,
       gamesPlayed: userGame.gamesPlayed,
-      achievements: userGame.achievements
+      achievements: userGame.achievements,
     }));
 
     res.json(stats);
@@ -78,7 +78,7 @@ export const updateGameScore = async (req, res, next) => {
 
     // ゲームの存在確認
     const game = await db.game.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
 
     if (!game) {
@@ -90,9 +90,9 @@ export const updateGameScore = async (req, res, next) => {
       where: {
         userId_gameId: {
           userId,
-          gameId
-        }
-      }
+          gameId,
+        },
+      },
     });
 
     if (!userGame) {
@@ -102,8 +102,8 @@ export const updateGameScore = async (req, res, next) => {
           gameId,
           highScore: score,
           totalScore: score,
-          gamesPlayed: 1
-        }
+          gamesPlayed: 1,
+        },
       });
     } else {
       // 統計の更新
@@ -115,14 +115,14 @@ export const updateGameScore = async (req, res, next) => {
         where: {
           userId_gameId: {
             userId,
-            gameId
-          }
+            gameId,
+          },
         },
         data: {
           highScore: newHighScore,
           totalScore: newTotalScore,
-          gamesPlayed: newGamesPlayed
-        }
+          gamesPlayed: newGamesPlayed,
+        },
       });
     }
 
@@ -133,13 +133,13 @@ export const updateGameScore = async (req, res, next) => {
         gameId,
         score,
         sessionId,
-        playedAt: new Date()
-      }
+        playedAt: new Date(),
+      },
     });
 
     res.json({
       userGame,
-      gameSession
+      gameSession,
     });
   } catch (error) {
     next(error);
@@ -159,24 +159,24 @@ export const getLeaderboard = async (req, res, next) => {
       case 'daily':
         dateFilter = {
           playedAt: {
-            gte: new Date(now.setHours(0, 0, 0, 0))
-          }
+            gte: new Date(now.setHours(0, 0, 0, 0)),
+          },
         };
         break;
       case 'weekly':
         const weekAgo = new Date(now.setDate(now.getDate() - 7));
         dateFilter = {
           playedAt: {
-            gte: weekAgo
-          }
+            gte: weekAgo,
+          },
         };
         break;
       case 'monthly':
         const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
         dateFilter = {
           playedAt: {
-            gte: monthAgo
-          }
+            gte: monthAgo,
+          },
         };
         break;
     }
@@ -185,7 +185,7 @@ export const getLeaderboard = async (req, res, next) => {
     const leaderboard = await db.gameSession.findMany({
       where: {
         gameId,
-        ...dateFilter
+        ...dateFilter,
       },
       select: {
         userId: true,
@@ -194,15 +194,15 @@ export const getLeaderboard = async (req, res, next) => {
         user: {
           select: {
             username: true,
-            avatarUrl: true
-          }
-        }
+            avatarUrl: true,
+          },
+        },
       },
       orderBy: {
-        score: 'desc'
+        score: 'desc',
       },
       take: 100,
-      distinct: ['userId']
+      distinct: ['userId'],
     });
 
     res.json(leaderboard);
@@ -221,22 +221,22 @@ export const getAchievements = async (req, res, next) => {
       where: {
         userId_gameId: {
           userId,
-          gameId
-        }
-      }
+          gameId,
+        },
+      },
     });
 
     const achievements = userGame?.achievements || [];
 
     // 利用可能なアチーブメント一覧
     const availableAchievements = await db.achievement.findMany({
-      where: { gameId }
+      where: { gameId },
     });
 
     const achievementStatus = availableAchievements.map(achievement => ({
       ...achievement,
       unlocked: achievements.includes(achievement.id),
-      unlockedAt: userGame?.updatedAt
+      unlockedAt: userGame?.updatedAt,
     }));
 
     res.json(achievementStatus);
@@ -255,9 +255,9 @@ export const unlockAchievement = async (req, res, next) => {
       where: {
         userId_gameId: {
           userId,
-          gameId
-        }
-      }
+          gameId,
+        },
+      },
     });
 
     if (!userGame) {
@@ -276,12 +276,12 @@ export const unlockAchievement = async (req, res, next) => {
       where: {
         userId_gameId: {
           userId,
-          gameId
-        }
+          gameId,
+        },
       },
       data: {
-        achievements
-      }
+        achievements,
+      },
     });
 
     res.json(updatedUserGame);
@@ -304,7 +304,7 @@ export const unlockGame = async (req, res, next) => {
 
     // ゲームの存在確認
     const game = await db.game.findUnique({
-      where: { id: gameId }
+      where: { id: gameId },
     });
 
     if (!game) {
@@ -316,11 +316,11 @@ export const unlockGame = async (req, res, next) => {
       where: {
         userId_gameId: {
           userId,
-          gameId
-        }
+          gameId,
+        },
       },
       update: {
-        unlocked: true
+        unlocked: true,
       },
       create: {
         userId,
@@ -328,8 +328,8 @@ export const unlockGame = async (req, res, next) => {
         unlocked: true,
         highScore: 0,
         totalScore: 0,
-        gamesPlayed: 0
-      }
+        gamesPlayed: 0,
+      },
     });
 
     res.json(userGame);

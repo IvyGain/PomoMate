@@ -10,8 +10,8 @@ export const getFriends = async (req, res, next) => {
       where: {
         OR: [
           { userId: userId, status: 'ACCEPTED' },
-          { friendId: userId, status: 'ACCEPTED' }
-        ]
+          { friendId: userId, status: 'ACCEPTED' },
+        ],
       },
       include: {
         user: {
@@ -20,8 +20,8 @@ export const getFriends = async (req, res, next) => {
             username: true,
             email: true,
             avatarUrl: true,
-            status: true
-          }
+            status: true,
+          },
         },
         friend: {
           select: {
@@ -29,10 +29,10 @@ export const getFriends = async (req, res, next) => {
             username: true,
             email: true,
             avatarUrl: true,
-            status: true
-          }
-        }
-      }
+            status: true,
+          },
+        },
+      },
     });
 
     const friendsList = friends.map(friendship => {
@@ -60,9 +60,9 @@ export const sendFriendRequest = async (req, res, next) => {
       where: {
         OR: [
           { userId: userId, friendId: friendId },
-          { userId: friendId, friendId: userId }
-        ]
-      }
+          { userId: friendId, friendId: userId },
+        ],
+      },
     });
 
     if (existingRequest) {
@@ -73,8 +73,8 @@ export const sendFriendRequest = async (req, res, next) => {
       data: {
         userId: userId,
         friendId: friendId,
-        status: 'PENDING'
-      }
+        status: 'PENDING',
+      },
     });
 
     res.status(201).json(friendRequest);
@@ -90,7 +90,7 @@ export const acceptFriendRequest = async (req, res, next) => {
     const userId = req.user.id;
 
     const request = await db.friendship.findUnique({
-      where: { id: requestId }
+      where: { id: requestId },
     });
 
     if (!request || request.friendId !== userId) {
@@ -99,7 +99,7 @@ export const acceptFriendRequest = async (req, res, next) => {
 
     const updatedRequest = await db.friendship.update({
       where: { id: requestId },
-      data: { status: 'ACCEPTED' }
+      data: { status: 'ACCEPTED' },
     });
 
     res.json(updatedRequest);
@@ -115,7 +115,7 @@ export const rejectFriendRequest = async (req, res, next) => {
     const userId = req.user.id;
 
     const request = await db.friendship.findUnique({
-      where: { id: requestId }
+      where: { id: requestId },
     });
 
     if (!request || request.friendId !== userId) {
@@ -123,7 +123,7 @@ export const rejectFriendRequest = async (req, res, next) => {
     }
 
     await db.friendship.delete({
-      where: { id: requestId }
+      where: { id: requestId },
     });
 
     res.status(204).send();
@@ -142,9 +142,9 @@ export const removeFriend = async (req, res, next) => {
       where: {
         OR: [
           { userId: userId, friendId: friendId, status: 'ACCEPTED' },
-          { userId: friendId, friendId: userId, status: 'ACCEPTED' }
-        ]
-      }
+          { userId: friendId, friendId: userId, status: 'ACCEPTED' },
+        ],
+      },
     });
 
     if (!friendship) {
@@ -152,7 +152,7 @@ export const removeFriend = async (req, res, next) => {
     }
 
     await db.friendship.delete({
-      where: { id: friendship.id }
+      where: { id: friendship.id },
     });
 
     res.status(204).send();
@@ -169,7 +169,7 @@ export const getPendingRequests = async (req, res, next) => {
     const pendingRequests = await db.friendship.findMany({
       where: {
         friendId: userId,
-        status: 'PENDING'
+        status: 'PENDING',
       },
       include: {
         user: {
@@ -177,10 +177,10 @@ export const getPendingRequests = async (req, res, next) => {
             id: true,
             username: true,
             email: true,
-            avatarUrl: true
-          }
-        }
-      }
+            avatarUrl: true,
+          },
+        },
+      },
     });
 
     res.json(pendingRequests);
@@ -196,12 +196,12 @@ export const getNotifications = async (req, res, next) => {
     
     const notifications = await db.notification.findMany({
       where: {
-        userId: userId
+        userId: userId,
       },
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc',
       },
-      take: 50
+      take: 50,
     });
 
     res.json(notifications);
@@ -219,8 +219,8 @@ export const markNotificationRead = async (req, res, next) => {
     const notification = await db.notification.findFirst({
       where: {
         id: notificationId,
-        userId: userId
-      }
+        userId: userId,
+      },
     });
 
     if (!notification) {
@@ -229,7 +229,7 @@ export const markNotificationRead = async (req, res, next) => {
 
     const updatedNotification = await db.notification.update({
       where: { id: notificationId },
-      data: { isRead: true }
+      data: { isRead: true },
     });
 
     res.json(updatedNotification);
@@ -246,9 +246,9 @@ export const markAllNotificationsRead = async (req, res, next) => {
     await db.notification.updateMany({
       where: {
         userId: userId,
-        isRead: false
+        isRead: false,
       },
-      data: { isRead: true }
+      data: { isRead: true },
     });
 
     res.json({ message: 'すべての通知を既読にしました' });

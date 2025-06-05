@@ -25,9 +25,9 @@ async function main() {
           longestStreak: 15,
           totalMinutes: 1050,
           selectedCharacterId: 'balanced_1',
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   console.log('テストユーザーを作成:', testUser.email);
@@ -45,7 +45,7 @@ async function main() {
     await prisma.achievement.upsert({
       where: { id: achievement.id },
       update: {},
-      create: achievement
+      create: achievement,
     });
   }
 
@@ -65,7 +65,7 @@ async function main() {
     await prisma.character.upsert({
       where: { id: character.id },
       update: {},
-      create: character
+      create: character,
     });
   }
 
@@ -82,7 +82,7 @@ async function main() {
     await prisma.game.upsert({
       where: { id: game.id },
       update: {},
-      create: game
+      create: game,
     });
   }
 
@@ -93,8 +93,8 @@ async function main() {
     data: {
       userId: testUser.id,
       achievementId: 'first_session',
-      unlockedAt: new Date()
-    }
+      unlockedAt: new Date(),
+    },
   });
 
   console.log('シードデータの投入が完了しました！');

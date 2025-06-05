@@ -5,7 +5,7 @@ const readline = require('readline');
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 const question = (query) => new Promise((resolve) => rl.question(query, resolve));
@@ -23,8 +23,8 @@ async function setupSupabase() {
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
-      persistSession: false
-    }
+      persistSession: false,
+    },
   });
 
   try {
@@ -81,13 +81,13 @@ async function setupSupabase() {
         policies: [
           {
             name: 'Users can view own profile',
-            definition: 'CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);'
+            definition: 'CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid() = id);',
           },
           {
             name: 'Users can update own profile',
-            definition: 'CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);'
-          }
-        ]
+            definition: 'CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);',
+          },
+        ],
       },
       // sessions table
       {
@@ -95,17 +95,17 @@ async function setupSupabase() {
         policies: [
           {
             name: 'Users can create own sessions',
-            definition: 'CREATE POLICY "Users can create own sessions" ON sessions FOR INSERT WITH CHECK (auth.uid() = user_id);'
+            definition: 'CREATE POLICY "Users can create own sessions" ON sessions FOR INSERT WITH CHECK (auth.uid() = user_id);',
           },
           {
             name: 'Users can view own sessions',
-            definition: 'CREATE POLICY "Users can view own sessions" ON sessions FOR SELECT USING (auth.uid() = user_id);'
+            definition: 'CREATE POLICY "Users can view own sessions" ON sessions FOR SELECT USING (auth.uid() = user_id);',
           },
           {
             name: 'Users can update own sessions',
-            definition: 'CREATE POLICY "Users can update own sessions" ON sessions FOR UPDATE USING (auth.uid() = user_id);'
-          }
-        ]
+            definition: 'CREATE POLICY "Users can update own sessions" ON sessions FOR UPDATE USING (auth.uid() = user_id);',
+          },
+        ],
       },
       // user_settings table
       {
@@ -113,10 +113,10 @@ async function setupSupabase() {
         policies: [
           {
             name: 'Users can manage own settings',
-            definition: 'CREATE POLICY "Users can manage own settings" ON user_settings FOR ALL USING (auth.uid() = user_id);'
-          }
-        ]
-      }
+            definition: 'CREATE POLICY "Users can manage own settings" ON user_settings FOR ALL USING (auth.uid() = user_id);',
+          },
+        ],
+      },
     ];
 
     for (const table of rlsPolicies) {
@@ -124,7 +124,7 @@ async function setupSupabase() {
       
       // Enable RLS
       const { error: rlsError } = await supabase.rpc('exec_sql', { 
-        sql: `ALTER TABLE ${table.table} ENABLE ROW LEVEL SECURITY;` 
+        sql: `ALTER TABLE ${table.table} ENABLE ROW LEVEL SECURITY;`, 
       });
       
       if (!rlsError) {
@@ -135,7 +135,7 @@ async function setupSupabase() {
       for (const policy of table.policies) {
         try {
           const { error: policyError } = await supabase.rpc('exec_sql', { 
-            sql: policy.definition 
+            sql: policy.definition, 
           });
           
           if (!policyError) {
@@ -152,14 +152,14 @@ async function setupSupabase() {
     
     const buckets = [
       { name: 'avatars', public: true },
-      { name: 'game-assets', public: true }
+      { name: 'game-assets', public: true },
     ];
 
     for (const bucket of buckets) {
       const { error: bucketError } = await supabase.storage.createBucket(bucket.name, {
         public: bucket.public,
         fileSizeLimit: 5242880, // 5MB
-        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
       });
 
       if (bucketError?.message?.includes('already exists')) {
@@ -175,8 +175,8 @@ async function setupSupabase() {
     console.log(`EXPO_PUBLIC_SUPABASE_URL=${supabaseUrl}`);
     
     // anon keyを取得（通常はプロジェクト設定から）
-    console.log(`EXPO_PUBLIC_SUPABASE_ANON_KEY=[Supabaseダッシュボードから取得してください]`);
-    console.log(`EXPO_PUBLIC_ENV=production`);
+    console.log('EXPO_PUBLIC_SUPABASE_ANON_KEY=[Supabaseダッシュボードから取得してください]');
+    console.log('EXPO_PUBLIC_ENV=production');
     console.log('=====================================\n');
 
     // 5. 重要な手動設定項目

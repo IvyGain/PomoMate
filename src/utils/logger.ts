@@ -41,7 +41,7 @@ class Logger {
       message,
       data,
       timestamp: new Date(),
-      context
+      context,
     };
 
     const formattedMessage = this.formatMessage(entry);

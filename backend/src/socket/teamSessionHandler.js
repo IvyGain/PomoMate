@@ -9,8 +9,8 @@ export const handleTeamSession = (io, socket) => {
       const participant = await prisma.teamSessionParticipant.findFirst({
         where: {
           teamSessionId: sessionId,
-          userId: socket.userId
-        }
+          userId: socket.userId,
+        },
       });
 
       if (!participant) {
@@ -32,7 +32,7 @@ export const handleTeamSession = (io, socket) => {
       // Notify others
       socket.to(`team:${sessionId}`).emit('team:user-joined', {
         userId: socket.userId,
-        user: socket.user
+        user: socket.user,
       });
 
       logger.info(`User ${socket.userId} joined team session ${sessionId}`);
@@ -49,7 +49,7 @@ export const handleTeamSession = (io, socket) => {
 
     // Notify others
     socket.to(`team:${sessionId}`).emit('team:user-left', {
-      userId: socket.userId
+      userId: socket.userId,
     });
   });
 
@@ -60,16 +60,16 @@ export const handleTeamSession = (io, socket) => {
         where: {
           teamSessionId_userId: {
             teamSessionId: sessionId,
-            userId: socket.userId
-          }
+            userId: socket.userId,
+          },
         },
-        data: { isReady }
+        data: { isReady },
       });
 
       // Notify all participants
       io.to(`team:${sessionId}`).emit('team:ready-update', {
         userId: socket.userId,
-        isReady
+        isReady,
       });
     } catch (error) {
       logger.error('Error updating ready status:', error);
@@ -85,8 +85,8 @@ export const handleTeamSession = (io, socket) => {
         where: {
           teamSessionId: sessionId,
           userId: socket.userId,
-          role: 'host'
-        }
+          role: 'host',
+        },
       });
 
       if (!participant) {
@@ -109,17 +109,17 @@ export const handleTeamSession = (io, socket) => {
         data: {
           teamSessionId: sessionId,
           userId: socket.userId,
-          message: message.trim()
+          message: message.trim(),
         },
         include: {
           user: {
             select: {
               id: true,
               displayName: true,
-              photoURL: true
-            }
-          }
-        }
+              photoURL: true,
+            },
+          },
+        },
       });
 
       // Broadcast to all participants
@@ -135,7 +135,7 @@ export const handleTeamSession = (io, socket) => {
     io.to(`user:${targetUserId}`).emit('team:voice-offer', {
       sessionId,
       userId: socket.userId,
-      offer
+      offer,
     });
   });
 
@@ -143,7 +143,7 @@ export const handleTeamSession = (io, socket) => {
     io.to(`user:${targetUserId}`).emit('team:voice-answer', {
       sessionId,
       userId: socket.userId,
-      answer
+      answer,
     });
   });
 
@@ -151,7 +151,7 @@ export const handleTeamSession = (io, socket) => {
     io.to(`user:${targetUserId}`).emit('team:voice-ice-candidate', {
       sessionId,
       userId: socket.userId,
-      candidate
+      candidate,
     });
   });
 
@@ -160,7 +160,7 @@ export const handleTeamSession = (io, socket) => {
     if (socket.data.teamSessionId) {
       // Notify team members
       socket.to(`team:${socket.data.teamSessionId}`).emit('team:user-disconnected', {
-        userId: socket.userId
+        userId: socket.userId,
       });
 
       // Update participant status
@@ -169,10 +169,10 @@ export const handleTeamSession = (io, socket) => {
           where: {
             teamSessionId_userId: {
               teamSessionId: socket.data.teamSessionId,
-              userId: socket.userId
-            }
+              userId: socket.userId,
+            },
           },
-          data: { isReady: false }
+          data: { isReady: false },
         });
       } catch (error) {
         // Participant might have already left

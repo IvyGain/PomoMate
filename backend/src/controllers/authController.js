@@ -9,13 +9,13 @@ const generateTokens = (userId) => {
   const accessToken = jwt.sign(
     { userId },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' },
   );
 
   const refreshToken = jwt.sign(
     { userId },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' },
   );
 
   return { accessToken, refreshToken };
@@ -29,7 +29,7 @@ export const register = async (req, res, next) => {
     if (error) {
       return res.status(400).json({ 
         error: 'Validation error', 
-        details: error.details[0].message 
+        details: error.details[0].message, 
       });
     }
 
@@ -37,7 +37,7 @@ export const register = async (req, res, next) => {
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (existingUser) {
@@ -53,7 +53,7 @@ export const register = async (req, res, next) => {
         email,
         password: hashedPassword,
         displayName,
-        friendCode: generateFriendCode()
+        friendCode: generateFriendCode(),
       },
       select: {
         id: true,
@@ -61,8 +61,8 @@ export const register = async (req, res, next) => {
         displayName: true,
         level: true,
         xp: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     // Generate tokens
@@ -72,7 +72,7 @@ export const register = async (req, res, next) => {
       message: 'Registration successful',
       user,
       accessToken,
-      refreshToken
+      refreshToken,
     });
   } catch (error) {
     next(error);
@@ -87,7 +87,7 @@ export const login = async (req, res, next) => {
     if (error) {
       return res.status(400).json({ 
         error: 'Validation error', 
-        details: error.details[0].message 
+        details: error.details[0].message, 
       });
     }
 
@@ -104,8 +104,8 @@ export const login = async (req, res, next) => {
         level: true,
         xp: true,
         photoURL: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     if (!user) {
@@ -127,14 +127,14 @@ export const login = async (req, res, next) => {
     // Update last active
     await prisma.user.update({
       where: { id: user.id },
-      data: { lastActiveDate: new Date() }
+      data: { lastActiveDate: new Date() },
     });
 
     res.json({
       message: 'Login successful',
       user: userWithoutPassword,
       accessToken,
-      refreshToken
+      refreshToken,
     });
   } catch (error) {
     next(error);
@@ -161,8 +161,8 @@ export const refreshToken = async (req, res, next) => {
         email: true,
         displayName: true,
         level: true,
-        xp: true
-      }
+        xp: true,
+      },
     });
 
     if (!user) {
@@ -174,7 +174,7 @@ export const refreshToken = async (req, res, next) => {
 
     res.json({
       message: 'Token refreshed',
-      ...tokens
+      ...tokens,
     });
   } catch (error) {
     if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
@@ -216,8 +216,8 @@ export const getMe = async (req, res, next) => {
         characterLevel: true,
         evolutionPath: true,
         createdAt: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     res.json({ user });
@@ -235,20 +235,20 @@ export const updateProfile = async (req, res, next) => {
       where: { id: req.user.id },
       data: {
         ...(displayName && { displayName }),
-        ...(photoURL && { photoURL })
+        ...(photoURL && { photoURL }),
       },
       select: {
         id: true,
         email: true,
         displayName: true,
         photoURL: true,
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     res.json({ 
       message: 'Profile updated',
-      user: updatedUser 
+      user: updatedUser, 
     });
   } catch (error) {
     next(error);
@@ -261,20 +261,20 @@ export const resetPasswordRequest = async (req, res, next) => {
     const { email } = req.body;
 
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     if (!user) {
       // Don't reveal if user exists
       return res.json({ 
-        message: 'If an account exists, a password reset link has been sent' 
+        message: 'If an account exists, a password reset link has been sent', 
       });
     }
 
     // TODO: Generate reset token and send email
     // For now, just return success
     res.json({ 
-      message: 'If an account exists, a password reset link has been sent' 
+      message: 'If an account exists, a password reset link has been sent', 
     });
   } catch (error) {
     next(error);

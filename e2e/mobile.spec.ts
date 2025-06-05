@@ -24,7 +24,7 @@ test.describe('モバイルレスポンシブテスト', () => {
     // スワイプでタブ切り替え
     await page.locator('[data-testid="tab-container"]').swipe({
       direction: 'left',
-      distance: 100
+      distance: 100,
     });
     
     // タブが切り替わったことを確認

@@ -12,7 +12,7 @@ const tests = [
   { name: 'REST API', path: '/rest/v1/' },
   { name: 'Auth API', path: '/auth/v1/health' },
   { name: 'Realtime', path: '/realtime/v1/' },
-  { name: 'Storage', path: '/storage/v1/health' }
+  { name: 'Storage', path: '/storage/v1/health' },
 ];
 
 function testEndpoint(url, name) {
@@ -88,7 +88,7 @@ async function runDiagnostics() {
   }
   
   console.log('\n🌐 ダッシュボードURL:');
-  console.log(`https://app.supabase.com/project/xjxgapahcookarqiwjww`);
+  console.log('https://app.supabase.com/project/xjxgapahcookarqiwjww');
 }
 
 runDiagnostics().catch(console.error); 

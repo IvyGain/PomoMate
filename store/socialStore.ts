@@ -161,7 +161,7 @@ export const useSocialStore = create<SocialState>()(
           };
           
           set(state => ({
-            pendingRequests: [...state.pendingRequests, newRequest]
+            pendingRequests: [...state.pendingRequests, newRequest],
           }));
           
           // Add a notification
@@ -193,7 +193,7 @@ export const useSocialStore = create<SocialState>()(
           
           // Remove from pending requests
           set({
-            pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+            pendingRequests: pendingRequests.filter(req => req.id !== requestId),
           });
           
           // Add a notification
@@ -207,7 +207,7 @@ export const useSocialStore = create<SocialState>()(
       rejectFriendRequest: (requestId: string) => {
         const { pendingRequests } = get();
         set({
-          pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+          pendingRequests: pendingRequests.filter(req => req.id !== requestId),
         });
       },
       
@@ -220,7 +220,7 @@ export const useSocialStore = create<SocialState>()(
         };
         
         set(state => ({
-          notifications: [newNotification, ...state.notifications]
+          notifications: [newNotification, ...state.notifications],
         }));
       },
       
@@ -229,14 +229,14 @@ export const useSocialStore = create<SocialState>()(
           notifications: state.notifications.map(notification => 
             notification.id === notificationId 
               ? { ...notification, read: true } 
-              : notification
-          )
+              : notification,
+          ),
         }));
       },
       
       markAllNotificationsAsRead: () => {
         set(state => ({
-          notifications: state.notifications.map(notification => ({ ...notification, read: true }))
+          notifications: state.notifications.map(notification => ({ ...notification, read: true })),
         }));
       },
       
@@ -254,7 +254,7 @@ export const useSocialStore = create<SocialState>()(
           realtimeService.subscribeToFriendStatus('global', {
             onStatusChange: (status) => {
               console.log('Friend status update:', status);
-            }
+            },
           });
         } catch (error) {
           console.error('Failed to initialize social listeners:', error);
@@ -264,36 +264,36 @@ export const useSocialStore = create<SocialState>()(
       updateFriendStatus: (friendId: string, status: 'オンライン' | 'オフライン') => {
         set(state => ({
           friends: state.friends.map(friend =>
-            friend.id === friendId ? { ...friend, status } : friend
-          )
+            friend.id === friendId ? { ...friend, status } : friend,
+          ),
         }));
       },
       
       handleIncomingFriendRequest: (request: FriendRequest) => {
         set(state => ({
-          pendingRequests: [...state.pendingRequests, request]
+          pendingRequests: [...state.pendingRequests, request],
         }));
         
         get().addNotification({
           type: 'friendRequest',
-          message: `${request.name}さんからフレンドリクエストが届きました`
+          message: `${request.name}さんからフレンドリクエストが届きました`,
         });
       },
       
       handleFriendRequestAccepted: (friendData: Friend) => {
         set(state => ({
-          friends: [...state.friends, friendData]
+          friends: [...state.friends, friendData],
         }));
         
         get().addNotification({
           type: 'friendAccepted',
-          message: `${friendData.name}さんがフレンドリクエストを承認しました`
+          message: `${friendData.name}さんがフレンドリクエストを承認しました`,
         });
       },
     }),
     {
       name: 'social-storage',
       storage: createJSONStorage(() => getStorageInterface()),
-    }
-  )
+    },
+  ),
 );

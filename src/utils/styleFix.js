@@ -73,12 +73,12 @@ if (typeof window !== 'undefined') {
                 return true;
               }
               return Object.defineProperty(target, prop, descriptor);
-            }
+            },
           });
         },
         set: function(value) {
           styleDescriptor.set.call(this, value);
-        }
+        },
       });
     }
   } catch (e) {

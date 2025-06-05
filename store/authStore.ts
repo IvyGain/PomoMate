@@ -35,14 +35,14 @@ export const useAuthStore = create<AuthState>()(
               user: result.user as User, 
               isAuthenticated: true,
               isLoading: false,
-              error: null 
+              error: null, 
             });
           }
         } catch (error: any) {
           const appError = handleError(error, 'AuthStore.login');
           set({ 
             isLoading: false, 
-            error: appError.userMessage || appError.message 
+            error: appError.userMessage || appError.message, 
           });
           throw error;
         }
@@ -65,14 +65,14 @@ export const useAuthStore = create<AuthState>()(
               user: result.user as User, 
               isAuthenticated: true,
               isLoading: false,
-              error: null 
+              error: null, 
             });
           }
         } catch (error: any) {
           const appError = handleError(error, 'AuthStore.register');
           set({ 
             isLoading: false, 
-            error: appError.userMessage || appError.message 
+            error: appError.userMessage || appError.message, 
           });
           throw error;
         }
@@ -88,7 +88,7 @@ export const useAuthStore = create<AuthState>()(
             user: null, 
             isAuthenticated: false, 
             isLoading: false,
-            error: null 
+            error: null, 
           });
         } catch (error: any) {
           // Force logout even if API fails
@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthState>()(
             user: null, 
             isAuthenticated: false,
             isLoading: false,
-            error: null 
+            error: null, 
           });
         }
       },
@@ -109,20 +109,20 @@ export const useAuthStore = create<AuthState>()(
             set({ 
               user: user as User, 
               isAuthenticated: true,
-              error: null 
+              error: null, 
             });
           } else {
             set({ 
               user: null, 
               isAuthenticated: false,
-              error: null 
+              error: null, 
             });
           }
         } catch (error) {
           set({ 
             user: null, 
             isAuthenticated: false, 
-            error: null 
+            error: null, 
           });
         }
       },
@@ -146,7 +146,7 @@ export const useAuthStore = create<AuthState>()(
           const appError = handleError(error, 'AuthStore.resetPassword');
           set({ 
             isLoading: false, 
-            error: appError.userMessage || appError.message 
+            error: appError.userMessage || appError.message, 
           });
           throw error;
         }
@@ -157,8 +157,8 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => getStorageInterface()),
       partialize: (state) => ({ 
         user: state.user,
-        isAuthenticated: state.isAuthenticated 
+        isAuthenticated: state.isAuthenticated, 
       }),
-    }
-  )
+    },
+  ),
 );

@@ -13,7 +13,7 @@ export class SupabaseRealtime {
       onSessionUpdate?: (session: any) => void;
       onSessionStart?: (session: any) => void;
       onSessionEnd?: (session: any) => void;
-    }
+    },
   ) {
     try {
       const channelName = `team-session:${sessionId}`;
@@ -40,7 +40,7 @@ export class SupabaseRealtime {
           },
           (payload: any) => {
             callbacks.onParticipantJoin?.(payload.new);
-          }
+          },
         )
         .on(
           'postgres_changes',
@@ -54,7 +54,7 @@ export class SupabaseRealtime {
             if (payload.new.left_at && !payload.old.left_at) {
               callbacks.onParticipantLeave?.(payload.new);
             }
-          }
+          },
         )
         .on(
           'postgres_changes',
@@ -75,7 +75,7 @@ export class SupabaseRealtime {
             } else {
               callbacks.onSessionUpdate?.(payload.new);
             }
-          }
+          },
         )
         .subscribe();
 
@@ -92,7 +92,7 @@ export class SupabaseRealtime {
     teamId: string,
     callbacks: {
       onMessage?: (message: any) => void;
-    }
+    },
   ) {
     try {
       const channelName = `team-chat:${teamId}`;
@@ -116,7 +116,7 @@ export class SupabaseRealtime {
           },
           (payload: any) => {
             callbacks.onMessage?.(payload.payload);
-          }
+          },
         )
         .subscribe();
 
@@ -152,7 +152,7 @@ export class SupabaseRealtime {
     userId: string,
     callbacks: {
       onStatusChange?: (status: any) => void;
-    }
+    },
   ) {
     const channelName = `friend-status:${userId}`;
     
@@ -170,7 +170,7 @@ export class SupabaseRealtime {
         () => {
           const state = channel.presenceState();
           callbacks.onStatusChange?.(state);
-        }
+        },
       )
       .subscribe();
 
@@ -196,7 +196,7 @@ export class SupabaseRealtime {
   subscribeToLeaderboard(
     callbacks: {
       onUpdate?: (leaderboard: any) => void;
-    }
+    },
   ) {
     const channelName = 'global-leaderboard';
     
@@ -222,7 +222,7 @@ export class SupabaseRealtime {
             .limit(10);
 
           callbacks.onUpdate?.(data);
-        }
+        },
       )
       .subscribe();
 

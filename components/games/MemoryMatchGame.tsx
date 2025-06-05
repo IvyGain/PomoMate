@@ -7,7 +7,7 @@ import { Award, Clock, X, Zap } from 'lucide-react-native';
 
 // Card icons (emojis)
 const cardIcons = [
-  '❤️', '⭐', '😊', '☀️', '🌙', '☁️', '☂️', '☕'
+  '❤️', '⭐', '😊', '☀️', '🌙', '☁️', '☂️', '☕',
 ];
 
 interface Card {
@@ -54,14 +54,14 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
         id: index * 2,
         icon,
         flipped: false,
-        matched: false
+        matched: false,
       });
       
       cardPairs.push({
         id: index * 2 + 1,
         icon,
         flipped: false,
-        matched: false
+        matched: false,
       });
     });
     
@@ -190,7 +190,7 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
                 style={[
                   styles.card,
                   card.flipped && styles.cardFlipped,
-                  card.matched && styles.cardMatched
+                  card.matched && styles.cardMatched,
                 ]}
                 onPress={() => handleCardPress(card.id)}
                 activeOpacity={0.7}

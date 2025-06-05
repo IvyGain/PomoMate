@@ -15,8 +15,8 @@ if (!supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });
 
 async function runMigration() {
@@ -36,7 +36,7 @@ async function runMigration() {
 
     // SQLをセクションに分割して実行
     const sections = sqlContent.split(';').filter(section => 
-      section.trim() && !section.trim().startsWith('--')
+      section.trim() && !section.trim().startsWith('--'),
     );
 
     console.log(`📝 ${sections.length} のSQLコマンドを実行します...\n`);
