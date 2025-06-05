@@ -67,7 +67,7 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  // Simple authentication-based navigation
+  // Enhanced authentication-based navigation
   useEffect(() => {
     if (!isReady) return;
 
@@ -75,44 +75,51 @@ export default function RootLayout() {
       segments,
       isAuthenticated,
       currentPath: segments.join('/'),
-      firstSegment: segments[0]
+      firstSegment: segments[0],
+      segmentsLength: segments.length
     });
 
-    // Segments might be undefined or empty on initial load
-    const firstSegment = segments?.[0];
-    const currentPath = segments.join('/');
-    
-    // Auth-related pages that don't require authentication
-    const authPages = ['login', 'register', 'forgot-password', 'email-confirmed', 'email-sent'];
-    const isAuthPage = authPages.includes(firstSegment || '');
-    
-    // Check if this is an auth callback URL
-    const isAuthCallback = typeof window !== 'undefined' && 
-      (window.location.search.includes('token_hash=') || 
-       window.location.search.includes('access_token=') ||
-       window.location.hash.includes('access_token='));
-    
-    // Don't redirect if we're processing an auth callback
-    if (isAuthCallback) {
-      console.log('🔗 Auth callback detected, skipping navigation redirect');
-      return;
-    }
-    
-    // Allow navigation to auth pages and email confirmation
-    if (!isAuthenticated && !isAuthPage && segments.length > 0) {
-      // Not authenticated and not on auth page -> go to login
-      console.log('➡️ Redirecting to login (not authenticated)');
-      router.replace('/login');
-    } else if (isAuthenticated && (firstSegment === 'login' || firstSegment === 'register')) {
-      // Authenticated and on login/register page -> go to home
-      console.log('➡️ Redirecting to home (authenticated on auth page)');
-      router.replace('/(tabs)');
-    } else if (isAuthenticated && segments.length === 0) {
-      // Authenticated and on root -> go to home
-      console.log('➡️ Redirecting to home (authenticated on root)');
-      router.replace('/(tabs)');
-    }
-  }, [isAuthenticated, isReady, segments]);
+    // Add a small delay to ensure auth state is stable
+    const timer = setTimeout(() => {
+      const firstSegment = segments?.[0];
+      const currentPath = segments.join('/');
+      
+      // Auth-related pages that don't require authentication
+      const authPages = ['login', 'register', 'forgot-password', 'email-confirmed', 'email-sent'];
+      const isAuthPage = authPages.includes(firstSegment || '');
+      
+      // Check if this is an auth callback URL
+      const isAuthCallback = typeof window !== 'undefined' && 
+        (window.location.search.includes('token_hash=') || 
+         window.location.search.includes('access_token=') ||
+         window.location.hash.includes('access_token='));
+      
+      // Don't redirect if we're processing an auth callback
+      if (isAuthCallback) {
+        console.log('🔗 Auth callback detected, skipping navigation redirect');
+        return;
+      }
+      
+      if (isAuthenticated) {
+        // User is authenticated
+        if (firstSegment === 'login' || firstSegment === 'register' || segments.length === 0) {
+          console.log('✅ Authenticated user, redirecting to main app');
+          router.replace('/(tabs)');
+        }
+      } else {
+        // User is not authenticated
+        if (!isAuthPage && segments.length > 0) {
+          console.log('❌ Not authenticated, redirecting to login');
+          router.replace('/login');
+        } else if (segments.length === 0) {
+          console.log('❌ Not authenticated on root, redirecting to login');
+          router.replace('/login');
+        }
+      }
+    }, 100); // Small delay to prevent race conditions
+
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, isReady, segments, router]);
 
   if (!loaded || !isReady) {
     return null;

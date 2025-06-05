@@ -57,10 +57,12 @@ export default function LoginScreen() {
       await login(email, password);
       console.log('✅ Login function completed successfully');
       
-      // Force immediate navigation after successful login
-      console.log('🚀 Navigating to tabs...');
-      router.replace('/(tabs)');
-      console.log('✅ Navigation initiated');
+      // Wait a moment for state to update, then navigate
+      setTimeout(() => {
+        console.log('🚀 Navigating to tabs...');
+        router.replace('/(tabs)');
+        console.log('✅ Navigation initiated');
+      }, 500);
     } catch (error: any) {
       console.error('❌ Login failed:', error);
       console.error('❌ Error details:', {
@@ -85,9 +87,12 @@ export default function LoginScreen() {
     try {
       console.log('Attempting demo login with:', demoEmail);
       await login(demoEmail, demoPassword);
-      // Force immediate navigation after successful demo login
-      console.log('Demo login successful, navigating to tabs');
-      router.replace('/(tabs)');
+      
+      // Wait a moment for state to update, then navigate
+      setTimeout(() => {
+        console.log('Demo login successful, navigating to tabs');
+        router.replace('/(tabs)');
+      }, 500);
     } catch (error) {
       console.error('Demo login failed:', error);
       Alert.alert(
