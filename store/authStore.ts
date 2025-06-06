@@ -26,19 +26,31 @@ export const useAuthStore = create<AuthState>()(
       
       login: async (email: string, password: string) => {
         try {
+          console.log('🏪 AuthStore: Starting login process');
           set({ isLoading: true, error: null });
           
+          console.log('🏪 AuthStore: Calling UnifiedAuthService.login');
           const result = await UnifiedAuthService.login(email, password);
+          console.log('🏪 AuthStore: Login service result:', { 
+            hasUser: !!result.user, 
+            hasToken: !!result.accessToken 
+          });
           
           if (result.user) {
+            console.log('🏪 AuthStore: Setting authenticated state');
             set({ 
               user: result.user as User, 
               isAuthenticated: true,
               isLoading: false,
               error: null, 
             });
+            console.log('🏪 AuthStore: Authentication state updated successfully');
+          } else {
+            console.warn('🏪 AuthStore: No user returned from login service');
+            set({ isLoading: false, error: 'No user data received' });
           }
         } catch (error: any) {
+          console.error('🏪 AuthStore: Login error:', error);
           const appError = handleError(error, 'AuthStore.login');
           set({ 
             isLoading: false, 

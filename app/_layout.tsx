@@ -84,6 +84,14 @@ export default function RootLayout() {
       const firstSegment = segments?.[0];
       const currentPath = segments.join('/');
       
+      console.log('🧭 Navigation check:', {
+        isAuthenticated,
+        firstSegment,
+        currentPath,
+        segmentsLength: segments.length,
+        isReady
+      });
+      
       // Auth-related pages that don't require authentication
       const authPages = ['login', 'register', 'forgot-password', 'email-confirmed', 'email-sent'];
       const isAuthPage = authPages.includes(firstSegment || '');
@@ -102,18 +110,24 @@ export default function RootLayout() {
       
       if (isAuthenticated) {
         // User is authenticated
+        console.log('🔐 User is authenticated, checking if navigation needed');
         if (firstSegment === 'login' || firstSegment === 'register' || segments.length === 0) {
-          console.log('✅ Authenticated user, redirecting to main app');
+          console.log('✅ Authenticated user on auth page, redirecting to main app');
           router.replace('/(tabs)');
+        } else {
+          console.log('✅ Authenticated user already on protected page');
         }
       } else {
         // User is not authenticated
+        console.log('🔓 User not authenticated, checking if redirect needed');
         if (!isAuthPage && segments.length > 0) {
-          console.log('❌ Not authenticated, redirecting to login');
+          console.log('❌ Not authenticated on protected page, redirecting to login');
           router.replace('/login');
         } else if (segments.length === 0) {
           console.log('❌ Not authenticated on root, redirecting to login');
           router.replace('/login');
+        } else {
+          console.log('✅ User on auth page, no redirect needed');
         }
       }
     }, 100); // Small delay to prevent race conditions

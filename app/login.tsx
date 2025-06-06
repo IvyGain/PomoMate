@@ -57,12 +57,23 @@ export default function LoginScreen() {
       await login(email, password);
       console.log('✅ Login function completed successfully');
       
-      // Wait a moment for state to update, then navigate
+      // Force navigation immediately and also check state after delay
+      console.log('🚀 Attempting immediate navigation to tabs...');
+      router.replace('/(tabs)');
+      
+      // Also check authentication state after delay for debugging
       setTimeout(() => {
-        console.log('🚀 Navigating to tabs...');
-        router.replace('/(tabs)');
-        console.log('✅ Navigation initiated');
-      }, 500);
+        console.log('🔍 Checking auth state after login delay:', { 
+          isAuthenticated, 
+          user: user ? user.id : 'no user',
+          isLoading 
+        });
+        
+        if (!isAuthenticated || !user) {
+          console.warn('⚠️ User not authenticated after login attempt');
+          // Don't show alert immediately, let the navigation system handle it
+        }
+      }, 1000);
     } catch (error: any) {
       console.error('❌ Login failed:', error);
       console.error('❌ Error details:', {
@@ -85,16 +96,29 @@ export default function LoginScreen() {
     const demoPassword = 'Po8silba8';
     
     try {
-      console.log('Attempting demo login with:', demoEmail);
+      console.log('🎯 Attempting demo login with:', demoEmail);
       await login(demoEmail, demoPassword);
+      console.log('✅ Demo login function completed');
       
-      // Wait a moment for state to update, then navigate
+      // Force navigation immediately for demo login
+      console.log('🚀 Attempting immediate demo navigation to tabs...');
+      router.replace('/(tabs)');
+      
+      // Also check authentication state after delay for debugging
       setTimeout(() => {
-        console.log('Demo login successful, navigating to tabs');
-        router.replace('/(tabs)');
-      }, 500);
+        console.log('🔍 Checking demo auth state after delay:', { 
+          isAuthenticated, 
+          user: user ? user.id : 'no user',
+          isLoading 
+        });
+        
+        if (!isAuthenticated || !user) {
+          console.warn('⚠️ Demo user not authenticated after login');
+          // Don't show alert immediately, let the navigation system handle it
+        }
+      }, 1000);
     } catch (error) {
-      console.error('Demo login failed:', error);
+      console.error('❌ Demo login failed:', error);
       Alert.alert(
         'デモログインエラー', 
         'デモユーザーでのログインに失敗しました。管理者にお問い合わせください。',
