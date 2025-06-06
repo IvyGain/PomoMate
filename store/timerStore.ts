@@ -352,11 +352,11 @@ export const useTimerStore = create<TimerState>()(
         // Sync with Supabase
         try {
           await settingsService.updateSettings({
-            focus_duration: get().focusDuration,
+            pomodoro_duration: get().focusDuration,
             short_break_duration: get().shortBreakDuration,
             long_break_duration: get().longBreakDuration,
-            auto_start_break: get().autoStartBreaks,
-            auto_start_focus: get().autoStartFocus,
+            auto_start_breaks: get().autoStartBreaks,
+            auto_start_pomodoros: get().autoStartFocus,
             sound_enabled: get().soundEnabled,
             notification_enabled: true, // Default
             vibration_enabled: get().vibrationEnabled,
@@ -708,11 +708,11 @@ export const useTimerStore = create<TimerState>()(
       syncSettings: async () => {
         try {
           await settingsService.updateSettings({
-            focus_duration: get().focusDuration,
+            pomodoro_duration: get().focusDuration,
             short_break_duration: get().shortBreakDuration,
             long_break_duration: get().longBreakDuration,
-            auto_start_break: get().autoStartBreaks,
-            auto_start_focus: get().autoStartFocus,
+            auto_start_breaks: get().autoStartBreaks,
+            auto_start_pomodoros: get().autoStartFocus,
             sound_enabled: get().soundEnabled,
             notification_enabled: true,
             vibration_enabled: get().vibrationEnabled,
@@ -730,13 +730,13 @@ export const useTimerStore = create<TimerState>()(
           
           if (settings) {
             set({
-              focusDuration: settings.focus_duration,
-              shortBreakDuration: settings.short_break_duration,
-              longBreakDuration: settings.long_break_duration,
-              autoStartBreaks: settings.auto_start_break,
-              autoStartFocus: settings.auto_start_focus,
-              soundEnabled: settings.sound_enabled,
-              vibrationEnabled: settings.vibration_enabled,
+              focusDuration: settings.pomodoro_duration || settings.focus_duration || 25,
+              shortBreakDuration: settings.short_break_duration || 5,
+              longBreakDuration: settings.long_break_duration || 15,
+              autoStartBreaks: settings.auto_start_breaks || settings.auto_start_break || false,
+              autoStartFocus: settings.auto_start_pomodoros || settings.auto_start_focus || false,
+              soundEnabled: settings.sound_enabled || true,
+              vibrationEnabled: settings.notification_enabled || false,
             });
             
             // Update time remaining based on current mode
@@ -745,7 +745,7 @@ export const useTimerStore = create<TimerState>()(
             
             switch (currentMode) {
               case 'focus':
-                newTimeRemaining = settings.focus_duration * 60;
+                newTimeRemaining = (settings.pomodoro_duration || settings.focus_duration || 25) * 60;
                 break;
               case 'shortBreak':
                 newTimeRemaining = settings.short_break_duration * 60;
