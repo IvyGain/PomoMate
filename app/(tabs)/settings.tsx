@@ -396,7 +396,7 @@ export default function SettingsScreen() {
         </View>
         
         <TouchableOpacity 
-          style={[styles.logoutButton, { borderColor: theme.error }]}
+          style={[styles.logoutButton, { borderColor: theme.error, backgroundColor: theme.background }]}
           onPress={handleLogout}
         >
           <Text style={[styles.logoutText, { color: theme.error }]}>

@@ -16,18 +16,18 @@ export interface ThemeColors {
 }
 
 const lightTheme: ThemeColors = {
-  background: '#FFFFFF',
-  card: '#F8F9FA',
-  text: '#333333',
-  textSecondary: '#666666',
-  primary: '#007AFF',
-  secondary: '#5856D6',
-  success: '#34C759',
-  warning: '#FF9500',
-  error: '#FF3B30',
-  inactive: '#C7C7CC',
-  border: '#E5E5EA',
-  overlay: 'rgba(0, 0, 0, 0.4)',
+  background: '#0A0A0F',
+  card: '#1A1A2E',
+  text: '#FFFFFF',
+  textSecondary: '#AAAAAA',
+  primary: '#8B5CF6',
+  secondary: '#A855F7',
+  success: '#6BCB77',
+  warning: '#FFD166',
+  error: '#EF476F',
+  inactive: '#555555',
+  border: '#333333',
+  overlay: 'rgba(0, 0, 0, 0.7)',
 };
 
 const darkTheme: ThemeColors = {

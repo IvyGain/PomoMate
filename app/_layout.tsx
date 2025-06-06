@@ -126,7 +126,7 @@ export default function RootLayout() {
       if (isAuthenticated) {
         // User is authenticated
         console.log('🔐 User is authenticated, checking if navigation needed');
-        if (firstSegment === 'login' || firstSegment === 'register' || segments.length === 0) {
+        if (firstSegment === 'login' || firstSegment === 'register' || segments.length === 0 || firstSegment === 'forgot-password') {
           console.log('✅ Authenticated user on auth page, redirecting to main app');
           router.replace('/(tabs)');
         } else {

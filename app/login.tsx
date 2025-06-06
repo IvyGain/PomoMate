@@ -20,7 +20,7 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const { theme } = useThemeStore();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, isAuthenticated, user } = useAuthStore();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,23 +57,9 @@ export default function LoginScreen() {
       await login(email, password);
       console.log('✅ Login function completed successfully');
       
-      // Force navigation immediately and also check state after delay
-      console.log('🚀 Attempting immediate navigation to tabs...');
-      router.replace('/(tabs)');
+      // Navigation will be handled by _layout.tsx based on auth state
+      console.log('✅ Login successful, auth state will trigger navigation');
       
-      // Also check authentication state after delay for debugging
-      setTimeout(() => {
-        console.log('🔍 Checking auth state after login delay:', { 
-          isAuthenticated, 
-          user: user ? user.id : 'no user',
-          isLoading 
-        });
-        
-        if (!isAuthenticated || !user) {
-          console.warn('⚠️ User not authenticated after login attempt');
-          // Don't show alert immediately, let the navigation system handle it
-        }
-      }, 1000);
     } catch (error: any) {
       console.error('❌ Login failed:', error);
       console.error('❌ Error details:', {
@@ -100,23 +86,9 @@ export default function LoginScreen() {
       await login(demoEmail, demoPassword);
       console.log('✅ Demo login function completed');
       
-      // Force navigation immediately for demo login
-      console.log('🚀 Attempting immediate demo navigation to tabs...');
-      router.replace('/(tabs)');
+      // Navigation will be handled by _layout.tsx based on auth state
+      console.log('✅ Demo login successful, auth state will trigger navigation');
       
-      // Also check authentication state after delay for debugging
-      setTimeout(() => {
-        console.log('🔍 Checking demo auth state after delay:', { 
-          isAuthenticated, 
-          user: user ? user.id : 'no user',
-          isLoading 
-        });
-        
-        if (!isAuthenticated || !user) {
-          console.warn('⚠️ Demo user not authenticated after login');
-          // Don't show alert immediately, let the navigation system handle it
-        }
-      }, 1000);
     } catch (error) {
       console.error('❌ Demo login failed:', error);
       Alert.alert(
