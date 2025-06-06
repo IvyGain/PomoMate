@@ -14,7 +14,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   testMatch: [
     '**/__tests__/**/*.(ts|tsx|js|jsx)',
-    '**/*.(test|spec).(ts|tsx|js|jsx)',
+    '**/!(e2e)/**/*.(test|spec).(ts|tsx|js|jsx)',
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
