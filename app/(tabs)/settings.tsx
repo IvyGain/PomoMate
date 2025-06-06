@@ -98,6 +98,11 @@ export default function SettingsScreen() {
               console.log('🔓 Starting logout process...');
               await logout();
               console.log('✅ Logout completed successfully');
+              
+              // 強制的にログイン画面にリダイレクト
+              if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+              }
             } catch (error) {
               console.error('❌ Logout failed:', error);
               Alert.alert('ログアウトエラー', 'ログアウトに失敗しました。');
@@ -396,10 +401,14 @@ export default function SettingsScreen() {
         </View>
         
         <TouchableOpacity 
-          style={[styles.logoutButton, { borderColor: theme.error, backgroundColor: theme.background }]}
+          style={[styles.logoutButton, { 
+            borderColor: theme.error, 
+            backgroundColor: theme.error,
+          }]}
           onPress={handleLogout}
+          activeOpacity={0.8}
         >
-          <Text style={[styles.logoutText, { color: theme.error }]}>
+          <Text style={[styles.logoutText, { color: '#FFFFFF' }]}>
             ログアウト
           </Text>
         </TouchableOpacity>
