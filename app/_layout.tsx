@@ -1,6 +1,21 @@
 // Apply web compatibility fixes first to prevent "Illegal invocation" errors
 import '@/src/utils/webCompatibility';
 
+// Suppress React Native animation warnings for web
+if (typeof window !== 'undefined') {
+  const originalConsoleWarn = console.warn;
+  console.warn = (...args) => {
+    if (
+      typeof args[0] === 'string' &&
+      args[0].includes('useNativeDriver') &&
+      args[0].includes('not supported')
+    ) {
+      return; // Suppress this specific warning
+    }
+    originalConsoleWarn.apply(console, args);
+  };
+}
+
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -122,6 +137,7 @@ export default function RootLayout() {
         console.log('🔓 User not authenticated, checking if redirect needed');
         if (!isAuthPage && segments.length > 0) {
           console.log('❌ Not authenticated on protected page, redirecting to login');
+          console.log('🧭 Current page:', firstSegment, 'Redirecting from logout?');
           router.replace('/login');
         } else if (segments.length === 0) {
           console.log('❌ Not authenticated on root, redirecting to login');

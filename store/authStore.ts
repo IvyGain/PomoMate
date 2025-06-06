@@ -92,17 +92,23 @@ export const useAuthStore = create<AuthState>()(
       
       logout: async () => {
         try {
+          console.log('🏪 AuthStore: Starting logout process');
           set({ isLoading: true, error: null });
           
+          console.log('🏪 AuthStore: Calling UnifiedAuthService.logout');
           await UnifiedAuthService.logout();
+          console.log('🏪 AuthStore: Logout service completed');
           
+          console.log('🏪 AuthStore: Clearing authentication state');
           set({ 
             user: null, 
             isAuthenticated: false, 
             isLoading: false,
             error: null, 
           });
+          console.log('🏪 AuthStore: Authentication state cleared successfully');
         } catch (error: any) {
+          console.error('🏪 AuthStore: Logout error, forcing state clear:', error);
           // Force logout even if API fails
           set({ 
             user: null, 
@@ -110,6 +116,7 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: null, 
           });
+          console.log('🏪 AuthStore: Forced authentication state clear completed');
         }
       },
       

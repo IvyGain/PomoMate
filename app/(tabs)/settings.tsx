@@ -85,6 +85,7 @@ export default function SettingsScreen() {
   };
   
   const handleLogout = () => {
+    console.log('🔓 Logout button pressed');
     Alert.alert(
       'ログアウト',
       'ログアウトしてもよろしいですか？',
@@ -92,7 +93,16 @@ export default function SettingsScreen() {
         { text: 'キャンセル', style: 'cancel' },
         { 
           text: 'ログアウト', 
-          onPress: logout,
+          onPress: async () => {
+            try {
+              console.log('🔓 Starting logout process...');
+              await logout();
+              console.log('✅ Logout completed successfully');
+            } catch (error) {
+              console.error('❌ Logout failed:', error);
+              Alert.alert('ログアウトエラー', 'ログアウトに失敗しました。');
+            }
+          },
         },
       ],
     );

@@ -234,12 +234,19 @@ export class UnifiedAuthService {
 
   static async logout(): Promise<void> {
     try {
+      console.log('🔐 UnifiedAuthService: Starting logout');
       authLogger.info('User logout');
+      
+      console.log('🔐 UnifiedAuthService: Calling supabase.auth.signOut()');
       await supabase.auth.signOut();
+      console.log('🔐 UnifiedAuthService: Supabase signOut completed');
     } catch (error) {
+      console.error('🔐 UnifiedAuthService: Logout error:', error);
       authLogger.error('Logout error', error);
     } finally {
+      console.log('🔐 UnifiedAuthService: Clearing tokens');
       await this.clearTokens();
+      console.log('🔐 UnifiedAuthService: Tokens cleared');
     }
   }
 
