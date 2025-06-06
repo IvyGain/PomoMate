@@ -6,11 +6,14 @@ if (typeof window !== 'undefined') {
   const originalConsoleWarn = console.warn;
   console.warn = (...args) => {
     if (
-      typeof args[0] === 'string' &&
-      args[0].includes('useNativeDriver') &&
-      args[0].includes('not supported')
+      typeof args[0] === 'string' && (
+        args[0].includes('useNativeDriver') ||
+        args[0].includes('Animated:') ||
+        args[0].includes('RCTAnimation') ||
+        args[0].includes('native animated module')
+      )
     ) {
-      return; // Suppress this specific warning
+      return; // Suppress animation warnings
     }
     originalConsoleWarn.apply(console, args);
   };

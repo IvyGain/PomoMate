@@ -99,24 +99,31 @@ export const useAuthStore = create<AuthState>()(
           await UnifiedAuthService.logout();
           console.log('🏪 AuthStore: Logout service completed');
           
-          console.log('🏪 AuthStore: Clearing authentication state');
+        } catch (error: any) {
+          console.error('🏪 AuthStore: Logout service error (continuing with state clear):', error);
+        } finally {
+          console.log('🏪 AuthStore: Clearing authentication state (forced)');
+          
+          // Force clear authentication state regardless of service errors
           set({ 
             user: null, 
             isAuthenticated: false, 
             isLoading: false,
             error: null, 
           });
+          
           console.log('🏪 AuthStore: Authentication state cleared successfully');
-        } catch (error: any) {
-          console.error('🏪 AuthStore: Logout error, forcing state clear:', error);
-          // Force logout even if API fails
-          set({ 
-            user: null, 
-            isAuthenticated: false,
-            isLoading: false,
-            error: null, 
-          });
-          console.log('🏪 AuthStore: Forced authentication state clear completed');
+          
+          // Clear localStorage/AsyncStorage data
+          try {
+            if (typeof window !== 'undefined' && window.localStorage) {
+              console.log('🏪 AuthStore: Clearing localStorage');
+              window.localStorage.removeItem('auth-storage');
+              console.log('🏪 AuthStore: localStorage cleared');
+            }
+          } catch (storageError) {
+            console.warn('🏪 AuthStore: Failed to clear localStorage:', storageError);
+          }
         }
       },
       

@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useThemeStore } from '@/store/themeStore';
 import { useUserStore } from '@/store/userStore';
 import { useAuthStore } from '@/store/authStore';
@@ -37,7 +38,8 @@ import {
 export default function SettingsScreen() {
   const { theme, toggleTheme, currentTheme } = useThemeStore();
   const { resetProgress } = useUserStore();
-  const { logout } = useAuthStore();
+  const { logout, isAuthenticated, user } = useAuthStore();
+  const router = useRouter();
   const { 
     focusDuration, 
     shortBreakDuration, 
@@ -85,7 +87,9 @@ export default function SettingsScreen() {
   };
   
   const handleLogout = () => {
-    console.log('🔓 Logout button pressed');
+    console.log('🔓 [Settings] Logout button pressed');
+    console.log('🔓 [Settings] Current auth state:', { isAuthenticated, userId: user?.id });
+    
     Alert.alert(
       'ログアウト',
       'ログアウトしてもよろしいですか？',
@@ -95,16 +99,45 @@ export default function SettingsScreen() {
           text: 'ログアウト', 
           onPress: async () => {
             try {
-              console.log('🔓 Starting logout process...');
-              await logout();
-              console.log('✅ Logout completed successfully');
+              console.log('🔓 [Settings] Starting logout process...');
+              console.log('🔓 [Settings] Auth state before logout:', { isAuthenticated, userId: user?.id });
               
-              // 強制的にログイン画面にリダイレクト
-              if (typeof window !== 'undefined') {
-                window.location.href = '/login';
-              }
+              await logout();
+              
+              console.log('✅ [Settings] Logout function completed');
+              console.log('🔓 [Settings] Auth state after logout:', { 
+                isAuthenticated: useAuthStore.getState().isAuthenticated,
+                user: useAuthStore.getState().user 
+              });
+              
+              // Wait a moment for state to update
+              setTimeout(() => {
+                console.log('🚀 [Settings] Attempting navigation to login...');
+                console.log('🔓 [Settings] Final auth state check:', { 
+                  isAuthenticated: useAuthStore.getState().isAuthenticated,
+                  user: useAuthStore.getState().user 
+                });
+                
+                try {
+                  router.replace('/login');
+                  console.log('✅ [Settings] Navigation to login successful');
+                } catch (navError) {
+                  console.error('❌ [Settings] Navigation failed:', navError);
+                  // Fallback to window.location
+                  if (typeof window !== 'undefined') {
+                    console.log('🔄 [Settings] Using window.location fallback');
+                    window.location.href = '/login';
+                  }
+                }
+              }, 100);
+              
             } catch (error) {
-              console.error('❌ Logout failed:', error);
+              console.error('❌ [Settings] Logout failed:', error);
+              console.error('❌ [Settings] Error details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+              });
               Alert.alert('ログアウトエラー', 'ログアウトに失敗しました。');
             }
           },
