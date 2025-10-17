@@ -220,8 +220,8 @@ export const useTimerStore = create<TimerState>()(
                 )
               }));
               
-              // Call completeSession to update user stats
-              get().completeSession();
+              // Note: completeSession was already called here, but it doesn't update state
+              // The state was already updated above
             } else {
               // Coming from a break
               set(state => ({
@@ -262,8 +262,8 @@ export const useTimerStore = create<TimerState>()(
               isRunning: autoStartBreaks
             });
             
-            // Call completeSession to update user stats
-            get().completeSession();
+            // Note: completeSession was already called here, but it doesn't update state
+            // The state was already updated above
           } else {
             // Coming from a break
             set({ 
@@ -300,8 +300,37 @@ export const useTimerStore = create<TimerState>()(
       },
       
       completeSession: () => {
-        // This is called when a focus session is completed
-        // The actual stats update happens in userStore
+        // This is called when a focus session is completed from dev mode
+        const { currentMode, completedSessions, consecutiveSessionsCount, sessionsUntilLongBreak, autoStartBreaks, autoStartFocus, focusDuration, shortBreakDuration, longBreakDuration } = get();
+        
+        if (currentMode === 'focus') {
+          // Increment session counters
+          const newCompletedSessions = completedSessions + 1;
+          const newConsecutiveCount = consecutiveSessionsCount + 1;
+          const shouldTakeLongBreak = newConsecutiveCount >= sessionsUntilLongBreak;
+          const nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
+          
+          console.log('[COMPLETE SESSION] Completed sessions:', newCompletedSessions);
+          console.log('[COMPLETE SESSION] Consecutive sessions:', newConsecutiveCount);
+          console.log('[COMPLETE SESSION] Should take long break:', shouldTakeLongBreak);
+          console.log('[COMPLETE SESSION] Next mode:', nextMode);
+          
+          // Update state
+          set({ 
+            completedSessions: newCompletedSessions,
+            consecutiveSessionsCount: shouldTakeLongBreak ? 0 : newConsecutiveCount,
+            currentMode: nextMode,
+            timeRemaining: shouldTakeLongBreak ? longBreakDuration * 60 : shortBreakDuration * 60,
+            isRunning: autoStartBreaks
+          });
+        } else {
+          // Coming from a break
+          set({ 
+            currentMode: 'focus',
+            timeRemaining: focusDuration * 60,
+            isRunning: autoStartFocus
+          });
+        }
       },
       
       updateSettings: (settings) => {
@@ -731,6 +760,7 @@ export const useTimerStore = create<TimerState>()(
         longBreakDuration: state.longBreakDuration,
         sessionsUntilLongBreak: state.sessionsUntilLongBreak,
         completedSessions: state.completedSessions,
+        consecutiveSessionsCount: state.consecutiveSessionsCount,
         autoStartBreaks: state.autoStartBreaks,
         autoStartFocus: state.autoStartFocus,
         soundEnabled: state.soundEnabled,

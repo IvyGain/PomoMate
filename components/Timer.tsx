@@ -24,6 +24,7 @@ export const Timer: React.FC = () => {
     resetTimer,
     tickTimer,
     setMode,
+    completeSession,
     vibrationEnabled,
     soundEnabled,
     autoStartBreaks,
@@ -234,6 +235,9 @@ export const Timer: React.FC = () => {
   
   // Handle dev mode session completion
   const handleDevModeComplete = () => {
+    console.log('[DEV MODE] Current consecutiveSessionsCount:', consecutiveSessionsCount);
+    console.log('[DEV MODE] Sessions until long break:', sessionsUntilLongBreak);
+    
     if (currentMode === 'focus') {
       // Add session to stats
       if (isTeamSession && currentTeamSessionId) {
@@ -252,24 +256,10 @@ export const Timer: React.FC = () => {
       if (vibrationEnabled && Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      
-      // Transition to break based on completed sessions
-      const newCompletedSessions = completedSessions + 1;
-      const shouldTakeLongBreak = newCompletedSessions % sessionsUntilLongBreak === 0;
-      const nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
-      
-      // Set next mode and start if auto start is enabled
-      setMode(nextMode);
-      if (autoStartBreaks) {
-        startTimer();
-      }
-    } else {
-      // Coming from a break, go back to focus
-      setMode('focus');
-      if (autoStartFocus) {
-        startTimer();
-      }
     }
+    
+    // Complete session (handles mode transition and consecutive count)
+    completeSession();
   };
   
   // Get color based on current mode
@@ -304,7 +294,11 @@ export const Timer: React.FC = () => {
   const getNextSessionInfo = () => {
     const untilLongBreak = sessionsUntilLongBreak - consecutiveSessionsCount;
     
-    if (untilLongBreak === 0) {
+    console.log('[INFO] Consecutive sessions:', consecutiveSessionsCount);
+    console.log('[INFO] Sessions until long break setting:', sessionsUntilLongBreak);
+    console.log('[INFO] Until long break:', untilLongBreak);
+    
+    if (untilLongBreak <= 0) {
       return '次は長休憩です';
     } else {
       return `長休憩まであと ${untilLongBreak} セッション`;
