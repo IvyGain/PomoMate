@@ -402,7 +402,17 @@ export const Timer: React.FC = () => {
         activeOpacity={0.8}
         onPress={isRunning ? pauseTimer : startTimer}
       >
-        <View style={[styles.timerButtonOuter, isRunning && styles.timerButtonOuterActive]}>
+        <View style={[
+          styles.timerButtonOuter, 
+          isRunning && {
+            backgroundColor: getModeColor() + '20',
+            shadowColor: getModeColor(),
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.6,
+            shadowRadius: 20,
+            elevation: 8,
+          }
+        ]}>
           <ProgressCircle
             progress={progress}
             size={280}
@@ -668,14 +678,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  timerButtonOuterActive: {
-    backgroundColor: colors.primary + '20',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-    elevation: 8,
-  },
+  timerButtonOuterActive: {},
   timerContent: {
     alignItems: 'center',
   },
