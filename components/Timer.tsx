@@ -403,34 +403,32 @@ export const Timer: React.FC = () => {
         onPress={isRunning ? pauseTimer : startTimer}
       >
         <View style={[styles.timerButtonOuter, isRunning && styles.timerButtonOuterActive]}>
-          <View style={[styles.timerButtonInner, isRunning && styles.timerButtonInnerActive]}>
-            <ProgressCircle
-              progress={progress}
-              size={280}
-              strokeWidth={15}
-              color={getModeColor()}
-            >
-              <View style={styles.timerContent}>
-                <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-                <Text style={styles.modeText}>
-                  {getModeName()}
-                  {isTeamSession && ' (チーム)'}
-                </Text>
-                
-                {isTeamSession && currentTeamSessionId && (
-                  <View style={styles.teamIndicator}>
-                    <Users size={16} color={getModeColor()} />
-                    <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
-                      {(() => {
-                        const session = teamSessions.find(s => s.id === currentTeamSessionId);
-                        return session ? session.participants.filter(p => p.isActive).length : 0;
-                      })()}人参加中
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </ProgressCircle>
-          </View>
+          <ProgressCircle
+            progress={progress}
+            size={280}
+            strokeWidth={15}
+            color={getModeColor()}
+          >
+            <View style={styles.timerContent}>
+              <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
+              <Text style={styles.modeText}>
+                {getModeName()}
+                {isTeamSession && ' (チーム)'}
+              </Text>
+              
+              {isTeamSession && currentTeamSessionId && (
+                <View style={styles.teamIndicator}>
+                  <Users size={16} color={getModeColor()} />
+                  <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
+                    {(() => {
+                      const session = teamSessions.find(s => s.id === currentTeamSessionId);
+                      return session ? session.participants.filter(p => p.isActive).length : 0;
+                    })()}人参加中
+                  </Text>
+                </View>
+              )}
+            </View>
+          </ProgressCircle>
         </View>
       </TouchableOpacity>
       
@@ -663,9 +661,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   timerButtonOuter: {
-    width: 300,
-    height: 300,
-    borderRadius: 150,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
     backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
@@ -673,25 +671,10 @@ const styles = StyleSheet.create({
   timerButtonOuterActive: {
     backgroundColor: colors.primary + '20',
     shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 20,
     elevation: 8,
-  },
-  timerButtonInner: {
-    width: 290,
-    height: 290,
-    borderRadius: 145,
-    backgroundColor: colors.background,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  timerButtonInnerActive: {
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
   timerContent: {
     alignItems: 'center',
