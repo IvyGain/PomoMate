@@ -828,19 +828,60 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           {/* Timer View */}
           <View style={styles.contentPage}>
             <View style={styles.timerContainer}>
-              <View style={[
-                styles.timerCircle,
-                { borderColor: getModeColor(activeSession.currentMode) }
-              ]}>
-                <Text style={[styles.timerText, { color: theme.text }]}>
-                  {formatTime(activeSession.timeRemaining)}
-                </Text>
-                <Text style={[styles.timerMode, { color: getModeColor(activeSession.currentMode) }]}>
-                  {getModeName(activeSession.currentMode)}
-                </Text>
+              {/* Player Status Section (Ready Button) */}
+              <View style={styles.playerStatusSection}>
+                <TouchableOpacity
+                  style={[
+                    styles.readyButton,
+                    { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' }
+                  ]}
+                  onPress={handleSetReady}
+                >
+                  <Text style={[
+                    styles.readyButtonText,
+                    { color: isReady ? theme.success : theme.textSecondary }
+                  ]}>
+                    {isReady ? "準備完了" : "準備する"}
+                  </Text>
+                  {isReady && (
+                    <Check size={16} color={theme.success} />
+                  )}
+                </TouchableOpacity>
               </View>
               
-              <View style={styles.timerControls}>
+              {/* Tappable Timer Circle */}
+              <TouchableOpacity 
+                style={styles.timerCircleWrapper}
+                onPress={handleToggleSession}
+                disabled={!isHost && !allReady}
+                activeOpacity={0.8}
+              >
+                <View style={[
+                  styles.timerCircle,
+                  { 
+                    borderColor: getModeColor(activeSession.currentMode),
+                    backgroundColor: theme.card,
+                  }
+                ]}>
+                  <View style={[
+                    styles.timerCircleInner,
+                    { 
+                      backgroundColor: theme.background,
+                      shadowColor: getModeColor(activeSession.currentMode),
+                    }
+                  ]}>
+                    <Text style={[styles.timerText, { color: theme.text }]}>
+                      {formatTime(activeSession.timeRemaining)}
+                    </Text>
+                    <Text style={[styles.timerMode, { color: getModeColor(activeSession.currentMode) }]}>
+                      {getModeName(activeSession.currentMode)}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+              
+              {/* Session Status Section (Mode Buttons) */}
+              <View style={styles.sessionStatusSection}>
                 {isHost && (
                   <View style={styles.modeButtons}>
                     <TouchableOpacity
@@ -883,42 +924,6 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     </TouchableOpacity>
                   </View>
                 )}
-                
-                <View style={styles.mainControls}>
-                  {(isHost || allReady) && (
-                    <TouchableOpacity
-                      style={[
-                        styles.startButton,
-                        { backgroundColor: activeSession.isRunning ? theme.error : theme.success }
-                      ]}
-                      onPress={handleToggleSession}
-                    >
-                      {activeSession.isRunning ? (
-                        <Pause size={24} color="#fff" />
-                      ) : (
-                        <Play size={24} color="#fff" />
-                      )}
-                    </TouchableOpacity>
-                  )}
-                  
-                  <TouchableOpacity
-                    style={[
-                      styles.readyButton,
-                      { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' }
-                    ]}
-                    onPress={handleSetReady}
-                  >
-                    <Text style={[
-                      styles.readyButtonText,
-                      { color: isReady ? theme.success : theme.textSecondary }
-                    ]}>
-                      {isReady ? "準備完了" : "準備する"}
-                    </Text>
-                    {isReady && (
-                      <Check size={16} color={theme.success} />
-                    )}
-                  </TouchableOpacity>
-                </View>
               </View>
             </View>
             
@@ -1316,14 +1321,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.md,
   },
+  playerStatusSection: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  sessionStatusSection: {
+    width: '100%',
+    marginTop: spacing.lg,
+  },
+  timerCircleWrapper: {
+    marginVertical: spacing.md,
+  },
   timerCircle: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    borderWidth: 3,
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    borderWidth: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  timerCircleInner: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   timerText: {
     fontSize: fontSizes.xxl,
@@ -1333,9 +1371,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     fontWeight: 'bold',
   },
-  timerControls: {
-    width: '100%',
-  },
+
   modeButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1352,25 +1388,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: spacing.xs,
   },
-  mainControls: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  startButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-  },
+
   readyButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.lg,
+    minWidth: 200,
   },
   readyButtonText: {
     fontSize: fontSizes.sm,
