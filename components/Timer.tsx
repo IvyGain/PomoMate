@@ -402,31 +402,50 @@ export const Timer: React.FC = () => {
         activeOpacity={0.8}
         onPress={isRunning ? pauseTimer : startTimer}
       >
-        <View style={styles.timerButtonOuter}>
-          <View style={styles.timerButtonInner}>
+        <View style={[styles.timerButtonOuter, isRunning && styles.timerButtonOuterActive]}>
+          <View style={[styles.timerButtonInner, isRunning && styles.timerButtonInnerActive]}>
             <ProgressCircle
               progress={progress}
               size={280}
               strokeWidth={15}
               color={getModeColor()}
             >
-              <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-              <Text style={styles.modeText}>
-                {getModeName()}
-                {isTeamSession && ' (チーム)'}
-              </Text>
-              
-              {isTeamSession && currentTeamSessionId && (
-                <View style={styles.teamIndicator}>
-                  <Users size={16} color={getModeColor()} />
-                  <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
-                    {(() => {
-                      const session = teamSessions.find(s => s.id === currentTeamSessionId);
-                      return session ? session.participants.filter(p => p.isActive).length : 0;
-                    })()}人参加中
-                  </Text>
+              <View style={styles.timerContent}>
+                <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
+                <View style={styles.statusIndicator}>
+                  {isRunning ? (
+                    <>
+                      <View style={[styles.statusDot, { backgroundColor: getModeColor() }]} />
+                      <Text style={[styles.statusText, { color: getModeColor() }]}>
+                        実行中
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <View style={[styles.statusDot, { backgroundColor: colors.textSecondary }]} />
+                      <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+                        一時停止中
+                      </Text>
+                    </>
+                  )}
                 </View>
-              )}
+                <Text style={styles.modeText}>
+                  {getModeName()}
+                  {isTeamSession && ' (チーム)'}
+                </Text>
+                
+                {isTeamSession && currentTeamSessionId && (
+                  <View style={styles.teamIndicator}>
+                    <Users size={16} color={getModeColor()} />
+                    <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
+                      {(() => {
+                        const session = teamSessions.find(s => s.id === currentTeamSessionId);
+                        return session ? session.participants.filter(p => p.isActive).length : 0;
+                      })()}人参加中
+                    </Text>
+                  </View>
+                )}
+              </View>
             </ProgressCircle>
           </View>
         </View>
@@ -673,6 +692,11 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  timerButtonOuterActive: {
+    backgroundColor: colors.primary + '20',
+    shadowColor: colors.primary,
+    shadowOpacity: 0.5,
+  },
   timerButtonInner: {
     width: 290,
     height: 290,
@@ -685,6 +709,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
+  },
+  timerButtonInnerActive: {
+    shadowColor: colors.primary,
+    shadowOpacity: 0.3,
+  },
+  timerContent: {
+    alignItems: 'center',
+  },
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.sm,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: spacing.xs,
+  },
+  statusText: {
+    fontSize: fontSizes.sm,
+    fontWeight: 'bold',
   },
   timerText: {
     fontSize: fontSizes.timer,
