@@ -2,8 +2,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievements } from '@/constants/achievements';
-import { CharacterType, determineCharacterType, getCharacterByEvolutionPath } from '@/constants/characters';
-import { useAuthStore } from './authStore';
 
 interface UserStats {
   level: number;
@@ -17,13 +15,8 @@ interface UserStats {
   totalDays: number; // 合計使用日数（連続でなくても）
   totalSessions: number; // フォーカスと休憩を含む全セッション数
   activeDays: string[]; // アクティブだった日付の配列
-  characterType: CharacterType; // キャラクターのタイプ
-  characterLevel: number; // キャラクターのレベル
-  characterExp: number; // キャラクター進化用の経験値
-  characterEvolutionPath: CharacterType[]; // 進化の履歴
   playedGames: string[]; // プレイしたゲームのID
   gamePlayCount: number; // ゲームをプレイした回数
-  activeAbilities: string[]; // 有効化されている特殊能力のID
   teamSessionsCompleted: number; // 完了したチームセッション数
   teamSessionMinutes: number; // チームセッションの合計時間（分）
 }
@@ -36,9 +29,7 @@ interface UserState extends UserStats {
   reduceXp: (amount: number) => void; // For developer mode
   unlockAchievement: (achievementId: string) => void; // For developer mode
   checkSpecialAchievements: () => void; // Check time-based and special achievements
-  evolveCharacter: () => void; // Evolve character if conditions are met
   recordGamePlay: (gameId: string) => void; // Record game play
-  applyCharacterAbility: (abilityId: string) => void; // Apply character ability
 }
 
 // XP required for each level (index is level - 1)
@@ -78,13 +69,8 @@ export const useUserStore = create<UserState>()(
       totalDays: 0,
       totalSessions: 0,
       activeDays: [],
-      characterType: 'balanced',
-      characterLevel: 1,
-      characterExp: 0,
-      characterEvolutionPath: ['balanced'],
       playedGames: [],
       gamePlayCount: 0,
-      activeAbilities: [],
       teamSessionsCompleted: 0,
       teamSessionMinutes: 0,
       
@@ -99,8 +85,6 @@ export const useUserStore = create<UserState>()(
           totalSessions,
           activeDays,
           totalDays,
-          characterExp,
-          activeAbilities,
           teamSessionsCompleted,
           teamSessionMinutes,
         } = get();
@@ -124,20 +108,8 @@ export const useUserStore = create<UserState>()(
           // Continued streak
           newStreak += 1;
         } else if (lastSessionDate !== today) {
-          // Check for streak protection ability
-          const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
-          const hasStreakProtection = character.abilities.some(
-            ability => ability.type === 'streakProtection' && ability.isActive
-          );
-          
-          if (hasStreakProtection && lastSessionDate && 
-              new Date(lastSessionDate).getTime() > Date.now() - 172800000) { // Within 48 hours
-            // Streak protected
-            newStreak += 1;
-          } else {
-            // Streak broken or first time
-            newStreak = 1;
-          }
+          // Streak broken or first time
+          newStreak = 1;
         }
         
         // Add XP for completing a session (base XP + minutes bonus)
@@ -147,16 +119,6 @@ export const useUserStore = create<UserState>()(
         if (isTeamSession && teamSize > 1) {
           const multiplier = getTeamSessionMultiplier(teamSize);
           sessionXp = Math.round(sessionXp * multiplier);
-        }
-        
-        // Apply XP boost from character abilities if any
-        const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
-        const xpBoostAbility = character.abilities.find(
-          ability => ability.type === 'xpBoost' && ability.isActive
-        );
-        
-        if (xpBoostAbility) {
-          sessionXp = Math.round(sessionXp * (1 + xpBoostAbility.value / 100));
         }
         
         let newXp = xp + sessionXp;
@@ -169,9 +131,6 @@ export const useUserStore = create<UserState>()(
           newLevel += 1;
           newXpToNextLevel = getXpForLevel(newLevel);
         }
-        
-        // Update character exp
-        const newCharacterExp = characterExp + Math.floor(minutes / 2);
         
         // Update team session stats if applicable
         const newTeamSessionsCompleted = isTeamSession ? teamSessionsCompleted + 1 : teamSessionsCompleted;
@@ -188,13 +147,9 @@ export const useUserStore = create<UserState>()(
           totalSessions: totalSessions + 1,
           activeDays: newActiveDays,
           totalDays: newTotalDays,
-          characterExp: newCharacterExp,
           teamSessionsCompleted: newTeamSessionsCompleted,
           teamSessionMinutes: newTeamSessionMinutes,
         });
-        
-        // Check for character evolution
-        get().evolveCharacter();
         
         // Check for new achievements
         get().checkAchievements();
@@ -291,18 +246,9 @@ export const useUserStore = create<UserState>()(
             newlyUnlocked.push(achievement.id);
             
             // Add XP reward for unlocking achievement
-            const { xp, level, xpToNextLevel, activeAbilities } = userStats;
+            const { xp, level, xpToNextLevel } = userStats;
             
-            // Apply achievement boost from character abilities if any
             let achievementReward = achievement.reward;
-            const character = getCharacterByEvolutionPath(get().characterEvolutionPath, get().characterLevel);
-            const achievementBoostAbility = character.abilities.find(
-              ability => ability.type === 'achievementBoost' && ability.isActive
-            );
-            
-            if (achievementBoostAbility) {
-              achievementReward = Math.round(achievementReward * (1 + achievementBoostAbility.value / 100));
-            }
             
             let newXp = xp + achievementReward;
             let newLevel = level;
@@ -388,94 +334,8 @@ export const useUserStore = create<UserState>()(
         // Perfect Week would need to track daily sessions for a week
       },
       
-      evolveCharacter: () => {
-        const {
-          characterLevel,
-          characterExp,
-          characterType,
-          characterEvolutionPath,
-          sessions,
-          streak,
-          totalDays,
-        } = get();
-        
-        // Get current character data
-        const character = getCharacterByEvolutionPath(characterEvolutionPath, characterLevel);
-        
-        if (!character || !character.nextEvolutionExp) {
-          return; // Already at max evolution or invalid character
-        }
-        
-        // Check if enough exp to evolve
-        if (characterExp >= character.nextEvolutionExp) {
-          // Determine new character type based on recent stats
-          const newType = determineCharacterType(sessions, streak, totalDays);
-          
-          // Create new evolution path
-          const newEvolutionPath = [...characterEvolutionPath, newType];
-          
-          // Update character
-          set({
-            characterLevel: characterLevel + 1,
-            characterExp: 0, // Reset exp after evolution
-            characterType: newType,
-            characterEvolutionPath: newEvolutionPath,
-          });
-          
-          // Unlock character evolution achievement
-          if (characterLevel === 1) {
-            get().unlockAchievement('character_evolution_1');
-          } else if (characterLevel === 2) {
-            get().unlockAchievement('character_evolution_2');
-          } else if (characterLevel === 3) {
-            get().unlockAchievement('character_evolution_3');
-          } else if (characterLevel === 4) {
-            get().unlockAchievement('character_evolution_4');
-          }
-          
-          // Unlock character type achievement
-          if (newType === 'balanced' && !get().unlockedAchievements.includes('balanced_character')) {
-            get().unlockAchievement('balanced_character');
-          } else if (newType === 'focused' && !get().unlockedAchievements.includes('focused_character')) {
-            get().unlockAchievement('focused_character');
-          } else if (newType === 'consistent' && !get().unlockedAchievements.includes('consistent_character')) {
-            get().unlockAchievement('consistent_character');
-          }
-          
-          // Check for character collector achievement
-          const uniqueTypes = new Set(characterEvolutionPath);
-          if (uniqueTypes.size >= 3 && !get().unlockedAchievements.includes('character_collector')) {
-            get().unlockAchievement('character_collector');
-          }
-          
-          // Check for evolution master achievement
-          if (characterLevel + 1 === 5 && !get().unlockedAchievements.includes('evolution_master')) {
-            get().unlockAchievement('evolution_master');
-          }
-        }
-      },
-      
-      // Apply character ability
-      applyCharacterAbility: (abilityId: string) => {
-        const { activeAbilities } = get();
-        
-        // Check if ability is already active
-        if (activeAbilities.includes(abilityId)) {
-          // Deactivate ability
-          set({
-            activeAbilities: activeAbilities.filter(id => id !== abilityId)
-          });
-        } else {
-          // Activate ability
-          set({
-            activeAbilities: [...activeAbilities, abilityId]
-          });
-        }
-      },
-      
+
       resetProgress: () => {
-        // Get the current user from auth store to maintain the connection
-        const { user } = useAuthStore.getState();
         
         set({
           level: 1,
@@ -489,13 +349,8 @@ export const useUserStore = create<UserState>()(
           totalDays: 0,
           totalSessions: 0,
           activeDays: [],
-          characterType: 'balanced',
-          characterLevel: 1,
-          characterExp: 0,
-          characterEvolutionPath: ['balanced'],
           playedGames: [],
           gamePlayCount: 0,
-          activeAbilities: [],
           teamSessionsCompleted: 0,
           teamSessionMinutes: 0,
         });

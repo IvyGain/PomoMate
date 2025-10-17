@@ -44,6 +44,7 @@ interface TimerState {
   longBreakDuration: number; // in minutes
   sessionsUntilLongBreak: number;
   completedSessions: number;
+  consecutiveSessionsCount: number; // Track consecutive focus sessions for long break countdown
   autoStartBreaks: boolean;
   autoStartFocus: boolean;
   soundEnabled: boolean;
@@ -106,6 +107,7 @@ export const useTimerStore = create<TimerState>()(
       longBreakDuration: 15, // in minutes
       sessionsUntilLongBreak: 4,
       completedSessions: 0,
+      consecutiveSessionsCount: 0,
       autoStartBreaks: true,
       autoStartFocus: false,
       soundEnabled: true,
@@ -191,16 +193,18 @@ export const useTimerStore = create<TimerState>()(
             }));
           } else if (session && session.isRunning && session.timeRemaining === 0) {
             // Team session timer completed
-            const { currentMode, autoStartBreaks, autoStartFocus, completedSessions, sessionsUntilLongBreak } = get();
+            const { currentMode, autoStartBreaks, autoStartFocus, completedSessions, sessionsUntilLongBreak, consecutiveSessionsCount } = get();
             
             if (currentMode === 'focus') {
               const newCompletedSessions = completedSessions + 1;
-              const shouldTakeLongBreak = newCompletedSessions % sessionsUntilLongBreak === 0;
+              const newConsecutiveCount = consecutiveSessionsCount + 1;
+              const shouldTakeLongBreak = newConsecutiveCount >= sessionsUntilLongBreak;
               const nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
               
               // Update team session
               set(state => ({
                 completedSessions: newCompletedSessions,
+                consecutiveSessionsCount: shouldTakeLongBreak ? 0 : newConsecutiveCount,
                 currentMode: nextMode,
                 timeRemaining: shouldTakeLongBreak ? get().longBreakDuration * 60 : get().shortBreakDuration * 60,
                 isRunning: autoStartBreaks,
@@ -242,15 +246,17 @@ export const useTimerStore = create<TimerState>()(
           set({ timeRemaining: timeRemaining - 1 });
         } else if (isRunning && timeRemaining === 0) {
           // Timer completed
-          const { currentMode, autoStartBreaks, autoStartFocus, completedSessions, sessionsUntilLongBreak } = get();
+          const { currentMode, autoStartBreaks, autoStartFocus, completedSessions, sessionsUntilLongBreak, consecutiveSessionsCount } = get();
           
           if (currentMode === 'focus') {
             const newCompletedSessions = completedSessions + 1;
-            const shouldTakeLongBreak = newCompletedSessions % sessionsUntilLongBreak === 0;
+            const newConsecutiveCount = consecutiveSessionsCount + 1;
+            const shouldTakeLongBreak = newConsecutiveCount >= sessionsUntilLongBreak;
             const nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
             
             set({ 
               completedSessions: newCompletedSessions,
+              consecutiveSessionsCount: shouldTakeLongBreak ? 0 : newConsecutiveCount,
               currentMode: nextMode,
               timeRemaining: shouldTakeLongBreak ? get().longBreakDuration * 60 : get().shortBreakDuration * 60,
               isRunning: autoStartBreaks

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Clock, BarChart2, Award, User, Users } from 'lucide-react-native';
+import { Clock, BarChart2, Award, Users } from 'lucide-react-native';
 import { useThemeStore } from '@/store/themeStore';
 
 export default function TabLayout() {
@@ -45,14 +45,6 @@ export default function TabLayout() {
           title: '実績',
           tabBarLabel: '実績',
           tabBarIcon: ({ color }) => <Award size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="character"
-        options={{
-          title: 'マイキャラクター',
-          tabBarLabel: 'キャラ',
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
         }}
       />
       <Tabs.Screen

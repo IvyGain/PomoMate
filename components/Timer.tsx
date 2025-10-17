@@ -30,6 +30,7 @@ export const Timer: React.FC = () => {
     autoStartFocus,
     completedSessions,
     sessionsUntilLongBreak,
+    consecutiveSessionsCount,
     isTeamSession,
     currentTeamSessionId,
     teamSessions,
@@ -301,10 +302,9 @@ export const Timer: React.FC = () => {
   
   // Get next session info
   const getNextSessionInfo = () => {
-    const nextSession = completedSessions + 1;
-    const untilLongBreak = sessionsUntilLongBreak - (nextSession % sessionsUntilLongBreak);
+    const untilLongBreak = sessionsUntilLongBreak - consecutiveSessionsCount;
     
-    if (untilLongBreak === 0 || untilLongBreak === sessionsUntilLongBreak) {
+    if (untilLongBreak === 0) {
       return '次は長休憩です';
     } else {
       return `長休憩まであと ${untilLongBreak} セッション`;
