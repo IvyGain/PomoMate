@@ -412,23 +412,6 @@ export const Timer: React.FC = () => {
             >
               <View style={styles.timerContent}>
                 <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-                <View style={styles.statusIndicator}>
-                  {isRunning ? (
-                    <>
-                      <View style={[styles.statusDot, { backgroundColor: getModeColor() }]} />
-                      <Text style={[styles.statusText, { color: getModeColor() }]}>
-                        実行中
-                      </Text>
-                    </>
-                  ) : (
-                    <>
-                      <View style={[styles.statusDot, { backgroundColor: colors.textSecondary }]} />
-                      <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-                        一時停止中
-                      </Text>
-                    </>
-                  )}
-                </View>
                 <Text style={styles.modeText}>
                   {getModeName()}
                   {isTeamSession && ' (チーム)'}
@@ -716,21 +699,6 @@ const styles = StyleSheet.create({
   },
   timerContent: {
     alignItems: 'center',
-  },
-  statusIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.sm,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: spacing.xs,
-  },
-  statusText: {
-    fontSize: fontSizes.sm,
-    fontWeight: 'bold',
   },
   timerText: {
     fontSize: fontSizes.timer,

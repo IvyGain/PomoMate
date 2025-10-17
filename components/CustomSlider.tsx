@@ -1,131 +1,79 @@
-import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, PanResponder } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import Slider from '@react-native-community/slider';
 
 interface CustomSliderProps {
-  value: number;
-  onValueChange: (value: number) => void;
+  style?: any;
   minimumValue: number;
   maximumValue: number;
-  step?: number;
-  minimumTrackTintColor?: string;
-  maximumTrackTintColor?: string;
-  thumbTintColor?: string;
+  step: number;
+  value: number;
+  onValueChange: (value: number) => void;
+  minimumTrackTintColor: string;
+  maximumTrackTintColor: string;
+  thumbTintColor: string;
 }
 
-export const CustomSlider: React.FC<CustomSliderProps> = ({
-  value,
-  onValueChange,
-  minimumValue,
-  maximumValue,
-  step = 1,
-  minimumTrackTintColor = '#4A90E2',
-  maximumTrackTintColor = '#D1D5DB',
-  thumbTintColor = '#4A90E2',
-}) => {
-  const [sliderWidth, setSliderWidth] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-
-  const getValueFromPosition = useCallback(
-    (x: number) => {
-      const percentage = Math.max(0, Math.min(1, x / sliderWidth));
-      const rawValue = minimumValue + percentage * (maximumValue - minimumValue);
-      const steppedValue = Math.round(rawValue / step) * step;
-      return Math.max(minimumValue, Math.min(maximumValue, steppedValue));
-    },
-    [sliderWidth, minimumValue, maximumValue, step]
-  );
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: (evt, gestureState) => {
-      setIsDragging(true);
-      const newValue = getValueFromPosition(gestureState.x0 - gestureState.dx);
-      onValueChange(newValue);
-    },
-    onPanResponderMove: (evt, gestureState) => {
-      const newValue = getValueFromPosition(gestureState.moveX);
-      onValueChange(newValue);
-    },
-    onPanResponderRelease: () => {
-      setIsDragging(false);
-    },
-  });
-
-  const percentage = ((value - minimumValue) / (maximumValue - minimumValue)) * 100;
-
-  return (
-    <View
-      style={styles.container}
-      onLayout={(e) => setSliderWidth(e.nativeEvent.layout.width)}
-      {...panResponder.panHandlers}
-    >
-      <View style={styles.track}>
-        <View
-          style={[
-            styles.minimumTrack,
-            {
-              width: `${percentage}%`,
-              backgroundColor: minimumTrackTintColor,
-            },
-          ]}
+export const CustomSlider: React.FC<CustomSliderProps> = (props) => {
+  if (Platform.OS === 'web') {
+    const { style, value, minimumValue, maximumValue, step, onValueChange, minimumTrackTintColor, maximumTrackTintColor, thumbTintColor } = props;
+    
+    const percentage = ((value - minimumValue) / (maximumValue - minimumValue)) * 100;
+    
+    return (
+      <View style={[styles.webSliderContainer, style]}>
+        <input
+          type="range"
+          min={minimumValue}
+          max={maximumValue}
+          step={step}
+          value={value}
+          onChange={(e) => onValueChange(Number(e.target.value))}
+          style={{
+            width: '100%',
+            height: 40,
+            WebkitAppearance: 'none',
+            appearance: 'none',
+            background: `linear-gradient(to right, ${minimumTrackTintColor} 0%, ${minimumTrackTintColor} ${percentage}%, ${maximumTrackTintColor} ${percentage}%, ${maximumTrackTintColor} 100%)`,
+            outline: 'none',
+            borderRadius: 8,
+            cursor: 'pointer',
+          } as React.CSSProperties}
+          className="custom-slider-web"
         />
-        <View
-          style={[
-            styles.maximumTrack,
-            {
-              width: `${100 - percentage}%`,
-              backgroundColor: maximumTrackTintColor,
-            },
-          ]}
-        />
+        <style>
+          {`
+            .custom-slider-web::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              appearance: none;
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: ${thumbTintColor};
+              cursor: pointer;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+            
+            .custom-slider-web::-moz-range-thumb {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              background: ${thumbTintColor};
+              cursor: pointer;
+              border: none;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
+          `}
+        </style>
       </View>
-      <View
-        style={[
-          styles.thumb,
-          {
-            left: `${percentage}%`,
-            backgroundColor: thumbTintColor,
-            transform: [{ scale: isDragging ? 1.2 : 1 }],
-          },
-        ]}
-      />
-    </View>
-  );
+    );
+  }
+  
+  return <Slider {...props} />;
 };
 
 const styles = StyleSheet.create({
-  container: {
-    height: 40,
-    justifyContent: 'center',
-    flex: 1,
-  },
-  track: {
-    height: 4,
-    flexDirection: 'row',
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  minimumTrack: {
-    height: 4,
-    borderTopLeftRadius: 2,
-    borderBottomLeftRadius: 2,
-  },
-  maximumTrack: {
-    height: 4,
-    borderTopRightRadius: 2,
-    borderBottomRightRadius: 2,
-  },
-  thumb: {
-    position: 'absolute',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    marginLeft: -10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 4,
+  webSliderContainer: {
+    width: '100%',
   },
 });
