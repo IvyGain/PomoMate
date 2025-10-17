@@ -828,59 +828,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
           {/* Timer View */}
           <View style={styles.contentPage}>
             <View style={styles.timerContainer}>
-              {/* Player Status Section (Ready Button) */}
-              <View style={styles.playerStatusSection}>
-                <TouchableOpacity
-                  style={[
-                    styles.readyButton,
-                    { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' }
-                  ]}
-                  onPress={handleSetReady}
-                >
-                  <Text style={[
-                    styles.readyButtonText,
-                    { color: isReady ? theme.success : theme.textSecondary }
-                  ]}>
-                    {isReady ? "準備完了" : "準備する"}
-                  </Text>
-                  {isReady && (
-                    <Check size={16} color={theme.success} />
-                  )}
-                </TouchableOpacity>
-              </View>
-              
-              {/* Tappable Timer Circle */}
-              <TouchableOpacity 
-                style={styles.timerCircleWrapper}
-                onPress={handleToggleSession}
-                disabled={!isHost && !allReady}
-                activeOpacity={0.8}
-              >
-                <View style={[
-                  styles.timerCircle,
-                  { 
-                    borderColor: getModeColor(activeSession.currentMode),
-                    backgroundColor: theme.card,
-                  }
-                ]}>
-                  <View style={[
-                    styles.timerCircleInner,
-                    { 
-                      backgroundColor: theme.background,
-                      shadowColor: getModeColor(activeSession.currentMode),
-                    }
-                  ]}>
-                    <Text style={[styles.timerText, { color: theme.text }]}>
-                      {formatTime(activeSession.timeRemaining)}
-                    </Text>
-                    <Text style={[styles.timerMode, { color: getModeColor(activeSession.currentMode) }]}>
-                      {getModeName(activeSession.currentMode)}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-              
-              {/* Session Status Section (Mode Buttons) */}
+              {/* Session Status Section (Mode Buttons) - Now at top */}
               <View style={styles.sessionStatusSection}>
                 {isHost && (
                   <View style={styles.modeButtons}>
@@ -924,6 +872,61 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
                     </TouchableOpacity>
                   </View>
                 )}
+              </View>
+              
+              {/* Tappable Timer Circle */}
+              <TouchableOpacity 
+                style={styles.timerCircleWrapper}
+                onPress={handleToggleSession}
+                disabled={!isHost && !allReady}
+                activeOpacity={0.7}
+              >
+                <View style={[
+                  styles.timerCircle,
+                  { 
+                    borderColor: getModeColor(activeSession.currentMode),
+                    backgroundColor: theme.card,
+                  }
+                ]}>
+                  <View style={[
+                    styles.timerCircleInner,
+                    { 
+                      backgroundColor: theme.background,
+                      shadowColor: getModeColor(activeSession.currentMode),
+                    }
+                  ]}>
+                    <Text style={[styles.timerText, { color: theme.text }]}>
+                      {formatTime(activeSession.timeRemaining)}
+                    </Text>
+                    <Text style={[styles.timerMode, { color: getModeColor(activeSession.currentMode) }]}>
+                      {getModeName(activeSession.currentMode)}
+                    </Text>
+                    <Text style={[styles.timerHint, { color: theme.textSecondary }]}>
+                      {activeSession.isRunning ? "停止" : "開始"}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+              
+              {/* Player Status Section (Ready Button) - Now at bottom */}
+              <View style={styles.playerStatusSection}>
+                <TouchableOpacity
+                  style={[
+                    styles.readyButton,
+                    { backgroundColor: isReady ? 'rgba(107, 203, 119, 0.2)' : 'rgba(255, 255, 255, 0.1)' }
+                  ]}
+                  onPress={handleSetReady}
+                >
+                  <Text style={[
+                    styles.readyButtonText,
+                    { color: isReady ? theme.success : theme.textSecondary }
+                  ]}>
+                    {isReady ? "準備完了" : "準備する"}
+                  </Text>
+                  {isReady && (
+                    <Check size={16} color={theme.success} />
+                  )}
+                </TouchableOpacity>
               </View>
             </View>
             
@@ -1321,13 +1324,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.md,
   },
+  sessionStatusSection: {
+    width: '100%',
+    marginBottom: spacing.lg,
+  },
   playerStatusSection: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  sessionStatusSection: {
-    width: '100%',
     marginTop: spacing.lg,
   },
   timerCircleWrapper: {
@@ -1370,6 +1373,10 @@ const styles = StyleSheet.create({
   timerMode: {
     fontSize: fontSizes.sm,
     fontWeight: 'bold',
+  },
+  timerHint: {
+    fontSize: fontSizes.xs,
+    marginTop: spacing.xs,
   },
 
   modeButtons: {
