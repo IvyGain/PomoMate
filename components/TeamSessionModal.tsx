@@ -722,7 +722,7 @@ export const TeamSessionModal: React.FC<TeamSessionModalProps> = ({ visible, onC
     </View>
   );
   
-  // Render active tab
+  // Render active tab (force refresh)
   const renderActiveTab = () => {
     if (!activeSession) return null;
     
