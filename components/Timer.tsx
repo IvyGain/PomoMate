@@ -405,17 +405,14 @@ export const Timer: React.FC = () => {
         <View style={[
           styles.timerButtonOuter, 
           isRunning && {
-            backgroundColor: getModeColor() + '10',
+            backgroundColor: getModeColor() + '20',
+            shadowColor: getModeColor(),
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.6,
+            shadowRadius: 20,
+            elevation: 8,
           }
         ]}>
-          {isRunning && (
-            <View style={[
-              styles.glowContainer,
-              {
-                shadowColor: getModeColor(),
-              }
-            ]} />
-          )}
           <ProgressCircle
             progress={progress}
             size={280}
@@ -680,17 +677,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
-  },
-  glowContainer: {
-    position: 'absolute',
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 40,
-    elevation: 0,
   },
   timerButtonOuterActive: {},
   timerContent: {
