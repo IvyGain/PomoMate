@@ -31,12 +31,12 @@ export const CustomSlider: React.FC<CustomSliderProps> = (props) => {
           onChange={(e) => onValueChange(Number(e.target.value))}
           style={{
             width: '100%',
-            height: 40,
+            height: 4,
             WebkitAppearance: 'none',
             appearance: 'none',
             background: `linear-gradient(to right, ${minimumTrackTintColor} 0%, ${minimumTrackTintColor} ${percentage}%, ${maximumTrackTintColor} ${percentage}%, ${maximumTrackTintColor} 100%)`,
             outline: 'none',
-            borderRadius: 8,
+            borderRadius: 2,
             cursor: 'pointer',
           } as React.CSSProperties}
           className="custom-slider-web"
@@ -46,8 +46,8 @@ export const CustomSlider: React.FC<CustomSliderProps> = (props) => {
             .custom-slider-web::-webkit-slider-thumb {
               -webkit-appearance: none;
               appearance: none;
-              width: 20px;
-              height: 20px;
+              width: 16px;
+              height: 16px;
               border-radius: 50%;
               background: ${thumbTintColor};
               cursor: pointer;
@@ -55,8 +55,8 @@ export const CustomSlider: React.FC<CustomSliderProps> = (props) => {
             }
             
             .custom-slider-web::-moz-range-thumb {
-              width: 20px;
-              height: 20px;
+              width: 16px;
+              height: 16px;
               border-radius: 50%;
               background: ${thumbTintColor};
               cursor: pointer;
