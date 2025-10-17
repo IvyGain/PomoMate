@@ -15,7 +15,7 @@ import { useUserStore } from '@/store/userStore';
 import { useAuthStore } from '@/store/authStore';
 import { useTimerStore } from '@/store/timerStore';
 import ProfileHeader from '@/components/ProfileHeader';
-import { CustomSlider } from '@/components/CustomSlider';
+import Slider from '@react-native-community/slider';
 import { 
   Moon, 
   Sun, 
@@ -161,7 +161,8 @@ export default function SettingsScreen() {
         <Text style={[styles.settingTitle, { color: theme.text }]}>{title}</Text>
       </View>
       <View style={styles.sliderContainer}>
-        <CustomSlider
+        <Slider
+          style={styles.slider}
           minimumValue={min}
           maximumValue={max}
           step={step}

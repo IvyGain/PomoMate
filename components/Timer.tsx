@@ -375,38 +375,18 @@ export const Timer: React.FC = () => {
         </TouchableOpacity>
       </View>
       
-      {/* Unified Status Display */}
-      <View style={[
-        styles.statusCard,
-        { 
-          backgroundColor: isRunning ? getModeColor() + '20' : colors.card,
-          borderColor: isRunning ? getModeColor() : colors.textSecondary + '40',
-        }
-      ]}>
-        <View style={styles.statusHeader}>
-          <View style={[styles.statusDot, { backgroundColor: isRunning ? getModeColor() : colors.textSecondary }]} />
-          <Text style={[
-            styles.statusHeaderText, 
-            { color: isRunning ? getModeColor() : colors.textSecondary }
-          ]}>
-            {isRunning ? '実行中' : '一時停止中'}
-          </Text>
-        </View>
-        
-        <Text style={[styles.statusMainText, { color: colors.text }]}>
-          {getModeName()}{isTeamSession && ' (チーム)'}
-        </Text>
-        
-        <Text style={[styles.statusSubText, { color: colors.textSecondary }]}>
+      {/* Session Info */}
+      <View style={styles.sessionInfo}>
+        <Text style={styles.sessionInfoText}>
           {currentMode === 'focus' ? getNextSessionInfo() : '休憩中...'}
         </Text>
         
         {/* Team Session Button */}
         <TouchableOpacity
-          style={[styles.teamButton, { backgroundColor: isTeamSession ? getModeColor() : colors.background }]}
+          style={[styles.teamButton, { backgroundColor: isTeamSession ? colors.primary : colors.card }]}
           onPress={handleTeamSessionClick}
         >
-          <Users size={14} color={isTeamSession ? colors.text : colors.textSecondary} />
+          <Users size={16} color={isTeamSession ? colors.text : colors.textSecondary} />
           <Text style={[
             styles.teamButtonText, 
             { color: isTeamSession ? colors.text : colors.textSecondary }
@@ -432,6 +412,27 @@ export const Timer: React.FC = () => {
             >
               <View style={styles.timerContent}>
                 <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
+                <View style={styles.statusIndicator}>
+                  {isRunning ? (
+                    <>
+                      <View style={[styles.statusDot, { backgroundColor: getModeColor() }]} />
+                      <Text style={[styles.statusText, { color: getModeColor() }]}>
+                        実行中
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <View style={[styles.statusDot, { backgroundColor: colors.textSecondary }]} />
+                      <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+                        一時停止中
+                      </Text>
+                    </>
+                  )}
+                </View>
+                <Text style={styles.modeText}>
+                  {getModeName()}
+                  {isTeamSession && ' (チーム)'}
+                </Text>
                 
                 {isTeamSession && currentTeamSessionId && (
                   <View style={styles.teamIndicator}>
@@ -644,41 +645,22 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.sm,
     marginLeft: spacing.xs,
   },
-  statusCard: {
+  sessionInfo: {
     marginBottom: spacing.lg,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    borderWidth: 2,
     alignItems: 'center',
-    width: '100%',
   },
-  statusHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  statusHeaderText: {
-    fontSize: fontSizes.sm,
-    fontWeight: 'bold' as const,
-    textTransform: 'uppercase' as const,
-    letterSpacing: 1,
-  },
-  statusMainText: {
-    fontSize: fontSizes.xl,
-    fontWeight: 'bold' as const,
-    marginBottom: spacing.xs,
-  },
-  statusSubText: {
-    fontSize: fontSizes.sm,
+  sessionInfoText: {
+    color: colors.textSecondary,
+    fontSize: fontSizes.md,
     marginBottom: spacing.sm,
   },
   teamButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
+    marginBottom: spacing.sm,
   },
   teamButtonText: {
     fontSize: fontSizes.sm,
@@ -735,18 +717,31 @@ const styles = StyleSheet.create({
   timerContent: {
     alignItems: 'center',
   },
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.sm,
+  },
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     marginRight: spacing.xs,
   },
+  statusText: {
+    fontSize: fontSizes.sm,
+    fontWeight: 'bold',
+  },
   timerText: {
     fontSize: fontSizes.timer,
     fontWeight: 'bold',
     color: colors.text,
   },
-
+  modeText: {
+    fontSize: fontSizes.md,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
   teamIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
