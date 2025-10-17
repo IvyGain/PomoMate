@@ -440,7 +440,6 @@ const styles = StyleSheet.create({
   },
   slider: {
     flex: 1,
-    height: 40,
   },
   sliderValue: {
     width: 50,

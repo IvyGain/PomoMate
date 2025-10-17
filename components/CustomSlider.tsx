@@ -75,5 +75,6 @@ export const CustomSlider: React.FC<CustomSliderProps> = (props) => {
 const styles = StyleSheet.create({
   webSliderContainer: {
     width: '100%',
+    justifyContent: 'center',
   },
 });
