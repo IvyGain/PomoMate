@@ -375,6 +375,63 @@ export const Timer: React.FC = () => {
         </TouchableOpacity>
       </View>
       
+      {/* Session Info */}
+      <View style={styles.sessionInfo}>
+        <Text style={styles.sessionInfoText}>
+          {currentMode === 'focus' ? getNextSessionInfo() : '休憩中...'}
+        </Text>
+        
+        {/* Team Session Button */}
+        <TouchableOpacity
+          style={[styles.teamButton, { backgroundColor: isTeamSession ? colors.primary : colors.card }]}
+          onPress={handleTeamSessionClick}
+        >
+          <Users size={16} color={isTeamSession ? colors.text : colors.textSecondary} />
+          <Text style={[
+            styles.teamButtonText, 
+            { color: isTeamSession ? colors.text : colors.textSecondary }
+          ]}>
+            {isTeamSession ? 'チームセッション中' : 'チームセッション'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      
+      {/* Timer Circle */}
+      <TouchableOpacity 
+        style={styles.timerContainer}
+        activeOpacity={0.8}
+        onPress={isRunning ? pauseTimer : startTimer}
+      >
+        <View style={styles.timerButtonOuter}>
+          <View style={styles.timerButtonInner}>
+            <ProgressCircle
+              progress={progress}
+              size={280}
+              strokeWidth={15}
+              color={getModeColor()}
+            >
+              <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
+              <Text style={styles.modeText}>
+                {getModeName()}
+                {isTeamSession && ' (チーム)'}
+              </Text>
+              
+              {isTeamSession && currentTeamSessionId && (
+                <View style={styles.teamIndicator}>
+                  <Users size={16} color={getModeColor()} />
+                  <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
+                    {(() => {
+                      const session = teamSessions.find(s => s.id === currentTeamSessionId);
+                      return session ? session.participants.filter(p => p.isActive).length : 0;
+                    })()}人参加中
+                  </Text>
+                </View>
+              )}
+            </ProgressCircle>
+          </View>
+        </View>
+      </TouchableOpacity>
+      
       {/* User Stats */}
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
@@ -398,66 +455,6 @@ export const Timer: React.FC = () => {
         </View>
       </View>
       
-      {/* Session Info */}
-      <View style={styles.sessionInfo}>
-        <Text style={styles.sessionInfoText}>
-          {currentMode === 'focus' ? getNextSessionInfo() : '休憩中...'}
-        </Text>
-        
-        {/* Team Session Button */}
-        <TouchableOpacity
-          style={[styles.teamButton, { backgroundColor: isTeamSession ? colors.primary : colors.card }]}
-          onPress={handleTeamSessionClick}
-        >
-          <Users size={16} color={isTeamSession ? colors.text : colors.textSecondary} />
-          <Text style={[
-            styles.teamButtonText, 
-            { color: isTeamSession ? colors.text : colors.textSecondary }
-          ]}>
-            {isTeamSession ? 'チームセッション中' : 'チームセッション'}
-          </Text>
-        </TouchableOpacity>
-        
-        {/* Break Time Game Button */}
-        {(currentMode === 'shortBreak' || currentMode === 'longBreak') && (
-          <TouchableOpacity
-            style={styles.gameButton}
-            onPress={() => setShowBreakGame(true)}
-          >
-            <GamepadIcon size={16} color={colors.text} />
-            <Text style={styles.gameButtonText}>ミニゲームで遊ぶ</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      
-      {/* Timer Circle */}
-      <View style={styles.timerContainer}>
-        <ProgressCircle
-          progress={progress}
-          size={300}
-          strokeWidth={15}
-          color={getModeColor()}
-        >
-          <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-          <Text style={styles.modeText}>
-            {getModeName()}
-            {isTeamSession && ' (チーム)'}
-          </Text>
-          
-          {isTeamSession && currentTeamSessionId && (
-            <View style={styles.teamIndicator}>
-              <Users size={16} color={getModeColor()} />
-              <Text style={[styles.teamIndicatorText, { color: getModeColor() }]}>
-                {(() => {
-                  const session = teamSessions.find(s => s.id === currentTeamSessionId);
-                  return session ? session.participants.filter(p => p.isActive).length : 0;
-                })()}人参加中
-              </Text>
-            </View>
-          )}
-        </ProgressCircle>
-      </View>
-      
       {/* Timer Controls */}
       <View style={styles.controls}>
         <TouchableOpacity
@@ -467,16 +464,15 @@ export const Timer: React.FC = () => {
           <RotateCcw size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         
-        <TouchableOpacity
-          style={[styles.mainButton, { backgroundColor: getModeColor() }]}
-          onPress={isRunning ? pauseTimer : startTimer}
-        >
-          {isRunning ? (
-            <Pause size={32} color={colors.text} />
-          ) : (
-            <Play size={32} color={colors.text} />
-          )}
-        </TouchableOpacity>
+        {/* Break Time Game Button */}
+        {(currentMode === 'shortBreak' || currentMode === 'longBreak') && (
+          <TouchableOpacity
+            style={styles.gameButton}
+            onPress={() => setShowBreakGame(true)}
+          >
+            <GamepadIcon size={24} color={colors.text} />
+          </TouchableOpacity>
+        )}
         
         {/* Dev Mode Toggle */}
         <TouchableOpacity
@@ -653,21 +649,42 @@ const styles = StyleSheet.create({
     marginLeft: spacing.xs,
   },
   gameButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: borderRadius.circle,
     backgroundColor: colors.secondary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  gameButtonText: {
-    color: colors.text,
-    fontSize: fontSizes.sm,
-    fontWeight: 'bold',
-    marginLeft: spacing.xs,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: spacing.md,
   },
   timerContainer: {
     marginBottom: spacing.xl,
+  },
+  timerButtonOuter: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: colors.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  timerButtonInner: {
+    width: 290,
+    height: 290,
+    borderRadius: 145,
+    backgroundColor: colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   timerText: {
     fontSize: fontSizes.timer,
@@ -692,20 +709,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: spacing.lg,
   },
   controlButton: {
     width: 60,
     height: 60,
     borderRadius: borderRadius.circle,
     backgroundColor: colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: spacing.md,
-  },
-  mainButton: {
-    width: 80,
-    height: 80,
-    borderRadius: borderRadius.circle,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: spacing.md,
