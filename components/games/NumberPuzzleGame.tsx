@@ -146,9 +146,9 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
     return Math.max(1, 200 - moves) + timeBonus;
   };
   
-  // 画面サイズに基づいてタイルサイズを計算
   const screenWidth = Dimensions.get('window').width;
-  const tileSize = (screenWidth - (spacing.md * 2) - (spacing.xs * 8)) / 4;
+  const maxWidth = Math.min(screenWidth - (spacing.md * 4), 400);
+  const tileSize = (maxWidth - (spacing.xs * 8)) / 4;
   
   return (
     <View style={styles.container}>
@@ -290,12 +290,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: spacing.md,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   puzzleContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    width: Math.min(Dimensions.get('window').width - (spacing.md * 4), 400),
     justifyContent: 'center',
-    marginTop: spacing.lg,
   },
   tile: {
     margin: spacing.xs,
