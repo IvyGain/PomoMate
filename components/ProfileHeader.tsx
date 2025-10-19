@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { useUserStore } from '@/store/userStore';
 import { useTimerStore } from '@/store/timerStore';
-import { Settings, Clock, Users } from 'lucide-react-native';
+import { Settings, Clock, Users, Flame, Target } from 'lucide-react-native';
 import { router } from 'expo-router';
 
 interface ProfileHeaderProps {
@@ -14,7 +14,7 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({ showSettings = true }: ProfileHeaderProps) {
   const { user } = useAuthStore();
   const { theme } = useThemeStore();
-  const { level, xp, xpToNextLevel } = useUserStore();
+  const { level, xp, xpToNextLevel, streak, sessions } = useUserStore();
   const { isRunning, currentMode, isTeamSession } = useTimerStore();
   
   if (!user) return null;
@@ -95,6 +95,19 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
               <Text style={[styles.xpText, { color: theme.textSecondary }]}>
                 {xp}/{xpToNextLevel} XP
               </Text>
+            </View>
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Flame size={14} color="#FF6B6B" />
+                <Text style={[styles.statValue, { color: theme.text }]}>{streak}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>連続日数</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Target size={14} color="#4ECDC4" />
+                <Text style={[styles.statValue, { color: theme.text }]}>{sessions}</Text>
+                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>今日のセッション</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -220,5 +233,28 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 12,
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statValue: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  statLabel: {
+    fontSize: 11,
+  },
+  statDivider: {
+    width: 1,
+    height: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
 });

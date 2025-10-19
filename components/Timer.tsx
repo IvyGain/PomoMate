@@ -88,15 +88,47 @@ export const Timer: React.FC = () => {
     };
   }, [sound]);
 
-  const playCompletionSound = useCallback(async () => {
+  const playSound = useCallback(async (type: 'start' | 'stop' | 'complete') => {
     if (!soundEnabled || Platform.OS === 'web') return;
     
     try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+      });
+
+      let soundFile;
+      let volume = 1.0;
+      
+      switch (type) {
+        case 'start':
+          soundFile = 'https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3';
+          volume = 0.5;
+          break;
+        case 'stop':
+          soundFile = 'https://assets.mixkit.co/active_storage/sfx/2569/2569-preview.mp3';
+          volume = 0.4;
+          break;
+        case 'complete':
+          soundFile = 'https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3';
+          volume = 0.7;
+          break;
+        default:
+          return;
+      }
+      
       const { sound: newSound } = await Audio.Sound.createAsync(
-        require('@/assets/sounds/complete.mp3')
+        { uri: soundFile },
+        { volume, shouldPlay: true }
       );
       setSound(newSound);
-      await newSound.playAsync();
+      
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          newSound.unloadAsync();
+        }
+      });
     } catch (error) {
       console.log('Error playing sound:', error);
     }
@@ -129,16 +161,14 @@ export const Timer: React.FC = () => {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
         
-        if (soundEnabled && Platform.OS !== 'web') {
-          await playCompletionSound();
-        }
+        await playSound('complete');
       }
       
       prevLevelRef.current = level;
     };
     
     handleLevelUp();
-  }, [level, vibrationEnabled, soundEnabled, playCompletionSound]);
+  }, [level, vibrationEnabled, soundEnabled, playSound]);
   
   useEffect(() => {
     const handleCompletion = async () => {
@@ -149,9 +179,7 @@ export const Timer: React.FC = () => {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
         
-        if (soundEnabled && Platform.OS !== 'web') {
-          await playCompletionSound();
-        }
+        await playSound('complete');
         
         if (currentMode === 'focus') {
           if (isTeamSession && currentTeamSessionId) {
@@ -174,7 +202,7 @@ export const Timer: React.FC = () => {
     };
     
     handleCompletion();
-  }, [timeRemaining, showCompletionMessage, currentMode, vibrationEnabled, soundEnabled, isTeamSession, currentTeamSessionId, teamSessions, addSession, focusDuration, playCompletionSound]);
+  }, [timeRemaining, showCompletionMessage, currentMode, vibrationEnabled, soundEnabled, isTeamSession, currentTeamSessionId, teamSessions, addSession, focusDuration, playSound]);
   
   // Handle dev mode session completion
   const handleDevModeComplete = () => {
@@ -340,7 +368,21 @@ export const Timer: React.FC = () => {
       <TouchableOpacity 
         style={styles.timerContainer}
         activeOpacity={0.8}
-        onPress={isRunning ? pauseTimer : startTimer}
+        onPress={async () => {
+          if (isRunning) {
+            await playSound('stop');
+            if (vibrationEnabled && Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            pauseTimer();
+          } else {
+            await playSound('start');
+            if (vibrationEnabled && Platform.OS !== 'web') {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+            startTimer();
+          }
+        }}
       >
         <View style={[
           styles.timerButtonOuter,
