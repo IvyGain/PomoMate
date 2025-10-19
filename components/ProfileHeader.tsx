@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { useUserStore } from '@/store/userStore';
-import { LogOut, Settings } from 'lucide-react-native';
+import { useTimerStore } from '@/store/timerStore';
+import { Settings, Clock, Users } from 'lucide-react-native';
 import { router } from 'expo-router';
 
 interface ProfileHeaderProps {
@@ -11,9 +12,10 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ showSettings = true }: ProfileHeaderProps) {
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
   const { theme } = useThemeStore();
   const { level, xp, xpToNextLevel } = useUserStore();
+  const { isRunning, currentMode, isTeamSession } = useTimerStore();
   
   if (!user) return null;
   
@@ -29,34 +31,74 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
       .substring(0, 2);
   };
   
+  const getModeColor = () => {
+    switch (currentMode) {
+      case 'focus':
+        return theme.primary;
+      case 'shortBreak':
+        return theme.secondary;
+      case 'longBreak':
+        return theme.success;
+      default:
+        return theme.primary;
+    }
+  };
+
+  const getModeName = () => {
+    switch (currentMode) {
+      case 'focus':
+        return 'フォーカス中';
+      case 'shortBreak':
+        return '小休憩中';
+      case 'longBreak':
+        return '長休憩中';
+      default:
+        return 'フォーカス中';
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.profileSection}>
-        {user.photoURL ? (
-          <Image 
-            source={{ uri: user.photoURL }} 
-            style={styles.avatar} 
-          />
-        ) : (
-          <View style={[styles.avatarPlaceholder, { backgroundColor: theme.primary }]}>
-            <Text style={styles.initials}>{getInitials(user.displayName)}</Text>
-          </View>
-        )}
-        
-        <View style={styles.userInfo}>
-          <Text style={[styles.displayName, { color: theme.text }]}>
-            {user.displayName}
-          </Text>
-          <View style={styles.levelBadge}>
-            <Text style={[styles.levelText, { color: theme.primary }]}>Lv.{level}</Text>
-            <Text style={[styles.xpText, { color: theme.textSecondary }]}>
-              {xp}/{xpToNextLevel} XP
-            </Text>
+        <View style={styles.profileLeft}>
+          {user.photoURL ? (
+            <Image 
+              source={{ uri: user.photoURL }} 
+              style={styles.avatar} 
+            />
+          ) : (
+            <View style={[styles.avatarPlaceholder, { backgroundColor: theme.primary }]}>
+              <Text style={styles.initials}>{getInitials(user.displayName)}</Text>
+            </View>
+          )}
+          
+          <View style={styles.userInfo}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.displayName, { color: theme.text }]}>
+                {user.displayName}
+              </Text>
+              {isRunning && (
+                <View style={[styles.statusBadge, { backgroundColor: getModeColor() + '20' }]}>
+                  {isTeamSession ? (
+                    <Users size={12} color={getModeColor()} />
+                  ) : (
+                    <Clock size={12} color={getModeColor()} />
+                  )}
+                  <Text style={[styles.statusText, { color: getModeColor() }]}>
+                    {getModeName()}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.levelBadge}>
+              <Text style={[styles.levelText, { color: theme.primary }]}>Lv.{level}</Text>
+              <Text style={[styles.xpText, { color: theme.textSecondary }]}>
+                {xp}/{xpToNextLevel} XP
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-      
-      <View style={styles.actions}>
+        
         {showSettings && (
           <TouchableOpacity 
             style={[styles.iconButton, { backgroundColor: theme.card }]}
@@ -65,13 +107,6 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
             <Settings size={20} color={theme.text} />
           </TouchableOpacity>
         )}
-        
-        <TouchableOpacity 
-          style={[styles.iconButton, { backgroundColor: theme.card }]}
-          onPress={logout}
-        >
-          <LogOut size={20} color={theme.error} />
-        </TouchableOpacity>
       </View>
       
       <View style={styles.progressBarContainer}>
@@ -100,6 +135,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
+  profileLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
   avatar: {
     width: 48,
     height: 48,
@@ -121,10 +161,27 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 8,
+  },
   displayName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    gap: 4,
+  },
+  statusText: {
+    fontSize: 11,
+    fontWeight: '600',
   },
   levelBadge: {
     flexDirection: 'row',
@@ -138,16 +195,12 @@ const styles = StyleSheet.create({
   xpText: {
     fontSize: 12,
   },
-  actions: {
-    flexDirection: 'row',
-  },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 8,
   },
   progressBarContainer: {
     paddingHorizontal: 4,

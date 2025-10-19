@@ -385,14 +385,16 @@ export default function SettingsScreen() {
           )}
         </View>
         
-        <TouchableOpacity 
-          style={[styles.logoutButton, { borderColor: theme.error }]}
-          onPress={handleLogout}
-        >
-          <Text style={[styles.logoutText, { color: theme.error }]}>
-            ログアウト
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.section}>
+          <TouchableOpacity 
+            style={[styles.logoutButton, { borderColor: theme.error }]}
+            onPress={handleLogout}
+          >
+            <Text style={[styles.logoutText, { color: theme.error }]}>
+              ログアウト
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -483,7 +485,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginHorizontal: 16,
-    marginVertical: 24,
+    marginBottom: 8,
     paddingVertical: 14,
     borderRadius: 12,
     borderWidth: 1,
