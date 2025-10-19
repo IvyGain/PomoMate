@@ -147,8 +147,11 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
   };
   
   const screenWidth = Dimensions.get('window').width;
-  const maxWidth = Math.min(screenWidth - (spacing.md * 4), 400);
-  const tileSize = (maxWidth - (spacing.xs * 8)) / 4;
+  const containerPadding = spacing.md * 2;
+  const maxWidth = Math.min(screenWidth - containerPadding, 400);
+  const tileGap = spacing.xs;
+  const totalGap = tileGap * 3;
+  const tileSize = Math.floor((maxWidth - totalGap) / 4);
   
   return (
     <View style={styles.container}>
@@ -288,18 +291,19 @@ const styles = StyleSheet.create({
   },
   gameArea: {
     flex: 1,
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
   puzzleContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: Math.min(Dimensions.get('window').width - (spacing.md * 4), 400),
-    justifyContent: 'center',
+    gap: spacing.xs,
+    maxWidth: 400,
+    alignSelf: 'center',
   },
   tile: {
-    margin: spacing.xs,
     backgroundColor: colors.primary,
     borderRadius: borderRadius.md,
     justifyContent: 'center',
