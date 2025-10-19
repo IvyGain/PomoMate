@@ -100,15 +100,14 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
         setEndTime(Date.now());
         
         // スコア計算
-        const timeBonus = Math.max(0, 120 - Math.floor((Date.now() - startTime) / 1000));
-        const score = Math.max(1, 200 - moves) + timeBonus;
+        const score = calculateFinalScore(Date.now() - startTime, moves + 1);
         
         // ハイスコア更新
         if (score > highScore) {
           updateHighScore('number_puzzle', score);
           
           // 実績解除
-          if (score >= 150) {
+          if (score >= 500) {
             unlockAchievement('puzzle_master');
           }
         }
@@ -140,10 +139,55 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
     return Math.floor(totalTime / 1000);
   };
   
-  // スコア計算
+  // スコア計算（詳細版）
+  const calculateFinalScore = (timeMs: number, totalMoves: number) => {
+    const baseScore = 300;
+    let score = baseScore;
+    
+    // 時間ボーナス（90秒未満のみ）
+    const seconds = Math.floor(timeMs / 1000);
+    if (seconds < 90) {
+      // 30秒未満: 1秒ごとに+10点
+      // 30-60秒: 1秒ごとに+5点
+      // 60-90秒: 1秒ごとに+2点
+      if (seconds < 30) {
+        score += (30 - seconds) * 10;
+        score += 30 * 5; // 30-60秒分
+        score += 30 * 2; // 60-90秒分
+      } else if (seconds < 60) {
+        score += (60 - seconds) * 5;
+        score += 30 * 2; // 60-90秒分
+      } else {
+        score += (90 - seconds) * 2;
+      }
+    }
+    
+    // 手数ボーナス（80手以内のみ）
+    if (totalMoves <= 80) {
+      // 40手以内: 1手ごとに+8点
+      // 40-60手: 1手ごとに+5点
+      // 60-80手: 1手ごとに+3点
+      if (totalMoves <= 40) {
+        score += (40 - totalMoves) * 8;
+        score += 20 * 5; // 40-60手分
+        score += 20 * 3; // 60-80手分
+      } else if (totalMoves <= 60) {
+        score += (60 - totalMoves) * 5;
+        score += 20 * 3; // 60-80手分
+      } else {
+        score += (80 - totalMoves) * 3;
+      }
+    }
+    
+    return Math.max(0, score);
+  };
+  
+  // スコア表示用
   const calculateScore = () => {
-    const timeBonus = Math.max(0, 120 - getGameTime());
-    return Math.max(1, 200 - moves) + timeBonus;
+    if (endTime > 0) {
+      return calculateFinalScore(endTime - startTime, moves);
+    }
+    return 0;
   };
   
   const screenWidth = Dimensions.get('window').width;
@@ -225,7 +269,11 @@ export const NumberPuzzleGame: React.FC<{ onClose: () => void }> = ({ onClose })
           <Award size={48} color={colors.primary} />
           <Text style={styles.gameOverTitle}>ゲームクリア！</Text>
           <Text style={styles.gameOverScore}>スコア: {calculateScore()}</Text>
-          <Text style={styles.gameOverStats}>手数: {moves} / 時間: {getGameTime()}秒</Text>
+          
+          <View style={styles.detailsContainer}>
+            <Text style={styles.detailLabel}>手数: {moves}手</Text>
+            <Text style={styles.detailLabel}>時間: {getGameTime()}秒</Text>
+          </View>
           
           {calculateScore() > highScore && (
             <View style={styles.newHighScore}>
@@ -347,10 +395,15 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: spacing.sm,
   },
-  gameOverStats: {
+  detailsContainer: {
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
+    gap: spacing.xs,
+  },
+  detailLabel: {
     fontSize: fontSizes.md,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    textAlign: 'center',
   },
   newHighScore: {
     flexDirection: 'row',
