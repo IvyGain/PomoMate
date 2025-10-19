@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import { colors, spacing, fontSizes, borderRadius } from '@/constants/theme';
 import { useUserStore } from '@/store/userStore';
 import { useGameStore } from '@/store/gameStore';
-import { Award, Clock, X, Zap } from 'lucide-react-native';
+import { Award, X, Zap } from 'lucide-react-native';
 
 // Card icons (emojis)
 const cardIcons = [
@@ -42,6 +42,12 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [gameOver, setGameOver] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [scoreBreakdown, setScoreBreakdown] = useState<{
+    base: number;
+    movesBonus: number;
+    timeBonus: number;
+    total: number;
+  } | null>(null);
   
   const { unlockAchievement } = useUserStore();
   const { updateHighScore, games } = useGameStore();
@@ -133,14 +139,15 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
             setEndTime(finalEndTime);
             
             // Calculate score
-            const finalScore = calculateFinalScore(moves + 1, finalEndTime - startTime);
+            const breakdown = calculateFinalScore(moves + 1, finalEndTime - startTime);
+            setScoreBreakdown(breakdown);
             
             // Update high score
-            if (finalScore > highScore) {
-              updateHighScore('memory_match', finalScore);
+            if (breakdown.total > highScore) {
+              updateHighScore('memory_match', breakdown.total);
               
               // Unlock achievement
-              if (finalScore >= 150) {
+              if (breakdown.total >= 150) {
                 unlockAchievement('memory_master');
               }
             }
@@ -165,43 +172,61 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
     return Math.floor(totalTime / 1000);
   };
   
-  // Calculate final score
+  // Calculate final score with breakdown
   const calculateFinalScore = (totalMoves: number, totalTimeMs: number) => {
     const timeInSeconds = Math.floor(totalTimeMs / 1000);
     
     // Base score: 100 points
     let score = 100;
+    let breakdown = {
+      base: 100,
+      movesBonus: 0,
+      timeBonus: 0,
+      total: 0
+    };
     
-    // Moves penalty: -2 points per move over the optimal 16 moves (8 pairs)
-    const optimalMoves = 16;
-    if (totalMoves > optimalMoves) {
-      score -= (totalMoves - optimalMoves) * 2;
+    // Moves bonus: Reward efficient play
+    const optimalMoves = 16; // 8 pairs × 2 moves
+    if (totalMoves <= optimalMoves) {
+      // Perfect play: bonus points
+      breakdown.movesBonus = 50;
+      score += 50;
+    } else if (totalMoves <= 20) {
+      // Good play: smaller bonus
+      breakdown.movesBonus = 20;
+      score += 20;
+    } else {
+      // Penalty for too many moves
+      const penalty = (totalMoves - 20) * 2;
+      breakdown.movesBonus = -penalty;
+      score -= penalty;
     }
     
-    // Time bonus/penalty:
-    // Under 30 seconds: +50 bonus
-    // 30-45 seconds: +30 bonus
-    // 45-60 seconds: +10 bonus
-    // 60-90 seconds: no bonus/penalty
-    // Over 90 seconds: -1 point per second over 90
+    // Time bonus:
     if (timeInSeconds < 30) {
+      breakdown.timeBonus = 50;
       score += 50;
     } else if (timeInSeconds < 45) {
+      breakdown.timeBonus = 30;
       score += 30;
     } else if (timeInSeconds < 60) {
+      breakdown.timeBonus = 10;
       score += 10;
     } else if (timeInSeconds > 90) {
-      score -= (timeInSeconds - 90);
+      const penalty = timeInSeconds - 90;
+      breakdown.timeBonus = -penalty;
+      score -= penalty;
     }
     
     // Minimum score is 10
-    return Math.max(10, score);
+    breakdown.total = Math.max(10, score);
+    return breakdown;
   };
   
   // Calculate current score (for display during game)
   const getCurrentScore = () => {
-    if (endTime > 0) {
-      return calculateFinalScore(moves, endTime - startTime);
+    if (scoreBreakdown) {
+      return scoreBreakdown.total;
     }
     return 0;
   };
@@ -259,8 +284,38 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
         <View style={styles.gameOverContainer}>
           <Award size={48} color={colors.primary} />
           <Text style={styles.gameOverTitle}>ゲームクリア！</Text>
-          <Text style={styles.gameOverScore}>スコア: {getCurrentScore()}</Text>
-          <Text style={styles.gameOverStats}>手数: {moves} / 時間: {getGameTime()}秒</Text>
+          
+          <View style={styles.scoreBreakdown}>
+            <Text style={styles.finalScoreTitle}>最終スコア</Text>
+            <Text style={styles.finalScoreValue}>{getCurrentScore()}</Text>
+            
+            <View style={styles.breakdownDivider} />
+            
+            <View style={styles.breakdownItem}>
+              <Text style={styles.breakdownLabel}>基本スコア</Text>
+              <Text style={styles.breakdownValue}>+{scoreBreakdown?.base}</Text>
+            </View>
+            
+            <View style={styles.breakdownItem}>
+              <Text style={styles.breakdownLabel}>手数ボーナス ({moves}手)</Text>
+              <Text style={[
+                styles.breakdownValue,
+                scoreBreakdown && scoreBreakdown.movesBonus < 0 ? styles.breakdownPenalty : styles.breakdownBonus
+              ]}>
+                {scoreBreakdown && scoreBreakdown.movesBonus >= 0 ? '+' : ''}{scoreBreakdown?.movesBonus}
+              </Text>
+            </View>
+            
+            <View style={styles.breakdownItem}>
+              <Text style={styles.breakdownLabel}>時間ボーナス ({getGameTime()}秒)</Text>
+              <Text style={[
+                styles.breakdownValue,
+                scoreBreakdown && scoreBreakdown.timeBonus < 0 ? styles.breakdownPenalty : styles.breakdownBonus
+              ]}>
+                {scoreBreakdown && scoreBreakdown.timeBonus >= 0 ? '+' : ''}{scoreBreakdown?.timeBonus}
+              </Text>
+            </View>
+          </View>
           
           {getCurrentScore() > highScore && (
             <View style={styles.newHighScore}>
@@ -375,17 +430,53 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginTop: spacing.md,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.lg,
   },
-  gameOverScore: {
-    fontSize: fontSizes.lg,
-    color: colors.text,
-    marginBottom: spacing.sm,
+  scoreBreakdown: {
+    backgroundColor: colors.card,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
+    width: '100%',
+    marginBottom: spacing.lg,
   },
-  gameOverStats: {
+  finalScoreTitle: {
     fontSize: fontSizes.md,
     color: colors.textSecondary,
-    marginBottom: spacing.lg,
+    textAlign: 'center',
+    marginBottom: spacing.xs,
+  },
+  finalScoreValue: {
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold',
+    color: colors.primary,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  breakdownDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: spacing.md,
+  },
+  breakdownItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  breakdownLabel: {
+    fontSize: fontSizes.md,
+    color: colors.textSecondary,
+  },
+  breakdownValue: {
+    fontSize: fontSizes.md,
+    fontWeight: 'bold',
+    color: colors.text,
+  },
+  breakdownBonus: {
+    color: colors.success,
+  },
+  breakdownPenalty: {
+    color: colors.error,
   },
   newHighScore: {
     flexDirection: 'row',
