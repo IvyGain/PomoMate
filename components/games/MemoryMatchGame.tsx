@@ -26,10 +26,13 @@ const STATS_HEIGHT = 80;
 const AVAILABLE_HEIGHT = height - HEADER_HEIGHT - STATS_HEIGHT - GRID_PADDING - 40;
 const AVAILABLE_WIDTH = width - GRID_PADDING;
 
-// Calculate card size based on both width and height constraints
-const CARD_SIZE_BY_WIDTH = AVAILABLE_WIDTH / 4 - (CARD_MARGIN * 2);
-const CARD_SIZE_BY_HEIGHT = AVAILABLE_HEIGHT / 4 - (CARD_MARGIN * 2);
-const CARD_SIZE = Math.min(CARD_SIZE_BY_WIDTH, CARD_SIZE_BY_HEIGHT, 85); // Max 85px per card
+const CARDS_PER_ROW = 4;
+const NUM_ROWS = 4;
+
+// Calculate card size to fit in a 4x4 grid
+const CARD_SIZE_BY_WIDTH = (AVAILABLE_WIDTH / CARDS_PER_ROW) - (CARD_MARGIN * 2);
+const CARD_SIZE_BY_HEIGHT = (AVAILABLE_HEIGHT / NUM_ROWS) - (CARD_MARGIN * 2);
+const CARD_SIZE = Math.min(CARD_SIZE_BY_WIDTH, CARD_SIZE_BY_HEIGHT, 80); // Max 80px per card
 
 export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [cards, setCards] = useState<Card[]>([]);
