@@ -90,23 +90,22 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
                 </View>
               )}
             </View>
-            <View style={styles.levelBadge}>
-              <Text style={[styles.levelText, { color: theme.primary }]}>Lv.{level}</Text>
-              <Text style={[styles.xpText, { color: theme.textSecondary }]}>
-                {xp}/{xpToNextLevel} XP
-              </Text>
-            </View>
             <View style={styles.statsRow}>
+              <View style={styles.levelBadge}>
+                <Text style={[styles.levelText, { color: theme.primary }]}>Lv.{level}</Text>
+                <Text style={[styles.xpText, { color: theme.textSecondary }]}>
+                  {xp}/{xpToNextLevel} XP
+                </Text>
+              </View>
+              <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Flame size={14} color="#FF6B6B" />
                 <Text style={[styles.statValue, { color: theme.text }]}>{streak}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>連続日数</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.statItem}>
                 <Target size={14} color="#4ECDC4" />
                 <Text style={[styles.statValue, { color: theme.text }]}>{sessions}</Text>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>今日のセッション</Text>
               </View>
             </View>
           </View>
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
   levelBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   levelText: {
     fontSize: 14,
@@ -237,8 +236,8 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 12,
+    marginTop: 4,
+    gap: 8,
   },
   statItem: {
     flexDirection: 'row',
@@ -248,9 +247,6 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 13,
     fontWeight: '600',
-  },
-  statLabel: {
-    fontSize: 11,
   },
   statDivider: {
     width: 1,
