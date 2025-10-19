@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { SocialFeatures } from '@/components/SocialFeatures';
 import { useThemeStore } from '@/store/themeStore';
 import { Stack } from 'expo-router';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 
 export default function SocialScreen() {
   const { theme } = useThemeStore();
@@ -13,7 +14,9 @@ export default function SocialScreen() {
         title: 'ソーシャル',
         headerShown: false,
       }} />
-      <SocialFeatures />
+      <ResponsiveContainer maxWidth={600}>
+        <SocialFeatures />
+      </ResponsiveContainer>
     </View>
   );
 }

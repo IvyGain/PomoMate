@@ -4,19 +4,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '@/store/themeStore';
 import { Timer } from '@/components/Timer';
 import ProfileHeader from '@/components/ProfileHeader';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 
 export default function HomeScreen() {
   const { theme } = useThemeStore();
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <ProfileHeader />
-        
-        <View style={styles.timerContainer}>
-          <Timer />
-        </View>
-      </ScrollView>
+      <ResponsiveContainer>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <ProfileHeader />
+          
+          <View style={styles.timerContainer}>
+            <Timer />
+          </View>
+        </ScrollView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }

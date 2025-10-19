@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useTimerStore } from '@/store/timerStore';
 import ProfileHeader from '@/components/ProfileHeader';
 import { CustomSlider } from '@/components/CustomSlider';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 import { 
   Moon, 
   Sun, 
@@ -181,7 +182,8 @@ export default function SettingsScreen() {
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
-      <ScrollView>
+      <ResponsiveContainer>
+        <ScrollView>
         <ProfileHeader showSettings={false} />
         
         <View style={styles.section}>
@@ -395,7 +397,8 @@ export default function SettingsScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }

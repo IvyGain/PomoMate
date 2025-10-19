@@ -25,7 +25,17 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
   userStats,
   onPress,
 }) => {
-  const { progress, isUnlocked, currentValue } = getAchievementProgress(achievement, userStats);
+  const { progress, isUnlocked, currentValue } = getAchievementProgress(achievement, {
+    sessions: userStats.sessions,
+    streak: userStats.streak,
+    totalMinutes: userStats.totalMinutes,
+    level: userStats.level,
+    unlockedAchievements: userStats.unlockedAchievements,
+    totalDays: userStats.totalDays,
+    totalSessions: userStats.totalSessions,
+    teamSessionsCompleted: userStats.teamSessionsCompleted,
+    teamSessionMinutes: userStats.teamSessionMinutes,
+  });
   
   const Icon = achievement.icon;
   

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Modal, useWindowDimensions } from 'react-native';
 import { RotateCcw, Clock, Coffee, Bug, Zap, CheckCircle, GamepadIcon, Users } from 'lucide-react-native';
 import { ProgressCircle } from './ProgressCircle';
 import { useTimerStore } from '@/store/timerStore';
@@ -12,6 +12,7 @@ import { TeamSessionModal } from './TeamSessionModal';
 import { LevelUpModal } from './LevelUpModal';
 
 export const Timer: React.FC = () => {
+  const { width } = useWindowDimensions();
   const {
     isRunning,
     timeRemaining,
@@ -252,6 +253,9 @@ export const Timer: React.FC = () => {
     setShowTeamSessionModal(true);
   };
   
+  const timerSize = Math.min(width * 0.7, 280);
+  const timerStrokeWidth = Math.max(timerSize / 20, 12);
+  
   return (
     <View style={styles.container}>
       {/* Mode Selector */}
@@ -339,7 +343,12 @@ export const Timer: React.FC = () => {
         onPress={isRunning ? pauseTimer : startTimer}
       >
         <View style={[
-          styles.timerButtonOuter, 
+          styles.timerButtonOuter,
+          {
+            width: timerSize,
+            height: timerSize,
+            borderRadius: timerSize / 2,
+          },
           isRunning && {
             backgroundColor: getModeColor() + '20',
             shadowColor: getModeColor(),
@@ -351,8 +360,8 @@ export const Timer: React.FC = () => {
         ]}>
           <ProgressCircle
             progress={progress}
-            size={280}
-            strokeWidth={15}
+            size={timerSize}
+            strokeWidth={timerStrokeWidth}
             color={getModeColor()}
           >
             <View style={styles.timerContent}>
@@ -559,9 +568,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   timerButtonOuter: {
-    width: 280,
-    height: 280,
-    borderRadius: 140,
     backgroundColor: colors.cardElevated,
     alignItems: 'center',
     justifyContent: 'center',

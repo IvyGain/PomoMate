@@ -7,7 +7,8 @@ import { useUserStore } from '@/store/userStore';
 import { useThemeStore } from '@/store/themeStore';
 import { achievements } from '@/constants/achievements';
 import { AchievementCard } from '@/components/AchievementCard';
-import { Award, Filter } from 'lucide-react-native';
+import { Award } from 'lucide-react-native';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 
 type FilterType = 'all' | 'unlocked' | 'locked';
 
@@ -47,7 +48,8 @@ export default function AchievementsScreen() {
         },
       }} />
       
-      <View style={[styles.header, { borderBottomColor: 'rgba(255, 255, 255, 0.1)' }]}>
+      <ResponsiveContainer>
+        <View style={[styles.header, { borderBottomColor: 'rgba(255, 255, 255, 0.1)' }]}>
         <View style={styles.statsContainer}>
           <Award size={24} color={theme.primary} />
           <Text style={[styles.statsText, { color: theme.text }]}>
@@ -101,9 +103,9 @@ export default function AchievementsScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-      
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        </View>
+        
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         {filteredAchievements.length > 0 ? (
           filteredAchievements.map(achievement => (
             <AchievementCard
@@ -117,7 +119,8 @@ export default function AchievementsScreen() {
             <Text style={[styles.emptyText, { color: theme.textSecondary }]}>実績が見つかりません</Text>
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }

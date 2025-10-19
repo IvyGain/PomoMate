@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { spacing, fontSizes, borderRadius } from '@/constants/theme';
@@ -9,9 +9,7 @@ import { LevelProgress } from '@/components/LevelProgress';
 import { StatsCard } from '@/components/StatsCard';
 import { Clock, Flame, Zap, Award, Calendar, BarChart2, TrendingUp } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-// Get screen dimensions for responsive design
-const { width } = Dimensions.get('window');
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 
 export default function StatsScreen() {
   const {
@@ -27,6 +25,7 @@ export default function StatsScreen() {
   } = useUserStore();
   
   const { theme } = useThemeStore();
+  const { width } = useWindowDimensions();
   
   // Format total time
   const formatTotalTime = () => {
@@ -72,6 +71,9 @@ export default function StatsScreen() {
   
   const weeklyData = generateWeeklyData();
   
+  const contentWidth = Math.min(width, 600);
+  const dayColumnWidth = (contentWidth - spacing.lg * 2 - spacing.md * 2) / 7;
+  
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen options={{ 
@@ -85,7 +87,8 @@ export default function StatsScreen() {
         },
       }} />
       
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+      <ResponsiveContainer>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
         <View style={styles.levelSection}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>レベル進捗</Text>
           <LevelProgress
@@ -194,7 +197,7 @@ export default function StatsScreen() {
           <Text style={[styles.sectionTitle, { color: theme.text }]}>週間アクティビティ</Text>
           <View style={[styles.weeklyActivityChart, { backgroundColor: theme.card }]}>
             {weeklyData.map((day, index) => (
-              <View key={index} style={styles.dayColumn}>
+              <View key={index} style={[styles.dayColumn, { width: dayColumnWidth }]}>
                 <View style={styles.barContainer}>
                   <View 
                     style={[
@@ -229,7 +232,8 @@ export default function StatsScreen() {
             <Text style={[styles.averageUnit, { color: theme.textSecondary }]}>アクティブ日あたり</Text>
           </View>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </ResponsiveContainer>
     </SafeAreaView>
   );
 }
@@ -322,7 +326,6 @@ const styles = StyleSheet.create({
   },
   dayColumn: {
     alignItems: 'center',
-    width: (width - spacing.lg * 2 - spacing.md * 2) / 7,
   },
   barContainer: {
     height: 80,
