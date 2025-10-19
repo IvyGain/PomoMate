@@ -294,6 +294,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
+    maxWidth: (CARD_SIZE + CARD_MARGIN * 2) * CARDS_PER_ROW,
+    alignSelf: 'center',
   },
   card: {
     width: CARD_SIZE,
