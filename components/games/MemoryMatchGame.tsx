@@ -38,6 +38,7 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
   const [cards, setCards] = useState<Card[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
+  const [matchedPairs, setMatchedPairs] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
@@ -82,6 +83,7 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
     setCards(shuffledCards);
     setFlippedCards([]);
     setMoves(0);
+    setMatchedPairs(0);
     setGameOver(false);
     setStartTime(Date.now());
     setEndTime(0);
@@ -121,21 +123,24 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
           setCards(matchedCards);
           setFlippedCards([]);
           
-          // Check if all cards are matched
-          if (matchedCards.every(card => card.matched)) {
+          const newMatchedPairs = matchedPairs + 1;
+          setMatchedPairs(newMatchedPairs);
+          
+          // Check if all cards are matched (8 pairs total)
+          if (newMatchedPairs === 8) {
             setGameOver(true);
-            setEndTime(Date.now());
+            const finalEndTime = Date.now();
+            setEndTime(finalEndTime);
             
             // Calculate score
-            const timeBonus = Math.max(0, 30 - Math.floor((Date.now() - startTime) / 1000));
-            const score = Math.max(1, 100 - (moves * 5)) + (timeBonus * 2);
+            const finalScore = calculateFinalScore(moves + 1, finalEndTime - startTime);
             
             // Update high score
-            if (score > highScore) {
-              updateHighScore('memory_match', score);
+            if (finalScore > highScore) {
+              updateHighScore('memory_match', finalScore);
               
               // Unlock achievement
-              if (score >= 80) {
+              if (finalScore >= 150) {
                 unlockAchievement('memory_master');
               }
             }
@@ -160,10 +165,45 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
     return Math.floor(totalTime / 1000);
   };
   
-  // Calculate score
-  const calculateScore = () => {
-    const timeBonus = Math.max(0, 30 - getGameTime());
-    return Math.max(1, 100 - (moves * 5)) + (timeBonus * 2);
+  // Calculate final score
+  const calculateFinalScore = (totalMoves: number, totalTimeMs: number) => {
+    const timeInSeconds = Math.floor(totalTimeMs / 1000);
+    
+    // Base score: 100 points
+    let score = 100;
+    
+    // Moves penalty: -2 points per move over the optimal 16 moves (8 pairs)
+    const optimalMoves = 16;
+    if (totalMoves > optimalMoves) {
+      score -= (totalMoves - optimalMoves) * 2;
+    }
+    
+    // Time bonus/penalty:
+    // Under 30 seconds: +50 bonus
+    // 30-45 seconds: +30 bonus
+    // 45-60 seconds: +10 bonus
+    // 60-90 seconds: no bonus/penalty
+    // Over 90 seconds: -1 point per second over 90
+    if (timeInSeconds < 30) {
+      score += 50;
+    } else if (timeInSeconds < 45) {
+      score += 30;
+    } else if (timeInSeconds < 60) {
+      score += 10;
+    } else if (timeInSeconds > 90) {
+      score -= (timeInSeconds - 90);
+    }
+    
+    // Minimum score is 10
+    return Math.max(10, score);
+  };
+  
+  // Calculate current score (for display during game)
+  const getCurrentScore = () => {
+    if (endTime > 0) {
+      return calculateFinalScore(moves, endTime - startTime);
+    }
+    return 0;
   };
   
   return (
@@ -219,10 +259,10 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
         <View style={styles.gameOverContainer}>
           <Award size={48} color={colors.primary} />
           <Text style={styles.gameOverTitle}>ゲームクリア！</Text>
-          <Text style={styles.gameOverScore}>スコア: {calculateScore()}</Text>
+          <Text style={styles.gameOverScore}>スコア: {getCurrentScore()}</Text>
           <Text style={styles.gameOverStats}>手数: {moves} / 時間: {getGameTime()}秒</Text>
           
-          {calculateScore() > highScore && (
+          {getCurrentScore() > highScore && (
             <View style={styles.newHighScore}>
               <Zap size={20} color={colors.warning} />
               <Text style={styles.newHighScoreText}>新記録達成！</Text>
