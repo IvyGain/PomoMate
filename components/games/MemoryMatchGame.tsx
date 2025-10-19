@@ -17,11 +17,19 @@ interface Card {
   matched: boolean;
 }
 
-// Get screen width to calculate card size
-const { width } = Dimensions.get('window');
+// Get screen dimensions to calculate card size
+const { width, height } = Dimensions.get('window');
 const CARD_MARGIN = spacing.xs;
-const GRID_PADDING = spacing.md * 2 + spacing.xs * 2; // Container padding + grid padding
-const CARD_SIZE = (width - GRID_PADDING) / 4 - (CARD_MARGIN * 2); // 4 cards per row
+const GRID_PADDING = spacing.md * 2;
+const HEADER_HEIGHT = 60;
+const STATS_HEIGHT = 80;
+const AVAILABLE_HEIGHT = height - HEADER_HEIGHT - STATS_HEIGHT - GRID_PADDING - 40;
+const AVAILABLE_WIDTH = width - GRID_PADDING;
+
+// Calculate card size based on both width and height constraints
+const CARD_SIZE_BY_WIDTH = AVAILABLE_WIDTH / 4 - (CARD_MARGIN * 2);
+const CARD_SIZE_BY_HEIGHT = AVAILABLE_HEIGHT / 4 - (CARD_MARGIN * 2);
+const CARD_SIZE = Math.min(CARD_SIZE_BY_WIDTH, CARD_SIZE_BY_HEIGHT, 85); // Max 85px per card
 
 export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [cards, setCards] = useState<Card[]>([]);
@@ -305,11 +313,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.success,
   },
   cardBack: {
-    fontSize: fontSizes.xl,
+    fontSize: CARD_SIZE * 0.4,
     color: colors.text,
   },
   cardIcon: {
-    fontSize: fontSizes.xl,
+    fontSize: CARD_SIZE * 0.4,
   },
   gameOverContainer: {
     flex: 1,
