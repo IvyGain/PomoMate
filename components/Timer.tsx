@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, Switch, Modal, Animated } from 'react-native';
-import { Play, Pause, RotateCcw, Clock, Coffee, Bug, Zap, Award, Flame, CheckCircle, GamepadIcon, Users } from 'lucide-react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Modal } from 'react-native';
+import { RotateCcw, Clock, Coffee, Bug, Zap, CheckCircle, GamepadIcon, Users } from 'lucide-react-native';
 import { ProgressCircle } from './ProgressCircle';
 import { useTimerStore } from '@/store/timerStore';
 import { useUserStore } from '@/store/userStore';
 import { colors, fontSizes, spacing, borderRadius } from '@/constants/theme';
 import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
-import { LinearGradient } from 'expo-linear-gradient';
 import { BreakTimeGame } from './BreakTimeGame';
 import { TeamSessionModal } from './TeamSessionModal';
+import { LevelUpModal } from './LevelUpModal';
 
 export const Timer: React.FC = () => {
   const {
@@ -27,9 +27,6 @@ export const Timer: React.FC = () => {
     completeSession,
     vibrationEnabled,
     soundEnabled,
-    autoStartBreaks,
-    autoStartFocus,
-    completedSessions,
     sessionsUntilLongBreak,
     consecutiveSessionsCount,
     isTeamSession,
@@ -39,12 +36,7 @@ export const Timer: React.FC = () => {
   
   const { 
     addSession, 
-    level, 
-    xp, 
-    xpToNextLevel, 
-    sessions, 
-    streak,
-    totalMinutes,
+    level,
     teamSessionsCompleted,
   } = useUserStore();
   
@@ -52,24 +44,15 @@ export const Timer: React.FC = () => {
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   
-  // Developer mode state
   const [devMode, setDevMode] = useState(false);
   
-  // Level up celebration
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevel, setNewLevel] = useState(0);
   
-  // Break time game
   const [showBreakGame, setShowBreakGame] = useState(false);
   
-  // Team session modal
   const [showTeamSessionModal, setShowTeamSessionModal] = useState(false);
   
-  // Animation values
-  const scaleAnim = useState(new Animated.Value(1))[0];
-  const opacityAnim = useState(new Animated.Value(0))[0];
-  
-  // Store previous level in ref to detect changes
   const prevLevelRef = React.useRef(level);
   
   // Calculate total duration based on current mode
@@ -96,17 +79,15 @@ export const Timer: React.FC = () => {
   // Calculate progress (0 to 1)
   const progress = timeRemaining / getTotalDuration();
   
-  // Load sound
   useEffect(() => {
     return () => {
       if (sound) {
         sound.unloadAsync();
       }
     };
-  }, []);
+  }, [sound]);
 
-  // Play completion sound
-  const playCompletionSound = async () => {
+  const playCompletionSound = useCallback(async () => {
     if (!soundEnabled || Platform.OS === 'web') return;
     
     try {
@@ -118,7 +99,7 @@ export const Timer: React.FC = () => {
     } catch (error) {
       console.log('Error playing sound:', error);
     }
-  };
+  }, [soundEnabled]);
   
   // Timer tick effect
   useEffect(() => {
@@ -137,101 +118,62 @@ export const Timer: React.FC = () => {
     };
   }, [isRunning, tickTimer]);
   
-  // Track level changes to show celebration
   useEffect(() => {
-    // Check if level increased
-    if (level > prevLevelRef.current) {
-      setNewLevel(level);
-      setShowLevelUp(true);
-      
-      // Vibrate if enabled and not on web
-      if (vibrationEnabled && Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      
-      // Play sound if enabled
-      if (soundEnabled && Platform.OS !== 'web') {
-        playCompletionSound();
-      }
-      
-      // Animate level up
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.2,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-      
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }).start(() => {
-        setTimeout(() => {
-          Animated.timing(opacityAnim, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true,
-          }).start(() => {
-            setShowLevelUp(false);
-          });
-        }, 3000);
-      });
-      
-      // Hide after 5 seconds
-      setTimeout(() => {
-        setShowLevelUp(false);
-      }, 5000);
-    }
-    
-    // Update ref
-    prevLevelRef.current = level;
-  }, [level, vibrationEnabled, soundEnabled, scaleAnim, opacityAnim]);
-  
-  // Handle timer completion
-  useEffect(() => {
-    if (timeRemaining === 0 && !showCompletionMessage) {
-      // Show completion message
-      setShowCompletionMessage(true);
-      
-      // Vibrate if enabled and not on web
-      if (vibrationEnabled && Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      
-      // Play sound if enabled
-      if (soundEnabled && Platform.OS !== 'web') {
-        playCompletionSound();
-      }
-      
-      // If focus session completed, add to stats
-      if (currentMode === 'focus') {
-        // If team session, get team size
-        if (isTeamSession && currentTeamSessionId) {
-          const session = teamSessions.find(s => s.id === currentTeamSessionId);
-          if (session) {
-            const activeParticipants = session.participants.filter(p => p.isActive).length;
-            addSession(focusDuration, true, activeParticipants);
-          } else {
-            addSession(focusDuration);
-          }
-        } else {
-          addSession(focusDuration);
+    const handleLevelUp = async () => {
+      if (level > prevLevelRef.current) {
+        setNewLevel(level);
+        setShowLevelUp(true);
+        
+        if (vibrationEnabled && Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+        
+        if (soundEnabled && Platform.OS !== 'web') {
+          await playCompletionSound();
         }
       }
       
-      // Hide message after 3 seconds
-      setTimeout(() => {
-        setShowCompletionMessage(false);
-      }, 3000);
-    }
-  }, [timeRemaining, showCompletionMessage, currentMode, vibrationEnabled, soundEnabled]);
+      prevLevelRef.current = level;
+    };
+    
+    handleLevelUp();
+  }, [level, vibrationEnabled, soundEnabled, playCompletionSound]);
+  
+  useEffect(() => {
+    const handleCompletion = async () => {
+      if (timeRemaining === 0 && !showCompletionMessage) {
+        setShowCompletionMessage(true);
+        
+        if (vibrationEnabled && Platform.OS !== 'web') {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+        
+        if (soundEnabled && Platform.OS !== 'web') {
+          await playCompletionSound();
+        }
+        
+        if (currentMode === 'focus') {
+          if (isTeamSession && currentTeamSessionId) {
+            const session = teamSessions.find(s => s.id === currentTeamSessionId);
+            if (session) {
+              const activeParticipants = session.participants.filter(p => p.isActive).length;
+              addSession(focusDuration, true, activeParticipants);
+            } else {
+              addSession(focusDuration);
+            }
+          } else {
+            addSession(focusDuration);
+          }
+        }
+        
+        setTimeout(() => {
+          setShowCompletionMessage(false);
+        }, 3000);
+      }
+    };
+    
+    handleCompletion();
+  }, [timeRemaining, showCompletionMessage, currentMode, vibrationEnabled, soundEnabled, isTeamSession, currentTeamSessionId, teamSessions, addSession, focusDuration, playCompletionSound]);
   
   // Handle dev mode session completion
   const handleDevModeComplete = () => {
@@ -436,28 +378,7 @@ export const Timer: React.FC = () => {
         </View>
       </TouchableOpacity>
       
-      {/* User Stats */}
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Award size={16} color={colors.textSecondary} />
-          <Text style={styles.statText}>Lv.{level}</Text>
-        </View>
-        
-        <View style={styles.statItem}>
-          <Zap size={16} color={colors.textSecondary} />
-          <Text style={styles.statText}>{xp}/{xpToNextLevel} XP</Text>
-        </View>
-        
-        <View style={styles.statItem}>
-          <Flame size={16} color={colors.textSecondary} />
-          <Text style={styles.statText}>{streak}日連続</Text>
-        </View>
-        
-        <View style={styles.statItem}>
-          <Clock size={16} color={colors.textSecondary} />
-          <Text style={styles.statText}>{sessions}回</Text>
-        </View>
-      </View>
+
       
       {/* Timer Controls */}
       <View style={styles.controls}>
@@ -539,31 +460,11 @@ export const Timer: React.FC = () => {
         </View>
       )}
       
-      {/* Level Up Celebration */}
-      {showLevelUp && (
-        <View style={styles.levelUpOverlay}>
-          <Animated.View 
-            style={[
-              styles.levelUpContainer,
-              {
-                transform: [{ scale: scaleAnim }],
-                opacity: opacityAnim
-              }
-            ]}
-          >
-            <LinearGradient
-              colors={['#FF6B6B', '#FFD166', '#06D6A0']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.levelUpGradient}
-            >
-              <Text style={styles.levelUpTitle}>レベルアップ！</Text>
-              <Text style={styles.levelUpLevel}>Lv.{newLevel}</Text>
-              <Text style={styles.levelUpMessage}>おめでとうございます！</Text>
-            </LinearGradient>
-          </Animated.View>
-        </View>
-      )}
+      <LevelUpModal
+        visible={showLevelUp}
+        level={newLevel}
+        onClose={() => setShowLevelUp(false)}
+      />
       
       {/* Break Time Game Modal */}
       <Modal
@@ -608,24 +509,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   modeButtonText: {
-    color: colors.textSecondary,
-    fontSize: fontSizes.sm,
-    marginLeft: spacing.xs,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: spacing.lg,
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statText: {
     color: colors.textSecondary,
     fontSize: fontSizes.sm,
     marginLeft: spacing.xs,
@@ -780,37 +663,5 @@ const styles = StyleSheet.create({
   completionSubtitle: {
     fontSize: fontSizes.md,
     color: colors.textSecondary,
-  },
-  levelUpOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  levelUpContainer: {
-    width: 300,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  levelUpGradient: {
-    padding: spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  levelUpTitle: {
-    fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  levelUpLevel: {
-    fontSize: fontSizes.xxxl,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  levelUpMessage: {
-    fontSize: fontSizes.lg,
-    color: colors.text,
   },
 });

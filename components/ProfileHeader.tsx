@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
+import { useUserStore } from '@/store/userStore';
 import { LogOut, Settings } from 'lucide-react-native';
 import { router } from 'expo-router';
 
@@ -12,8 +13,11 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({ showSettings = true }: ProfileHeaderProps) {
   const { user, logout } = useAuthStore();
   const { theme } = useThemeStore();
+  const { level, xp, xpToNextLevel } = useUserStore();
   
   if (!user) return null;
+  
+  const progress = xp / xpToNextLevel;
   
   // Generate initials from display name
   const getInitials = (name: string) => {
@@ -43,9 +47,12 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
           <Text style={[styles.displayName, { color: theme.text }]}>
             {user.displayName}
           </Text>
-          <Text style={[styles.email, { color: theme.textSecondary }]}>
-            {user.email}
-          </Text>
+          <View style={styles.levelBadge}>
+            <Text style={[styles.levelText, { color: theme.primary }]}>Lv.{level}</Text>
+            <Text style={[styles.xpText, { color: theme.textSecondary }]}>
+              {xp}/{xpToNextLevel} XP
+            </Text>
+          </View>
         </View>
       </View>
       
@@ -66,21 +73,32 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
           <LogOut size={20} color={theme.error} />
         </TouchableOpacity>
       </View>
+      
+      <View style={styles.progressBarContainer}>
+        <View style={[styles.progressBarBackground, { backgroundColor: theme.card }]}>
+          <View 
+            style={[
+              styles.progressBarFill, 
+              { backgroundColor: theme.primary, width: `${progress * 100}%` }
+            ]} 
+          />
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
   avatar: {
     width: 48,
@@ -101,14 +119,24 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     marginLeft: 12,
+    flex: 1,
   },
   displayName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 4,
   },
-  email: {
+  levelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  levelText: {
     fontSize: 14,
+    fontWeight: '600',
+  },
+  xpText: {
+    fontSize: 12,
   },
   actions: {
     flexDirection: 'row',
@@ -120,5 +148,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
+  },
+  progressBarContainer: {
+    paddingHorizontal: 4,
+  },
+  progressBarBackground: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
   },
 });
