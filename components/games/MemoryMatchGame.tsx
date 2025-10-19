@@ -199,20 +199,38 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
       score -= penalty;
     }
     
-    // Time bonus: 30秒未満の場合、1秒ごとに+5点
-    if (timeInSeconds < 30) {
-      // 30秒未満: (30 - 実際の秒数) × 5点
-      const secondsUnder30 = 30 - timeInSeconds;
-      breakdown.timeBonus = secondsUnder30 * 5;
+    // Time bonus: 時間に応じて細かく加点
+    if (timeInSeconds <= 15) {
+      // 15秒以内: 超ボーナス (15秒から1秒ごとに+10点)
+      const secondsUnder15 = 15 - timeInSeconds;
+      breakdown.timeBonus = 50 + (secondsUnder15 * 10);
       score += breakdown.timeBonus;
-    } else if (timeInSeconds < 45) {
-      breakdown.timeBonus = 10;
-      score += 10;
-    } else if (timeInSeconds < 60) {
+    } else if (timeInSeconds <= 20) {
+      // 16-20秒: 高ボーナス (20秒から1秒ごとに+7点)
+      const secondsUnder20 = 20 - timeInSeconds;
+      breakdown.timeBonus = 25 + (secondsUnder20 * 7);
+      score += breakdown.timeBonus;
+    } else if (timeInSeconds <= 25) {
+      // 21-25秒: 中ボーナス (25秒から1秒ごとに+5点)
+      const secondsUnder25 = 25 - timeInSeconds;
+      breakdown.timeBonus = 10 + (secondsUnder25 * 5);
+      score += breakdown.timeBonus;
+    } else if (timeInSeconds <= 30) {
+      // 26-30秒: 小ボーナス (30秒から1秒ごとに+2点)
+      const secondsUnder30 = 30 - timeInSeconds;
+      breakdown.timeBonus = secondsUnder30 * 2;
+      score += breakdown.timeBonus;
+    } else if (timeInSeconds <= 40) {
+      // 31-40秒: ボーナスなし
       breakdown.timeBonus = 0;
+    } else if (timeInSeconds <= 50) {
+      // 41-50秒: 軽いペナルティ
+      const penalty = (timeInSeconds - 40) * 1;
+      breakdown.timeBonus = -penalty;
+      score -= penalty;
     } else {
-      // 60秒以上: ペナルティ
-      const penalty = (timeInSeconds - 60) * 2;
+      // 51秒以上: 重いペナルティ
+      const penalty = 10 + ((timeInSeconds - 50) * 2);
       breakdown.timeBonus = -penalty;
       score -= penalty;
     }
