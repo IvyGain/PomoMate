@@ -185,35 +185,34 @@ export const MemoryMatchGame: React.FC<{ onClose: () => void }> = ({ onClose }) 
       total: 0
     };
     
-    // Moves bonus: Reward efficient play
-    const optimalMoves = 16; // 8 pairs × 2 moves
+    // Moves bonus: 16手以内の場合、1手ずつ加点
+    const optimalMoves = 16; // 8 pairs × 2 moves = perfect play
     if (totalMoves <= optimalMoves) {
-      // Perfect play: bonus points
-      breakdown.movesBonus = 50;
-      score += 50;
-    } else if (totalMoves <= 20) {
-      // Good play: smaller bonus
-      breakdown.movesBonus = 20;
-      score += 20;
+      // 16手以内: (16 - 実際の手数) × 加点
+      const movesUnderOptimal = optimalMoves - totalMoves;
+      breakdown.movesBonus = movesUnderOptimal * 5; // 1手ごとに5点加点
+      score += breakdown.movesBonus;
     } else {
-      // Penalty for too many moves
-      const penalty = (totalMoves - 20) * 2;
+      // 16手以上: ペナルティ
+      const penalty = (totalMoves - optimalMoves) * 2;
       breakdown.movesBonus = -penalty;
       score -= penalty;
     }
     
-    // Time bonus:
+    // Time bonus: 30秒未満の場合、1秒ごとに+5点
     if (timeInSeconds < 30) {
-      breakdown.timeBonus = 50;
-      score += 50;
+      // 30秒未満: (30 - 実際の秒数) × 5点
+      const secondsUnder30 = 30 - timeInSeconds;
+      breakdown.timeBonus = secondsUnder30 * 5;
+      score += breakdown.timeBonus;
     } else if (timeInSeconds < 45) {
-      breakdown.timeBonus = 30;
-      score += 30;
-    } else if (timeInSeconds < 60) {
       breakdown.timeBonus = 10;
       score += 10;
-    } else if (timeInSeconds > 90) {
-      const penalty = timeInSeconds - 90;
+    } else if (timeInSeconds < 60) {
+      breakdown.timeBonus = 0;
+    } else {
+      // 60秒以上: ペナルティ
+      const penalty = (timeInSeconds - 60) * 2;
       breakdown.timeBonus = -penalty;
       score -= penalty;
     }
