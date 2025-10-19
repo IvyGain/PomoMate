@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { Clock, BarChart2, Award, Users } from 'lucide-react-native';
+import { Clock, BarChart2, Award, Users, Settings } from 'lucide-react-native';
 import { useThemeStore } from '@/store/themeStore';
 
 export default function TabLayout() {
@@ -53,6 +53,14 @@ export default function TabLayout() {
           title: 'ソーシャル',
           tabBarLabel: 'ソーシャル',
           tabBarIcon: ({ color }) => <Users size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: '設定',
+          tabBarLabel: '設定',
+          tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
       />
     </Tabs>

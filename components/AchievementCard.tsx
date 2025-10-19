@@ -92,9 +92,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.md,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   unlockedContainer: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
   },
   lockedContainer: {
     backgroundColor: colors.card,
@@ -107,6 +109,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.md,
+    borderWidth: 2,
+    borderColor: colors.borderLight,
   },
   content: {
     flex: 1,
@@ -146,11 +150,13 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   rewardBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(147, 51, 234, 0.2)',
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
     marginLeft: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.borderAccent,
   },
   rewardText: {
     color: colors.primary,

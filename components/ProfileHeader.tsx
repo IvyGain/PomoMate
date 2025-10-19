@@ -34,13 +34,13 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
   const getModeColor = () => {
     switch (currentMode) {
       case 'focus':
-        return theme.primary;
+        return '#FF6B6B';
       case 'shortBreak':
-        return theme.secondary;
+        return '#4ECDC4';
       case 'longBreak':
-        return theme.success;
+        return '#10B981';
       default:
-        return theme.primary;
+        return '#FF6B6B';
     }
   };
 
@@ -127,7 +127,8 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 12,
-    paddingBottom: 8,
+    paddingBottom: 12,
+    backgroundColor: 'transparent',
   },
   profileSection: {
     flexDirection: 'row',
@@ -201,17 +202,23 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   progressBarContainer: {
     paddingHorizontal: 4,
   },
   progressBarBackground: {
-    height: 6,
-    borderRadius: 3,
+    height: 4,
+    borderRadius: 2,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: 2,
+    shadowColor: '#9333EA',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
 });

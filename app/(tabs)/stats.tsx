@@ -138,7 +138,7 @@ export default function StatsScreen() {
                 title="フォーカスセッション"
                 value={sessions}
                 icon={<Clock size={20} color={theme.text} />}
-                color={theme.primary}
+                color="#FF6B6B"
               />
             </View>
             <View style={styles.statsColumn}>
@@ -146,7 +146,7 @@ export default function StatsScreen() {
                 title="現在の連続日数"
                 value={streak}
                 icon={<Flame size={20} color={theme.text} />}
-                color={theme.error}
+                color="#F59E0B"
               />
             </View>
           </View>
@@ -157,7 +157,7 @@ export default function StatsScreen() {
                 title="合計フォーカス時間"
                 value={formatTotalTime()}
                 icon={<Zap size={20} color={theme.text} />}
-                color={theme.warning}
+                color="#10B981"
               />
             </View>
             <View style={styles.statsColumn}>
@@ -165,7 +165,7 @@ export default function StatsScreen() {
                 title="実績解除"
                 value={`${unlockedAchievements.length}/12`}
                 icon={<Award size={20} color={theme.text} />}
-                color={theme.secondary}
+                color="#3B82F6"
               />
             </View>
           </View>
@@ -176,7 +176,7 @@ export default function StatsScreen() {
                 title="平均セッション時間"
                 value={`${averageSessionLength}分`}
                 icon={<BarChart2 size={20} color={theme.text} />}
-                color="#9370DB"
+                color="#A855F7"
               />
             </View>
             <View style={styles.statsColumn}>
@@ -257,6 +257,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   summaryGradient: {
     padding: spacing.md,
@@ -315,6 +317,8 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: borderRadius.md,
     padding: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   dayColumn: {
     alignItems: 'center',
@@ -346,6 +350,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.md,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   averageHeader: {
     marginBottom: spacing.sm,

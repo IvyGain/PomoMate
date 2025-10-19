@@ -144,6 +144,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 8,
     padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   filterButton: {
     flex: 1,
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   activeFilter: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: '#9333EA',
   },
   filterText: {
     fontSize: fontSizes.sm,

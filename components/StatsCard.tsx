@@ -30,7 +30,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.md,
@@ -38,6 +38,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderLeftWidth: 4,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   content: {
     flex: 1,
@@ -58,5 +60,10 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.circle,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
   },
 });

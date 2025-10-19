@@ -208,13 +208,13 @@ export const Timer: React.FC = () => {
   const getModeColor = () => {
     switch (currentMode) {
       case 'focus':
-        return colors.primary;
+        return colors.focus;
       case 'shortBreak':
-        return colors.secondary;
+        return colors.shortBreak;
       case 'longBreak':
-        return colors.success;
+        return colors.longBreak;
       default:
-        return colors.primary;
+        return colors.focus;
     }
   };
   
@@ -495,9 +495,11 @@ const styles = StyleSheet.create({
   modeSelector: {
     flexDirection: 'row',
     marginBottom: spacing.lg,
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     borderRadius: borderRadius.lg,
     padding: 4,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   modeButton: {
     flexDirection: 'row',
@@ -529,6 +531,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   teamButtonText: {
     fontSize: fontSizes.sm,
@@ -539,10 +543,17 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: borderRadius.circle,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 5,
   },
   timerContainer: {
     marginBottom: spacing.xl,
@@ -551,9 +562,11 @@ const styles = StyleSheet.create({
     width: 280,
     height: 280,
     borderRadius: 140,
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.borderLight,
   },
   timerButtonOuterActive: {},
   timerContent: {
@@ -588,10 +601,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: borderRadius.circle,
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   devControls: {
     marginTop: spacing.xl,
@@ -612,10 +627,12 @@ const styles = StyleSheet.create({
   },
   teamStatsContainer: {
     marginTop: spacing.lg,
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     width: '100%',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
   },
   teamStatsTitle: {
     color: colors.text,
@@ -648,11 +665,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   completionMessage: {
-    backgroundColor: colors.card,
+    backgroundColor: colors.cardElevated,
     borderRadius: borderRadius.lg,
     padding: spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.borderAccent,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
   },
   completionTitle: {
     fontSize: fontSizes.xl,

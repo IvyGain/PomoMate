@@ -423,6 +423,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginHorizontal: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   settingIconTitle: {
     flexDirection: 'row',
@@ -460,6 +462,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginRight: 8,
+    shadowColor: '#9333EA',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   saveButtonText: {
     color: 'white',
@@ -490,6 +497,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
   },
   logoutText: {
     fontSize: 16,
