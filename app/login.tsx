@@ -33,7 +33,7 @@ export default function LoginScreen() {
       clientId: Platform.select({
         ios: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
         android: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
-        default: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com'
+        default: '773602259069-e8e1k3gfr1cgge47743079jci75sgfvg.apps.googleusercontent.com'
       }),
       redirectUri,
     },
