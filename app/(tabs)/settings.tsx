@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -7,7 +7,8 @@ import {
   Switch, 
   ScrollView,
   Alert,
-  Platform
+  Platform,
+  useWindowDimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeStore } from '@/store/themeStore';
@@ -39,6 +40,8 @@ export default function SettingsScreen() {
   const { theme, toggleTheme, themeType } = useThemeStore();
   const { resetProgress } = useUserStore();
   const { logout } = useAuthStore();
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
   const { 
     focusDuration, 
     shortBreakDuration, 
@@ -182,8 +185,11 @@ export default function SettingsScreen() {
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
-      <ResponsiveContainer>
-        <ScrollView>
+      <ResponsiveContainer maxWidth={isDesktop ? 900 : 800}>
+        <ScrollView 
+          contentContainerStyle={isDesktop && styles.desktopScrollContent}
+          showsVerticalScrollIndicator={false}
+        >
         <ProfileHeader showSettings={false} />
         
         <View style={styles.section}>
@@ -505,5 +511,8 @@ const styles = StyleSheet.create({
   logoutText: {
     fontSize: 16,
     fontWeight: '600',
+  },
+  desktopScrollContent: {
+    paddingVertical: 24,
   },
 });

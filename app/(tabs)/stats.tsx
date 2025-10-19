@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { spacing, fontSizes, borderRadius } from '@/constants/theme';
@@ -26,6 +26,9 @@ export default function StatsScreen() {
   
   const { theme } = useThemeStore();
   const { width } = useWindowDimensions();
+  
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
+  const isTablet = Platform.OS === 'web' && width >= 768 && width < 1024;
   
   // Format total time
   const formatTotalTime = () => {
@@ -87,8 +90,15 @@ export default function StatsScreen() {
         },
       }} />
       
-      <ResponsiveContainer>
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+      <ResponsiveContainer maxWidth={isDesktop ? 1100 : 800}>
+        <ScrollView 
+          style={styles.scrollView} 
+          contentContainerStyle={[
+            styles.content,
+            (isDesktop || isTablet) && styles.desktopContent
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
         <View style={styles.levelSection}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>レベル進捗</Text>
           <LevelProgress
@@ -134,63 +144,121 @@ export default function StatsScreen() {
         </View>
         
         <Text style={[styles.sectionTitle, { color: theme.text }]}>詳細統計</Text>
-        <View style={styles.statsGrid}>
-          <View style={styles.statsRow}>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="フォーカスセッション"
-                value={sessions}
-                icon={<Clock size={20} color={theme.text} />}
-                color="#FF6B6B"
-              />
+        <View style={[
+          styles.statsGrid,
+          (isDesktop || isTablet) && styles.desktopStatsGrid
+        ]}>
+          {(isDesktop || isTablet) ? (
+            <View style={styles.desktopRow}>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="フォーカスセッション"
+                  value={sessions}
+                  icon={<Clock size={20} color={theme.text} />}
+                  color="#FF6B6B"
+                />
+              </View>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="現在の連続日数"
+                  value={streak}
+                  icon={<Flame size={20} color={theme.text} />}
+                  color="#F59E0B"
+                />
+              </View>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="合計フォーカス時間"
+                  value={formatTotalTime()}
+                  icon={<Zap size={20} color={theme.text} />}
+                  color="#10B981"
+                />
+              </View>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="実績解除"
+                  value={`${unlockedAchievements.length}/12`}
+                  icon={<Award size={20} color={theme.text} />}
+                  color="#3B82F6"
+                />
+              </View>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="平均セッション時間"
+                  value={`${averageSessionLength}分`}
+                  icon={<BarChart2 size={20} color={theme.text} />}
+                  color="#A855F7"
+                />
+              </View>
+              <View style={[styles.statsColumn, styles.desktopColumn]}>
+                <StatsCard
+                  title="アクティブ日数"
+                  value={totalDays}
+                  icon={<Calendar size={20} color={theme.text} />}
+                  color="#4ECDC4"
+                />
+              </View>
             </View>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="現在の連続日数"
-                value={streak}
-                icon={<Flame size={20} color={theme.text} />}
-                color="#F59E0B"
-              />
-            </View>
-          </View>
-          
-          <View style={styles.statsRow}>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="合計フォーカス時間"
-                value={formatTotalTime()}
-                icon={<Zap size={20} color={theme.text} />}
-                color="#10B981"
-              />
-            </View>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="実績解除"
-                value={`${unlockedAchievements.length}/12`}
-                icon={<Award size={20} color={theme.text} />}
-                color="#3B82F6"
-              />
-            </View>
-          </View>
-          
-          <View style={styles.statsRow}>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="平均セッション時間"
-                value={`${averageSessionLength}分`}
-                icon={<BarChart2 size={20} color={theme.text} />}
-                color="#A855F7"
-              />
-            </View>
-            <View style={styles.statsColumn}>
-              <StatsCard
-                title="アクティブ日数"
-                value={totalDays}
-                icon={<Calendar size={20} color={theme.text} />}
-                color="#4ECDC4"
-              />
-            </View>
-          </View>
+          ) : (
+            <>
+              <View style={styles.statsRow}>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="フォーカスセッション"
+                    value={sessions}
+                    icon={<Clock size={20} color={theme.text} />}
+                    color="#FF6B6B"
+                  />
+                </View>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="現在の連続日数"
+                    value={streak}
+                    icon={<Flame size={20} color={theme.text} />}
+                    color="#F59E0B"
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.statsRow}>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="合計フォーカス時間"
+                    value={formatTotalTime()}
+                    icon={<Zap size={20} color={theme.text} />}
+                    color="#10B981"
+                  />
+                </View>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="実績解除"
+                    value={`${unlockedAchievements.length}/12`}
+                    icon={<Award size={20} color={theme.text} />}
+                    color="#3B82F6"
+                  />
+                </View>
+              </View>
+              
+              <View style={styles.statsRow}>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="平均セッション時間"
+                    value={`${averageSessionLength}分`}
+                    icon={<BarChart2 size={20} color={theme.text} />}
+                    color="#A855F7"
+                  />
+                </View>
+                <View style={styles.statsColumn}>
+                  <StatsCard
+                    title="アクティブ日数"
+                    value={totalDays}
+                    icon={<Calendar size={20} color={theme.text} />}
+                    color="#4ECDC4"
+                  />
+                </View>
+              </View>
+            </>
+          )}
         </View>
         
         <View style={styles.weeklyActivityContainer}>
@@ -369,5 +437,20 @@ const styles = StyleSheet.create({
   averageUnit: {
     fontSize: fontSizes.sm,
     marginTop: spacing.xs,
+  },
+  desktopContent: {
+    paddingVertical: spacing.xl,
+  },
+  desktopStatsGrid: {
+    marginBottom: spacing.xl * 1.5,
+  },
+  desktopRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -spacing.xs,
+  },
+  desktopColumn: {
+    width: '33.33%',
+    marginBottom: spacing.sm,
   },
 });

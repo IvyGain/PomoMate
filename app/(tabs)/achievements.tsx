@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { spacing, fontSizes } from '@/constants/theme';
@@ -15,8 +15,12 @@ type FilterType = 'all' | 'unlocked' | 'locked';
 export default function AchievementsScreen() {
   const userStats = useUserStore();
   const { theme } = useThemeStore();
+  const { width } = useWindowDimensions();
   const [filter, setFilter] = useState<FilterType>('all');
   const [filteredAchievements, setFilteredAchievements] = useState(achievements);
+  
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
+  const isTablet = Platform.OS === 'web' && width >= 768 && width < 1024;
   
   // Apply filter
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function AchievementsScreen() {
         },
       }} />
       
-      <ResponsiveContainer>
+      <ResponsiveContainer maxWidth={isDesktop ? 1000 : 800}>
         <View style={[styles.header, { borderBottomColor: 'rgba(255, 255, 255, 0.1)' }]}>
         <View style={styles.statsContainer}>
           <Award size={24} color={theme.primary} />
@@ -105,15 +109,41 @@ export default function AchievementsScreen() {
         </View>
         </View>
         
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        <ScrollView 
+          style={styles.scrollView} 
+          contentContainerStyle={[
+            styles.content,
+            (isDesktop || isTablet) && styles.gridContent
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
         {filteredAchievements.length > 0 ? (
-          filteredAchievements.map(achievement => (
-            <AchievementCard
-              key={achievement.id}
-              achievement={achievement}
-              userStats={userStats}
-            />
-          ))
+          (isDesktop || isTablet) ? (
+            <View style={styles.achievementsGrid}>
+              {filteredAchievements.map(achievement => (
+                <View 
+                  key={achievement.id} 
+                  style={[
+                    styles.gridItem,
+                    { width: isDesktop ? '33.33%' : '50%' }
+                  ]}
+                >
+                  <AchievementCard
+                    achievement={achievement}
+                    userStats={userStats}
+                  />
+                </View>
+              ))}
+            </View>
+          ) : (
+            filteredAchievements.map(achievement => (
+              <AchievementCard
+                key={achievement.id}
+                achievement={achievement}
+                userStats={userStats}
+              />
+            ))
+          )
         ) : (
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: theme.textSecondary }]}>実績が見つかりません</Text>
@@ -178,5 +208,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontSizes.md,
+  },
+  gridContent: {
+    paddingVertical: 8,
+  },
+  achievementsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -8,
+  },
+  gridItem: {
+    paddingHorizontal: 8,
   },
 });
