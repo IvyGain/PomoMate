@@ -31,8 +31,8 @@ export default function LoginScreen() {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
       clientId: Platform.select({
-        ios: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
-        android: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
+        ios: '773602259069-db0uo70d31rmh7lsd3fbsf36uagq3lno.apps.googleusercontent.com',
+        android: '',
         default: '773602259069-e8e1k3gfr1cgge47743079jci75sgfvg.apps.googleusercontent.com'
       }),
       redirectUri,
