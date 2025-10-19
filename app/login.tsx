@@ -1,36 +1,44 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
-  TextInput, 
   TouchableOpacity, 
   StyleSheet, 
-  KeyboardAvoidingView, 
-  Platform,
   ActivityIndicator,
   Image,
-  ScrollView,
-  Alert
+  Alert,
+  Platform
 } from 'react-native';
-import { Link } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { makeRedirectUri } from 'expo-auth-session';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const { theme } = useThemeStore();
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { loginWithGoogle, isLoading, error, clearError } = useAuthStore();
+  const [googleLoading, setGoogleLoading] = useState(false);
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  
-  // Refs for TextInputs to avoid findDOMNode warnings
-  const emailInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
-  
-  // Show error alert when error changes
+  const redirectUri = makeRedirectUri({
+    scheme: 'pomomate',
+    path: 'login'
+  });
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+    {
+      clientId: Platform.select({
+        ios: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+        android: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
+        default: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com'
+      }),
+      redirectUri,
+    },
+  );
+
   React.useEffect(() => {
     if (error) {
       Alert.alert('エラー', error, [
@@ -38,137 +46,108 @@ export default function LoginScreen() {
       ]);
     }
   }, [error, clearError]);
-  
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('入力エラー', 'メールアドレスとパスワードを入力してください。');
-      return;
-    }
-    
+
+  const handleGoogleLogin = React.useCallback(async (idToken: string) => {
     try {
-      await login(email, password);
-      // Navigation is now handled by the useProtectedRoute hook in _layout.tsx
+      setGoogleLoading(true);
+      await loginWithGoogle(idToken);
     } catch (error) {
-      // Error is handled by the store
+      console.error('Google login error:', error);
+    } finally {
+      setGoogleLoading(false);
+    }
+  }, [loginWithGoogle]);
+
+  React.useEffect(() => {
+    const processResponse = async () => {
+      if (response?.type === 'success') {
+        const { id_token } = response.params;
+        await handleGoogleLogin(id_token);
+      } else if (response?.type === 'error') {
+        setGoogleLoading(false);
+        Alert.alert('エラー', 'Google認証がキャンセルされました。');
+      }
+    };
+    processResponse();
+  }, [response, handleGoogleLogin]);
+
+  const handleDemoLogin = async () => {
+    try {
+      await loginWithGoogle('demo-token-123456789');
+    } catch (error) {
+      console.error('Demo login error:', error);
     }
   };
-  
-  const handleDemoLogin = async () => {
-    // Create a demo account if it doesn't exist and log in
-    const demoEmail = 'demo@example.com';
-    const demoPassword = 'password123';
-    
+
+  const handleGooglePress = async () => {
     try {
-      await login(demoEmail, demoPassword);
-    } catch (error) {
-      // If login fails, register a demo account
-      const { register } = useAuthStore.getState();
-      try {
-        await register(demoEmail, demoPassword, 'デモユーザー');
-      } catch (registerError) {
-        // Error is handled by the store
-      }
+      setGoogleLoading(true);
+      await promptAsync();
+    } catch {
+      setGoogleLoading(false);
+      Alert.alert('エラー', 'Google認証を開始できませんでした。');
     }
   };
   
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoid}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.logoContainer}>
-            <Image 
-              source={{ uri: 'https://images.unsplash.com/photo-1611224885990-ab7363d7f2a9?q=80&w=200&auto=format&fit=crop' }} 
-              style={styles.logo} 
-            />
-            <Text style={[styles.appName, { color: theme.text }]}>PomoMate</Text>
-            <Text style={[styles.tagline, { color: theme.textSecondary }]}>
-              集中力を高め、生産性を向上させる
-            </Text>
+      <View style={styles.content}>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={{ uri: 'https://images.unsplash.com/photo-1611224885990-ab7363d7f2a9?q=80&w=200&auto=format&fit=crop' }} 
+            style={styles.logo} 
+          />
+          <Text style={[styles.appName, { color: theme.text }]}>PomoMate</Text>
+          <Text style={[styles.tagline, { color: theme.textSecondary }]}>
+            集中力を高め、生産性を向上させる
+          </Text>
+        </View>
+        
+        <View style={styles.formContainer}>
+          <TouchableOpacity 
+            style={[styles.googleButton, { backgroundColor: '#fff' }]}
+            onPress={handleGooglePress}
+            disabled={isLoading || googleLoading || !request}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <>
+                <Image
+                  source={{ uri: 'https://cdn.cdnlogo.com/logos/g/35/google-icon.svg' }}
+                  style={styles.googleIcon}
+                />
+                <Text style={styles.googleButtonText}>Googleでログイン</Text>
+              </>
+            )}
+          </TouchableOpacity>
+          
+          <View style={styles.divider}>
+            <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
+            <Text style={[styles.dividerText, { color: theme.textSecondary }]}>または</Text>
+            <View style={[styles.dividerLine, { backgroundColor: theme.border }]} />
           </View>
           
-          <View style={styles.formContainer}>
-            <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
-              <Mail size={20} color={theme.textSecondary} style={styles.inputIcon} />
-              <TextInput
-                ref={emailInputRef}
-                style={[styles.input, { color: theme.text }]}
-                placeholder="メールアドレス"
-                placeholderTextColor={theme.textSecondary}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
-            </View>
-            
-            <View style={[styles.inputContainer, { backgroundColor: theme.card }]}>
-              <Lock size={20} color={theme.textSecondary} style={styles.inputIcon} />
-              <TextInput
-                ref={passwordInputRef}
-                style={[styles.input, { color: theme.text }]}
-                placeholder="パスワード"
-                placeholderTextColor={theme.textSecondary}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity 
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                {showPassword ? (
-                  <EyeOff size={20} color={theme.textSecondary} />
-                ) : (
-                  <Eye size={20} color={theme.textSecondary} />
-                )}
-              </TouchableOpacity>
-            </View>
-            
-            <TouchableOpacity 
-              style={[styles.loginButton, { backgroundColor: theme.primary }]}
-              onPress={handleLogin}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.loginButtonText}>ログイン</Text>
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.demoButton, { backgroundColor: theme.card }]}
-              onPress={handleDemoLogin}
-              disabled={isLoading}
-            >
+          <TouchableOpacity 
+            style={[styles.demoButton, { backgroundColor: theme.card }]}
+            onPress={handleDemoLogin}
+            disabled={isLoading || googleLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color={theme.text} />
+            ) : (
               <Text style={[styles.demoButtonText, { color: theme.text }]}>
                 デモアカウントでログイン
               </Text>
-            </TouchableOpacity>
-            
-            <View style={styles.linksContainer}>
-              <Link href="/forgot-password" asChild>
-                <TouchableOpacity>
-                  <Text style={[styles.link, { color: theme.primary }]}>
-                    パスワードをお忘れの方
-                  </Text>
-                </TouchableOpacity>
-              </Link>
-              
-              <Link href="/register" asChild>
-                <TouchableOpacity>
-                  <Text style={[styles.link, { color: theme.primary }]}>
-                    新規登録
-                  </Text>
-                </TouchableOpacity>
-              </Link>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            )}
+          </TouchableOpacity>
+          
+          <Text style={[styles.infoText, { color: theme.textSecondary }]}>
+            Googleアカウントでログインすることで、{'\n'}
+            利用規約とプライバシーポリシーに同意したものとみなされます。
+          </Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -177,17 +156,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  keyboardAvoid: {
+  content: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 60,
   },
   logo: {
     width: 100,
@@ -207,36 +183,41 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
   },
-  inputContainer: {
+  googleButton: {
+    height: 56,
+    borderRadius: 12,
     flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    height: 56,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    height: 56,
-    fontSize: 16,
-  },
-  eyeIcon: {
-    padding: 8,
-  },
-  loginButton: {
-    height: 56,
-    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  loginButtonText: {
-    color: '#fff',
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 12,
+  },
+  googleButtonText: {
+    color: '#000',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  dividerText: {
+    paddingHorizontal: 16,
+    fontSize: 14,
   },
   demoButton: {
     height: 56,
@@ -249,12 +230,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  linksContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  link: {
-    fontSize: 14,
-    fontWeight: '500',
+  infoText: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });
