@@ -28,6 +28,13 @@ export default function LoginScreen() {
     path: 'login'
   });
 
+  React.useEffect(() => {
+    console.log('=== Google OAuth Configuration ===');
+    console.log('Redirect URI:', redirectUri);
+    console.log('Platform:', Platform.OS);
+    console.log('================================');
+  }, [redirectUri]);
+
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
       clientId: Platform.select({
