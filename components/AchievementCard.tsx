@@ -14,6 +14,8 @@ interface AchievementCardProps {
     unlockedAchievements: string[];
     totalDays: number;
     totalSessions: number;
+    teamSessionsCompleted: number;
+    teamSessionMinutes: number;
   };
   onPress?: () => void;
 }
