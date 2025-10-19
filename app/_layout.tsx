@@ -1,10 +1,9 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { Slot, Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import {
-  Platform,
   StatusBar,
   View,
   StyleSheet,
@@ -28,6 +27,8 @@ export default function RootLayout() {
 
   const { theme } = useThemeStore();
   const { isAuthenticated } = useAuthStore();
+  const segments = useSegments();
+  const router = useRouter();
   
   // Expose a loading state
   const [isReady, setIsReady] = useState(false);
@@ -45,11 +46,26 @@ export default function RootLayout() {
       const timer = setTimeout(() => {
         SplashScreen.hideAsync();
         setIsReady(true);
-      }, 500); // Increased timeout to ensure navigation is ready
+      }, 500);
       
       return () => clearTimeout(timer);
     }
   }, [loaded]);
+  
+  // Handle authentication routing
+  useEffect(() => {
+    if (!isReady || !loaded) return;
+    
+    const inAuthGroup = segments[0] === '(tabs)';
+    
+    if (!isAuthenticated && inAuthGroup) {
+      // Redirect to login if not authenticated
+      router.replace('/login');
+    } else if (isAuthenticated && !inAuthGroup && segments[0] !== 'modal') {
+      // Redirect to home if authenticated
+      router.replace('/(tabs)');
+    }
+  }, [isAuthenticated, segments, isReady, loaded, router]);
 
   if (!loaded || !isReady) {
     return null;
