@@ -2,34 +2,33 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { useThemeStore } from '@/store/themeStore';
 import { spacing, fontSizes, borderRadius } from '@/constants/theme';
-import { Brain, Check, X, AlertTriangle } from 'lucide-react-native';
+import { Brain, X, Trophy } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 const TILE_SIZE = (width - spacing.lg * 4) / 2;
 
 interface PatternMemoryGameProps {
   onComplete: (score: number) => void;
+  onClose?: () => void;
 }
 
-// Colors for the tiles
 const TILE_COLORS = [
-  '#FF5252', // Red
-  '#4CAF50', // Green
-  '#2196F3', // Blue
-  '#FFEB3B', // Yellow
+  '#FF5252',
+  '#4CAF50',
+  '#2196F3',
+  '#FFEB3B',
 ];
 
-export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete }) => {
+export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete, onClose }) => {
   const { theme } = useThemeStore();
   const [gameState, setGameState] = useState<'ready' | 'watch' | 'repeat' | 'result'>('ready');
-  const [level, setLevel] = useState(1);
-  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [pattern, setPattern] = useState<number[]>([]);
   const [playerPattern, setPlayerPattern] = useState<number[]>([]);
   const [activeTile, setActiveTile] = useState<number | null>(null);
   const [showError, setShowError] = useState(false);
   
-  // Animation values
   const tileAnimations = [
     useRef(new Animated.Value(1)).current,
     useRef(new Animated.Value(1)).current,
@@ -37,38 +36,27 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     useRef(new Animated.Value(1)).current,
   ];
   
-  // Timer refs
   const patternTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   
-  // Start the game
   const startGame = () => {
-    setLevel(1);
-    setScore(0);
+    setStreak(0);
+    setBestStreak(0);
     setPattern([]);
     setPlayerPattern([]);
     setGameState('watch');
-    generatePattern(1);
+    generatePattern([]);
   };
   
-  // Generate a pattern for the current level
-  const generatePattern = (currentLevel: number) => {
-    // Pattern length increases with level
-    const patternLength = Math.min(currentLevel + 2, 10);
-    const newPattern: number[] = [];
-    
-    for (let i = 0; i < patternLength; i++) {
-      newPattern.push(Math.floor(Math.random() * 4));
-    }
-    
+  const generatePattern = (currentPattern: number[]) => {
+    const nextTile = Math.floor(Math.random() * 4);
+    const newPattern = [...currentPattern, nextTile];
     setPattern(newPattern);
     
-    // Start showing the pattern after a short delay
     setTimeout(() => {
       showPattern(newPattern);
     }, 1000);
   };
   
-  // Show the pattern to the player
   const showPattern = (patternToShow: number[]) => {
     let index = 0;
     
@@ -77,7 +65,6 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
         const tileIndex = patternToShow[index];
         setActiveTile(tileIndex);
         
-        // Animate the tile
         Animated.sequence([
           Animated.timing(tileAnimations[tileIndex], {
             toValue: 1.2,
@@ -91,7 +78,6 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
           }),
         ]).start();
         
-        // Move to the next tile after a delay
         patternTimerRef.current = setTimeout(() => {
           setActiveTile(null);
           patternTimerRef.current = setTimeout(() => {
@@ -100,7 +86,6 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
           }, 200);
         }, 600);
       } else {
-        // Pattern finished, player's turn
         setActiveTile(null);
         setPlayerPattern([]);
         setGameState('repeat');
@@ -110,11 +95,9 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     showNextTile();
   };
   
-  // Handle tile press during player's turn
   const handleTilePress = (tileIndex: number) => {
     if (gameState !== 'repeat') return;
     
-    // Animate the pressed tile
     Animated.sequence([
       Animated.timing(tileAnimations[tileIndex], {
         toValue: 1.2,
@@ -131,46 +114,34 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     const newPlayerPattern = [...playerPattern, tileIndex];
     setPlayerPattern(newPlayerPattern);
     
-    // Check if the player's pattern matches the original pattern so far
     const isCorrectSoFar = newPlayerPattern.every(
       (tile, index) => tile === pattern[index]
     );
     
     if (!isCorrectSoFar) {
-      // Wrong tile pressed
       setShowError(true);
+      setBestStreak(Math.max(bestStreak, streak));
       setTimeout(() => {
         setShowError(false);
         setGameState('result');
-      }, 1000);
+      }, 1500);
       return;
     }
     
-    // Check if the player has completed the pattern
     if (newPlayerPattern.length === pattern.length) {
-      // Pattern completed successfully
-      const levelScore = level * 10;
-      setScore(prevScore => prevScore + levelScore);
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      setBestStreak(Math.max(bestStreak, newStreak));
       
-      // Move to the next level or end the game
-      if (level < 5) {
-        setTimeout(() => {
-          setLevel(prevLevel => prevLevel + 1);
-          setPattern([]);
-          setPlayerPattern([]);
-          setGameState('watch');
-          generatePattern(level + 1);
-        }, 1000);
-      } else {
-        // Game completed
-        setTimeout(() => {
-          setGameState('result');
-        }, 1000);
-      }
+      setTimeout(() => {
+        setPattern([]);
+        setPlayerPattern([]);
+        setGameState('watch');
+        generatePattern(pattern);
+      }, 1000);
     }
   };
   
-  // Clean up timers on unmount
   useEffect(() => {
     return () => {
       if (patternTimerRef.current) {
@@ -179,7 +150,6 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     };
   }, []);
   
-  // Render a single tile
   const renderTile = (index: number) => {
     const isActive = activeTile === index;
     const baseColor = TILE_COLORS[index];
@@ -204,11 +174,15 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
     );
   };
   
-  // Handle game completion
   const handleComplete = () => {
-    // Calculate final score (max 100)
-    const finalScore = Math.min(100, score);
+    const finalScore = Math.min(100, Math.max(bestStreak, streak) * 10);
     onComplete(finalScore);
+  };
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    }
   };
   
   return (
@@ -216,8 +190,8 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.text }]}>パターンメモリー</Text>
         {gameState !== 'ready' && gameState !== 'result' && (
-          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-            レベル {level}/5
+          <Text style={[styles.subtitle, { color: theme.primary }]}>
+            {streak} 連続
           </Text>
         )}
       </View>
@@ -229,7 +203,7 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
             光るパターンを記憶して再現しよう！
           </Text>
           <Text style={[styles.subInstructions, { color: theme.textSecondary }]}>
-            レベルが上がるごとにパターンが長くなります
+            間違えるまで何連続できるか挑戦しよう
           </Text>
           
           <TouchableOpacity
@@ -240,6 +214,17 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
               スタート
             </Text>
           </TouchableOpacity>
+
+          {onClose && (
+            <TouchableOpacity
+              style={[styles.closeButton, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}
+              onPress={handleClose}
+            >
+              <Text style={[styles.closeButtonText, { color: theme.textSecondary }]}>
+                閉じる
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
       
@@ -263,6 +248,9 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
                 ]} 
               />
             </View>
+            <Text style={[styles.progressText, { color: theme.textSecondary }]}>
+              {playerPattern.length}/{pattern.length}
+            </Text>
           </View>
           
           <View style={styles.tilesContainer}>
@@ -289,30 +277,16 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
       
       {gameState === 'result' && (
         <View style={styles.resultContainer}>
-          {score > 0 ? (
-            <>
-              <Check size={60} color={theme.success} />
-              <Text style={[styles.resultTitle, { color: theme.text }]}>
-                素晴らしい！
-              </Text>
-              <Text style={[styles.resultScore, { color: theme.primary }]}>
-                スコア: {score}
-              </Text>
-              <Text style={[styles.resultDetail, { color: theme.textSecondary }]}>
-                レベル {level} まで達成
-              </Text>
-            </>
-          ) : (
-            <>
-              <AlertTriangle size={60} color={theme.warning} />
-              <Text style={[styles.resultTitle, { color: theme.text }]}>
-                残念！
-              </Text>
-              <Text style={[styles.resultDetail, { color: theme.textSecondary }]}>
-                もう一度挑戦してみよう
-              </Text>
-            </>
-          )}
+          <Trophy size={60} color={theme.primary} />
+          <Text style={[styles.resultTitle, { color: theme.text }]}>
+            お疲れ様でした！
+          </Text>
+          <Text style={[styles.resultScore, { color: theme.primary }]}>
+            {bestStreak} 連続
+          </Text>
+          <Text style={[styles.resultDetail, { color: theme.textSecondary }]}>
+            最高記録を達成しました
+          </Text>
           
           <View style={styles.resultButtonsContainer}>
             <TouchableOpacity
@@ -333,6 +307,17 @@ export const PatternMemoryGame: React.FC<PatternMemoryGameProps> = ({ onComplete
               </Text>
             </TouchableOpacity>
           </View>
+
+          {onClose && (
+            <TouchableOpacity
+              style={[styles.closeButton, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}
+              onPress={handleClose}
+            >
+              <Text style={[styles.closeButtonText, { color: theme.textSecondary }]}>
+                閉じる
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
@@ -350,11 +335,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.xl,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: fontSizes.md,
+    fontSize: fontSizes.xxl,
+    fontWeight: 'bold' as const,
   },
   contentContainer: {
     flex: 1,
@@ -364,7 +350,7 @@ const styles = StyleSheet.create({
   },
   instructions: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     textAlign: 'center',
     marginTop: spacing.lg,
     marginBottom: spacing.md,
@@ -379,10 +365,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.md,
     marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
   startButtonText: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
+  },
+  closeButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.sm,
+  },
+  closeButtonText: {
+    fontSize: fontSizes.md,
   },
   gameContainer: {
     flex: 1,
@@ -391,22 +387,27 @@ const styles = StyleSheet.create({
   },
   gameInstruction: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: spacing.lg,
     textAlign: 'center',
   },
   progressContainer: {
     width: '100%',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   progressBar: {
     height: 6,
     borderRadius: 3,
     width: '100%',
     overflow: 'hidden',
+    marginBottom: spacing.xs,
   },
   progressFill: {
     height: '100%',
+  },
+  progressText: {
+    fontSize: fontSizes.sm,
+    textAlign: 'center',
   },
   tilesContainer: {
     justifyContent: 'center',
@@ -433,7 +434,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginTop: spacing.sm,
   },
   resultContainer: {
@@ -444,13 +445,13 @@ const styles = StyleSheet.create({
   },
   resultTitle: {
     fontSize: fontSizes.xl,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginTop: spacing.lg,
     marginBottom: spacing.md,
   },
   resultScore: {
-    fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
+    fontSize: fontSizes.xxl * 1.5,
+    fontWeight: 'bold' as const,
     marginBottom: spacing.md,
   },
   resultDetail: {
@@ -460,6 +461,7 @@ const styles = StyleSheet.create({
   resultButtonsContainer: {
     flexDirection: 'row',
     marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
   resultButton: {
     paddingVertical: spacing.md,
@@ -469,6 +471,6 @@ const styles = StyleSheet.create({
   },
   resultButtonText: {
     fontSize: fontSizes.md,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
 });

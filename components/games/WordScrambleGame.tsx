@@ -2,119 +2,114 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useThemeStore } from '@/store/themeStore';
 import { spacing, fontSizes, borderRadius } from '@/constants/theme';
-import { Check, X, HelpCircle, Clock } from 'lucide-react-native';
+import { Check, X, Clock } from 'lucide-react-native';
 
 interface WordScrambleGameProps {
   onComplete: (score: number) => void;
-  onClose?: () => void; // Added onClose prop
+  onClose?: () => void;
 }
 
-// Word pairs for the game (Japanese word and its meaning)
-const wordPairs = [
-  { word: "集中力", meaning: "物事に注意を向ける能力" },
-  { word: "効率的", meaning: "無駄なく最大の効果を得る" },
-  { word: "時間管理", meaning: "時間を有効に使うこと" },
-  { word: "生産性", meaning: "効率よく成果を出すこと" },
-  { word: "目標設定", meaning: "達成したい成果を決めること" },
-  { word: "習慣化", meaning: "行動を自然に行えるようにすること" },
-  { word: "優先順位", meaning: "重要度に基づいて順序をつけること" },
-  { word: "タスク分割", meaning: "大きな仕事を小さく分けること" },
-  { word: "休息時間", meaning: "疲れを回復するための時間" },
-  { word: "自己管理", meaning: "自分自身をコントロールすること" },
-  { word: "継続力", meaning: "物事を続ける能力" },
-  { word: "達成感", meaning: "目標を達成した時の満足感" },
-  { word: "集中モード", meaning: "邪魔されずに作業に取り組む状態" },
-  { word: "作業環境", meaning: "仕事をする場所の状態" },
-  { word: "締め切り", meaning: "完了すべき期限" },
+const words = [
+  { original: "集中力", choices: ["集中力", "集中気", "集合力", "集力中"] },
+  { original: "効率的", choices: ["効率的", "高率的", "功率的", "効立的"] },
+  { original: "時間管理", choices: ["時間管理", "時管理間", "事間管理", "時管間理"] },
+  { original: "生産性", choices: ["生産性", "生性産", "生算性", "正産性"] },
+  { original: "目標設定", choices: ["目標設定", "目設標定", "木標設定", "目標定設"] },
+  { original: "習慣化", choices: ["習慣化", "習化慣", "週慣化", "習貫化"] },
+  { original: "優先順位", choices: ["優先順位", "優位順先", "憂先順位", "優順先位"] },
+  { original: "継続力", choices: ["継続力", "継力続", "系続力", "継統力"] },
+  { original: "達成感", choices: ["達成感", "達感成", "立成感", "達制感"] },
+  { original: "自己管理", choices: ["自己管理", "自理己管", "自子管理", "自己理管"] },
+  { original: "作業環境", choices: ["作業環境", "作環業境", "昨業環境", "作業境環"] },
+  { original: "締め切り", choices: ["締め切り", "締切めり", "占め切り", "締めりき"] },
+  { original: "休息時間", choices: ["休息時間", "休時息間", "球息時間", "休息間時"] },
+  { original: "集中モード", choices: ["集中モード", "集モード中", "集仲モード", "集中ドーム"] },
+  { original: "タスク分割", choices: ["タスク分割", "タ割ス分ク", "タスク割分", "タクス分割"] },
 ];
 
-// Fisher-Yates shuffle algorithm
-const shuffleArray = (array: any[]) => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
+const shuffleWord = (word: string): string => {
+  const chars = word.split('');
+  for (let i = chars.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    [chars[i], chars[j]] = [chars[j], chars[i]];
   }
-  return newArray;
+  const shuffled = chars.join('');
+  return shuffled === word ? shuffleWord(word) : shuffled;
 };
 
 export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, onClose }) => {
   const { theme } = useThemeStore();
   const [currentRound, setCurrentRound] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(20);
   const [gameActive, setGameActive] = useState(false);
   const [showResult, setShowResult] = useState(false);
-  const [currentWord, setCurrentWord] = useState('');
-  const [correctMeaning, setCorrectMeaning] = useState('');
+  const [scrambledWord, setScrambledWord] = useState('');
+  const [correctAnswer, setCorrectAnswer] = useState('');
   const [options, setOptions] = useState<string[]>([]);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [usedWords, setUsedWords] = useState<Set<number>>(new Set());
   
-  // Total number of rounds
-  const totalRounds = 5;
+  const totalRounds = 8;
   
-  // Start the game
   const startGame = () => {
     setCurrentRound(0);
     setScore(0);
     setGameActive(true);
     setShowResult(false);
+    setUsedWords(new Set());
     loadNextWord();
   };
   
-  // Load the next word
   const loadNextWord = () => {
-    // Reset state for new word
-    setTimeLeft(15);
+    setTimeLeft(20);
     setSelectedOption(null);
     setIsCorrect(null);
     
-    // Get a random word from the list
-    const randomIndex = Math.floor(Math.random() * wordPairs.length);
-    const wordPair = wordPairs[randomIndex];
+    const availableIndices = words
+      .map((_, index) => index)
+      .filter(index => !usedWords.has(index));
     
-    setCurrentWord(wordPair.word);
-    setCorrectMeaning(wordPair.meaning);
+    if (availableIndices.length === 0) {
+      setUsedWords(new Set());
+      availableIndices.push(...words.map((_, index) => index));
+    }
     
-    // Generate options (1 correct, 3 incorrect)
-    const incorrectOptions = wordPairs
-      .filter(pair => pair.meaning !== wordPair.meaning)
-      .map(pair => pair.meaning)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+    const wordData = words[randomIndex];
     
-    // Combine correct and incorrect options and shuffle
-    const allOptions = shuffleArray([wordPair.meaning, ...incorrectOptions]);
-    setOptions(allOptions);
+    setUsedWords(prev => new Set([...prev, randomIndex]));
+    setCorrectAnswer(wordData.original);
+    setScrambledWord(shuffleWord(wordData.original));
+    
+    const shuffledChoices = [...wordData.choices].sort(() => Math.random() - 0.5);
+    setOptions(shuffledChoices);
   };
   
-  // Handle option selection
   const handleSelectOption = (option: string) => {
-    if (selectedOption !== null) return; // Already selected
+    if (selectedOption !== null) return;
     
     setSelectedOption(option);
-    const correct = option === correctMeaning;
+    const correct = option === correctAnswer;
     setIsCorrect(correct);
     
     if (correct) {
-      setScore(prev => prev + Math.max(1, timeLeft));
+      const timeBonus = Math.floor(timeLeft * 2);
+      setScore(prev => prev + 10 + timeBonus);
     }
     
-    // Show result for 2 seconds, then move to next word
     setTimeout(() => {
       if (currentRound < totalRounds - 1) {
         setCurrentRound(prev => prev + 1);
         loadNextWord();
       } else {
-        // Game over
         setGameActive(false);
         setShowResult(true);
       }
-    }, 2000);
+    }, 1500);
   };
   
-  // Timer effect
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
     
@@ -123,7 +118,6 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
         setTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (timeLeft === 0 && selectedOption === null) {
-      // Time's up, move to next word
       setSelectedOption('');
       setIsCorrect(false);
       
@@ -132,11 +126,10 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
           setCurrentRound(prev => prev + 1);
           loadNextWord();
         } else {
-          // Game over
           setGameActive(false);
           setShowResult(true);
         }
-      }, 2000);
+      }, 1500);
     }
     
     return () => {
@@ -144,14 +137,11 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
     };
   }, [gameActive, timeLeft, selectedOption, currentRound]);
   
-  // Complete the game
   const completeGame = () => {
-    // Calculate final score (max 100)
     const finalScore = Math.min(100, score);
     onComplete(finalScore);
   };
 
-  // Handle close button
   const handleClose = () => {
     if (onClose) {
       onClose();
@@ -162,9 +152,9 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {!gameActive && !showResult ? (
         <View style={styles.startContainer}>
-          <Text style={[styles.title, { color: theme.text }]}>単語マッチング</Text>
+          <Text style={[styles.title, { color: theme.text }]}>単語スクランブル</Text>
           <Text style={[styles.instructions, { color: theme.textSecondary }]}>
-            表示される単語の正しい意味を選んでください。
+            バラバラになった文字から正しい単語を選んでください。
             素早く正解するほど高得点になります。
           </Text>
           <TouchableOpacity
@@ -248,11 +238,13 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
           
           <View style={styles.wordContainer}>
             <Text style={[styles.wordLabel, { color: theme.textSecondary }]}>
-              この単語の意味は？
+              この文字から正しい単語を選んでください
             </Text>
-            <Text style={[styles.word, { color: theme.text }]}>
-              {currentWord}
-            </Text>
+            <View style={[styles.scrambledContainer, { backgroundColor: theme.card }]}>
+              <Text style={[styles.scrambledWord, { color: theme.primary }]}>
+                {scrambledWord}
+              </Text>
+            </View>
           </View>
           
           <ScrollView style={styles.optionsContainer}>
@@ -266,7 +258,7 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
                     isCorrect ? { backgroundColor: 'rgba(107, 203, 119, 0.3)' } : 
                     { backgroundColor: 'rgba(239, 71, 111, 0.3)' }
                   ),
-                  option === correctMeaning && selectedOption !== null && { backgroundColor: 'rgba(107, 203, 119, 0.3)' }
+                  option === correctAnswer && selectedOption !== null && { backgroundColor: 'rgba(107, 203, 119, 0.3)' }
                 ]}
                 onPress={() => handleSelectOption(option)}
                 disabled={selectedOption !== null}
@@ -283,7 +275,7 @@ export const WordScrambleGame: React.FC<WordScrambleGameProps> = ({ onComplete, 
                   )
                 )}
                 
-                {option === correctMeaning && selectedOption !== null && selectedOption !== option && (
+                {option === correctAnswer && selectedOption !== null && selectedOption !== option && (
                   <Check size={20} color={theme.success} style={styles.resultIcon} />
                 )}
               </TouchableOpacity>
@@ -319,7 +311,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: spacing.lg,
     textAlign: 'center',
   },
@@ -337,7 +329,7 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
   closeButton: {
     paddingVertical: spacing.sm,
@@ -382,7 +374,7 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: fontSizes.md,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginLeft: spacing.xs,
   },
   wordContainer: {
@@ -390,12 +382,19 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
   },
   wordLabel: {
-    fontSize: fontSizes.md,
-    marginBottom: spacing.sm,
+    fontSize: fontSizes.sm,
+    marginBottom: spacing.md,
+    textAlign: 'center',
   },
-  word: {
-    fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
+  scrambledContainer: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.lg,
+  },
+  scrambledWord: {
+    fontSize: fontSizes.xxl * 1.2,
+    fontWeight: 'bold' as const,
+    letterSpacing: 8,
   },
   optionsContainer: {
     flex: 1,
@@ -410,7 +409,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   optionText: {
-    fontSize: fontSizes.md,
+    fontSize: fontSizes.lg,
     flex: 1,
   },
   resultIcon: {
@@ -422,7 +421,7 @@ const styles = StyleSheet.create({
   },
   feedbackText: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
   resultContainer: {
     flex: 1,
@@ -431,12 +430,12 @@ const styles = StyleSheet.create({
   },
   resultTitle: {
     fontSize: fontSizes.xl,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: spacing.lg,
   },
   resultScore: {
     fontSize: fontSizes.xxl,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: spacing.xl,
   },
   completeButton: {
@@ -447,6 +446,6 @@ const styles = StyleSheet.create({
   },
   completeButtonText: {
     fontSize: fontSizes.lg,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
 });
