@@ -80,9 +80,10 @@ class SoundService {
       let sound = this.sounds.get(type);
       
       if (!sound) {
-        sound = await this.loadSound(type);
-        if (!sound) return;
-        this.sounds.set(type, sound);
+        const loadedSound = await this.loadSound(type);
+        if (!loadedSound) return;
+        this.sounds.set(type, loadedSound);
+        sound = loadedSound;
       }
       
       await sound.setPositionAsync(0);
