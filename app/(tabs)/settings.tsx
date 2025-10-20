@@ -11,6 +11,7 @@ import {
   useWindowDimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { useThemeStore } from '@/store/themeStore';
 import { useUserStore } from '@/store/userStore';
 import { useAuthStore } from '@/store/authStore';
@@ -362,7 +363,7 @@ export default function SettingsScreen() {
             <Shield size={22} color={theme.text} style={styles.settingIcon} />,
             'プライバシー設定',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            () => Alert.alert('プライバシー設定', '準備中です')
+            () => router.push('/privacy')
           )}
           
           {renderSettingItem(
@@ -382,7 +383,7 @@ export default function SettingsScreen() {
             <HelpCircle size={22} color={theme.text} style={styles.settingIcon} />,
             'ヘルプ',
             <ChevronRight size={20} color={theme.textSecondary} />,
-            () => Alert.alert('ヘルプ', '準備中です')
+            () => router.push('/help')
           )}
           
           {renderSettingItem(
