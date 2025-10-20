@@ -52,10 +52,10 @@ class SoundService {
     }
   }
   
-  private async loadSound(type: SoundType): Promise<Audio.Sound | null> {
+  private async loadSound(type: SoundType): Promise<Audio.Sound | undefined> {
     try {
       const asset = SOUND_ASSETS[type];
-      if (!asset) return null;
+      if (!asset) return undefined;
       
       const { sound } = await Audio.Sound.createAsync(asset.file, {
         volume: asset.volume || 1.0,
@@ -65,7 +65,7 @@ class SoundService {
       return sound;
     } catch (error) {
       console.error(`Failed to load sound ${type}:`, error);
-      return null;
+      return undefined;
     }
   }
   
