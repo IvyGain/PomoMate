@@ -5,6 +5,9 @@ export const createTeamSessionProcedure = publicProcedure
   .input(
     z.object({
       name: z.string(),
+      hostId: z.string(),
+      hostName: z.string(),
+      hostAvatar: z.string(),
       voiceChatEnabled: z.boolean().optional(),
     })
   )

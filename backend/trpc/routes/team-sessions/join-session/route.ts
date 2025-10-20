@@ -5,10 +5,13 @@ export const joinTeamSessionProcedure = publicProcedure
   .input(
     z.object({
       sessionId: z.string(),
+      userId: z.string(),
+      userName: z.string(),
+      userAvatar: z.string(),
     })
   )
   .mutation(async ({ input }) => {
-    console.log(`[JOIN TEAM SESSION] Joining session ${input.sessionId}`);
+    console.log(`[JOIN TEAM SESSION] User ${input.userId} joining session ${input.sessionId}`);
     
     return {
       success: true,

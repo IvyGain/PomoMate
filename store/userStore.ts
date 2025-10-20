@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievements } from '@/constants/achievements';
+import { trpcClient } from '@/lib/trpc';
 
 interface UserStats {
   level: number;
@@ -30,6 +31,8 @@ interface UserState extends UserStats {
   unlockAchievement: (achievementId: string) => void; // For developer mode
   checkSpecialAchievements: () => void; // Check time-based and special achievements
   recordGamePlay: (gameId: string) => void; // Record game play
+  syncWithBackend: () => Promise<void>; // Sync user data with backend
+  loadFromBackend: () => Promise<void>; // Load user data from backend
 }
 
 // XP required for each level (index is level - 1)
@@ -356,6 +359,60 @@ export const useUserStore = create<UserState>()(
         });
       },
       
+      // Sync with backend
+      syncWithBackend: async () => {
+        try {
+          const state = get();
+          await trpcClient.user.updateProfile.mutate({
+            level: state.level,
+            xp: state.xp,
+            xpToNextLevel: state.xpToNextLevel,
+            sessions: state.sessions,
+            streak: state.streak,
+            lastSessionDate: state.lastSessionDate,
+            totalMinutes: state.totalMinutes,
+            unlockedAchievements: state.unlockedAchievements,
+            totalDays: state.totalDays,
+            totalSessions: state.totalSessions,
+            activeDays: state.activeDays,
+            playedGames: state.playedGames,
+            gamePlayCount: state.gamePlayCount,
+            teamSessionsCompleted: state.teamSessionsCompleted,
+            teamSessionMinutes: state.teamSessionMinutes,
+          });
+          console.log('[USER] Synced with backend');
+        } catch (error) {
+          console.error('[USER] Failed to sync with backend:', error);
+        }
+      },
+      
+      // Load from backend
+      loadFromBackend: async () => {
+        try {
+          const profile = await trpcClient.user.getProfile.query();
+          set({
+            level: profile.level,
+            xp: profile.xp,
+            xpToNextLevel: profile.xpToNextLevel,
+            sessions: profile.sessions,
+            streak: profile.streak,
+            lastSessionDate: profile.lastSessionDate,
+            totalMinutes: profile.totalMinutes,
+            unlockedAchievements: profile.unlockedAchievements,
+            totalDays: profile.totalDays,
+            totalSessions: profile.totalSessions,
+            activeDays: profile.activeDays,
+            playedGames: profile.playedGames,
+            gamePlayCount: profile.gamePlayCount,
+            teamSessionsCompleted: profile.teamSessionsCompleted,
+            teamSessionMinutes: profile.teamSessionMinutes,
+          });
+          console.log('[USER] Loaded from backend');
+        } catch (error) {
+          console.error('[USER] Failed to load from backend:', error);
+        }
+      },
+      
       // Record game play
       recordGamePlay: (gameId: string) => {
         const { playedGames, gamePlayCount } = get();
@@ -386,6 +443,9 @@ export const useUserStore = create<UserState>()(
         if (newGamePlayCount >= 50 && !get().unlockedAchievements.includes('game_addict')) {
           get().unlockAchievement('game_addict');
         }
+        
+        // Sync with backend
+        get().syncWithBackend();
       },
       
       // Developer mode functions
@@ -410,6 +470,9 @@ export const useUserStore = create<UserState>()(
         
         // Check for level-based achievements
         get().checkAchievements();
+        
+        // Sync with backend
+        get().syncWithBackend();
       },
       
       reduceXp: (amount: number) => {

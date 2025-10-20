@@ -11,6 +11,8 @@ import {
 import { ErrorBoundary } from "./error-boundary";
 import { useThemeStore } from "@/store/themeStore";
 import { useAuthStore } from "@/store/authStore";
+import { useUserStore } from "@/store/userStore";
+import { useSocialStore } from "@/store/socialStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc, trpcClient } from "@/lib/trpc";
 
@@ -31,11 +33,14 @@ export default function RootLayout() {
 
   const { theme } = useThemeStore();
   const { isAuthenticated } = useAuthStore();
+  const { loadFromBackend } = useUserStore();
+  const { loadFriendsFromBackend } = useSocialStore();
   const segments = useSegments();
   const router = useRouter();
   
   // Expose a loading state
   const [isReady, setIsReady] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -55,6 +60,30 @@ export default function RootLayout() {
       return () => clearTimeout(timer);
     }
   }, [loaded]);
+  
+  // Load data from backend when authenticated
+  useEffect(() => {
+    if (isAuthenticated && !dataLoaded) {
+      const loadData = async () => {
+        try {
+          console.log('[APP] Loading user data from backend...');
+          await Promise.all([
+            loadFromBackend(),
+            loadFriendsFromBackend(),
+          ]);
+          setDataLoaded(true);
+          console.log('[APP] User data loaded successfully');
+        } catch (error) {
+          console.error('[APP] Failed to load user data:', error);
+          // Continue anyway, local data will be used
+          setDataLoaded(true);
+        }
+      };
+      loadData();
+    } else if (!isAuthenticated) {
+      setDataLoaded(false);
+    }
+  }, [isAuthenticated, dataLoaded, loadFromBackend, loadFriendsFromBackend]);
   
   // Handle authentication routing
   useEffect(() => {

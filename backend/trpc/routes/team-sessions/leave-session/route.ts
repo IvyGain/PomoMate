@@ -5,10 +5,11 @@ export const leaveTeamSessionProcedure = publicProcedure
   .input(
     z.object({
       sessionId: z.string(),
+      userId: z.string(),
     })
   )
   .mutation(async ({ input }) => {
-    console.log(`[LEAVE TEAM SESSION] Leaving session ${input.sessionId}`);
+    console.log(`[LEAVE TEAM SESSION] User ${input.userId} leaving session ${input.sessionId}`);
     
     return {
       success: true,

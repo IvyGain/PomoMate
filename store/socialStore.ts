@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { trpcClient } from '@/lib/trpc';
 
 export interface Friend {
   id: string;
@@ -46,6 +47,8 @@ interface SocialState {
   addNotification: (notification: Omit<Notification, 'id' | 'time' | 'read'>) => void;
   markNotificationAsRead: (notificationId: string) => void;
   markAllNotificationsAsRead: () => void;
+  loadFriendsFromBackend: () => Promise<void>;
+  syncFriendsWithBackend: () => Promise<void>;
 }
 
 // Generate a random friend code
@@ -229,6 +232,31 @@ export const useSocialStore = create<SocialState>()(
         set(state => ({
           notifications: state.notifications.map(notification => ({ ...notification, read: true }))
         }));
+      },
+      
+      // Load friends from backend
+      loadFriendsFromBackend: async () => {
+        try {
+          const response = await trpcClient.friends.getFriends.query();
+          if (response.friends) {
+            set({ friends: response.friends });
+            console.log('[SOCIAL] Loaded friends from backend');
+          }
+        } catch (error) {
+          console.error('[SOCIAL] Failed to load friends from backend:', error);
+        }
+      },
+      
+      // Sync friends with backend
+      syncFriendsWithBackend: async () => {
+        try {
+          const { friends } = get();
+          // In a real implementation, this would sync the friends list
+          // For now, we'll just log it
+          console.log('[SOCIAL] Syncing friends with backend:', friends.length);
+        } catch (error) {
+          console.error('[SOCIAL] Failed to sync friends with backend:', error);
+        }
       },
     }),
     {

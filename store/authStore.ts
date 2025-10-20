@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { trpcClient } from '@/lib/trpc';
 
 export interface User {
   id: string;
@@ -37,22 +38,21 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true, error: null });
           
-          const user = {
-            id: idToken.substring(0, 20),
-            email: 'google-user@example.com',
-            displayName: 'Google User',
-            photoURL: undefined,
-            createdAt: new Date().toISOString(),
-          };
+          const response = await trpcClient.auth.googleLogin.mutate({ idToken });
+          
+          if (!response.success || !response.user) {
+            throw new Error('認証に失敗しました');
+          }
           
           set({ 
-            user, 
+            user: response.user, 
             isAuthenticated: true,
             isLoading: false 
           });
           
           return Promise.resolve();
         } catch (error) {
+          console.error('[AUTH] Google login error:', error);
           set({ 
             error: error instanceof Error ? error.message : "Google認証中にエラーが発生しました。", 
             isLoading: false 

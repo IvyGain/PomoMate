@@ -10,6 +10,7 @@ import { Audio } from 'expo-av';
 import { BreakTimeGame } from './BreakTimeGame';
 import { TeamSessionModal } from './TeamSessionModal';
 import { LevelUpModal } from './LevelUpModal';
+import { teamSessionSyncService } from '@/services/teamSessionSyncService';
 
 export const Timer: React.FC = () => {
   const { width } = useWindowDimensions();
@@ -55,6 +56,19 @@ export const Timer: React.FC = () => {
   const [showTeamSessionModal, setShowTeamSessionModal] = useState(false);
   
   const prevLevelRef = React.useRef(level);
+  
+  // Start/stop team session sync when team session is active
+  useEffect(() => {
+    if (isTeamSession && currentTeamSessionId) {
+      console.log('[TIMER] Starting team session sync');
+      teamSessionSyncService.startPolling();
+      
+      return () => {
+        console.log('[TIMER] Stopping team session sync');
+        teamSessionSyncService.stopPolling();
+      };
+    }
+  }, [isTeamSession, currentTeamSessionId]);
   
   // Calculate total duration based on current mode
   const getTotalDuration = () => {
