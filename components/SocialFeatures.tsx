@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -218,7 +218,8 @@ export const SocialFeatures: React.FC = () => {
     rejectFriendRequest,
     notifications,
     markNotificationAsRead,
-    sendFriendRequest
+    sendFriendRequest,
+    loadFriendsFromBackend
   } = useSocialStore();
   
   const {
@@ -251,6 +252,11 @@ export const SocialFeatures: React.FC = () => {
   const [messages, setMessages] = useState<{[key: string]: any[]}>({});
   const [activeJointSessions, setActiveJointSessions] = useState<any[]>([]);
   const [micEnabled, setMicEnabled] = useState(false);
+  
+  useEffect(() => {
+    console.log('[SOCIAL] Loading friends from backend...');
+    loadFriendsFromBackend();
+  }, []);
   
   // Handle like post
   const handleLikePost = (postId: string) => {

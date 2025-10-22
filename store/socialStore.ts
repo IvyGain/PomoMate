@@ -135,74 +135,107 @@ export const useSocialStore = create<SocialState>()(
         });
       },
       
-      removeFriend: (friendId: string) => {
+      removeFriend: async (friendId: string) => {
         const { friends } = get();
-        set({ friends: friends.filter(friend => friend.id !== friendId) });
-      },
-      
-      sendFriendRequest: (friendCode: string) => {
-        // In a real app, this would send a request to a server
-        // For this demo, we'll simulate receiving a friend request after a delay
-        setTimeout(() => {
-          const name = getRandomJapaneseName();
-          const newRequest: FriendRequest = {
-            id: Date.now().toString(),
-            name,
-            username: getRandomUsername(name),
-            avatar: getRandomAvatar(),
-            level: Math.floor(Math.random() * 20) + 1,
-            time: '今',
-          };
+        try {
+          console.log('[SOCIAL] Removing friend:', friendId);
+          await trpcClient.friends.removeFriend.mutate({ friendId });
           
-          set(state => ({
-            pendingRequests: [...state.pendingRequests, newRequest]
-          }));
+          set({ friends: friends.filter(friend => friend.id !== friendId) });
           
-          // Add a notification
           get().addNotification({
-            type: 'friendRequest',
-            message: `${newRequest.name}さんからフレンドリクエストが届きました`,
-          });
-        }, 2000);
-      },
-      
-      acceptFriendRequest: (requestId: string) => {
-        const { pendingRequests } = get();
-        const request = pendingRequests.find(req => req.id === requestId);
-        
-        if (request) {
-          // Add as friend
-          const newFriend: Friend = {
-            id: request.id,
-            name: request.name,
-            username: request.username,
-            avatar: request.avatar,
-            level: request.level,
-            streak: Math.floor(Math.random() * 20) + 1,
-            lastActive: '今',
-            status: Math.random() > 0.5 ? 'オンライン' : 'オフライン',
-          };
-          
-          get().addFriend(newFriend);
-          
-          // Remove from pending requests
-          set({
-            pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+            type: 'message',
+            message: 'フレンドを削除しました',
           });
           
-          // Add a notification
+          await get().loadFriendsFromBackend();
+        } catch (error) {
+          console.error('[SOCIAL] Failed to remove friend:', error);
+          set({ friends: friends.filter(friend => friend.id !== friendId) });
+        }
+      },
+      
+      sendFriendRequest: async (friendCode: string) => {
+        try {
+          console.log('[SOCIAL] Sending friend request to:', friendCode);
+          const response = await trpcClient.friends.addFriend.mutate({ friendCode });
+          
+          if (response.success) {
+            get().addNotification({
+              type: 'friendRequest',
+              message: 'フレンドリクエストを送信しました',
+            });
+          } else {
+            get().addNotification({
+              type: 'message',
+              message: response.message || 'フレンドリクエストの送信に失敗しました',
+            });
+          }
+          
+          await get().loadFriendsFromBackend();
+        } catch (error) {
+          console.error('[SOCIAL] Failed to send friend request:', error);
           get().addNotification({
-            type: 'friendAccepted',
-            message: `${request.name}さんのフレンドリクエストを承認しました`,
+            type: 'message',
+            message: 'フレンドリクエストの送信に失敗しました',
           });
         }
       },
       
-      rejectFriendRequest: (requestId: string) => {
+      acceptFriendRequest: async (requestId: string) => {
         const { pendingRequests } = get();
-        set({
-          pendingRequests: pendingRequests.filter(req => req.id !== requestId)
-        });
+        const request = pendingRequests.find(req => req.id === requestId);
+        
+        if (request) {
+          try {
+            console.log('[SOCIAL] Accepting friend request:', requestId);
+            
+            const newFriend: Friend = {
+              id: request.id,
+              name: request.name,
+              username: request.username,
+              avatar: request.avatar,
+              level: request.level,
+              streak: Math.floor(Math.random() * 20) + 1,
+              lastActive: '今',
+              status: Math.random() > 0.5 ? 'オンライン' : 'オフライン',
+            };
+            
+            get().addFriend(newFriend);
+            
+            set({
+              pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+            });
+            
+            get().addNotification({
+              type: 'friendAccepted',
+              message: `${request.name}さんのフレンドリクエストを承認しました`,
+            });
+            
+            await get().syncFriendsWithBackend();
+          } catch (error) {
+            console.error('[SOCIAL] Failed to accept friend request:', error);
+          }
+        }
+      },
+      
+      rejectFriendRequest: async (requestId: string) => {
+        const { pendingRequests } = get();
+        try {
+          console.log('[SOCIAL] Rejecting friend request:', requestId);
+          await trpcClient.friends.removeFriend.mutate({ friendId: requestId });
+          
+          set({
+            pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+          });
+          
+          await get().loadFriendsFromBackend();
+        } catch (error) {
+          console.error('[SOCIAL] Failed to reject friend request:', error);
+          set({
+            pendingRequests: pendingRequests.filter(req => req.id !== requestId)
+          });
+        }
       },
       
       addNotification: (notification) => {
@@ -234,13 +267,38 @@ export const useSocialStore = create<SocialState>()(
         }));
       },
       
-      // Load friends from backend
       loadFriendsFromBackend: async () => {
         try {
           const response = await trpcClient.friends.getFriends.query();
+          
           if (response.friends) {
-            set({ friends: response.friends });
-            console.log('[SOCIAL] Loaded friends from backend');
+            const mappedFriends: Friend[] = response.friends.map(f => ({
+              id: f.id,
+              name: f.displayName || 'Unknown',
+              username: f.id,
+              avatar: f.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop',
+              level: f.level || 1,
+              streak: 0,
+              lastActive: '今日',
+              status: 'オフライン' as const,
+            }));
+            
+            set({ friends: mappedFriends });
+            console.log('[SOCIAL] Loaded friends from backend:', mappedFriends.length);
+          }
+          
+          if (response.pendingRequests) {
+            const mappedRequests: FriendRequest[] = response.pendingRequests.map(r => ({
+              id: r.id,
+              name: r.displayName || 'Unknown',
+              username: r.id,
+              avatar: r.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop',
+              level: r.level || 1,
+              time: '今',
+            }));
+            
+            set({ pendingRequests: mappedRequests });
+            console.log('[SOCIAL] Loaded pending requests from backend:', mappedRequests.length);
           }
         } catch (error) {
           console.error('[SOCIAL] Failed to load friends from backend:', error);

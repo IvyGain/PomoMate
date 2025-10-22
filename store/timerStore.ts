@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { trpcClient } from '@/lib/trpc';
 
 export type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
@@ -65,7 +66,7 @@ interface TimerState {
   updateSettings: (settings: Partial<TimerSettings>) => void;
   
   // Team session actions
-  createTeamSession: (name: string, hostId: string, hostName: string, hostAvatar: string) => string;
+  createTeamSession: (name: string, hostId: string, hostName: string, hostAvatar: string) => Promise<string>;
   joinTeamSession: (sessionId: string, userId: string, userName: string, userAvatar: string) => boolean;
   leaveTeamSession: (sessionId: string, userId: string) => void;
   startTeamSession: (sessionId: string) => void;
@@ -354,49 +355,69 @@ export const useTimerStore = create<TimerState>()(
       },
       
       // Team session actions
-      createTeamSession: (name, hostId, hostName, hostAvatar) => {
-        const sessionId = generateSessionId();
-        const newSession: TeamSession = {
-          id: sessionId,
-          hostId,
-          name,
-          participants: [
-            {
-              id: hostId,
-              name: hostName,
-              avatar: hostAvatar,
-              isReady: true,
-              isActive: true,
-              joinedAt: new Date().toISOString()
-            }
-          ],
-          currentMode: 'focus',
-          timeRemaining: get().focusDuration * 60,
-          isRunning: false,
-          createdAt: new Date().toISOString(),
-          voiceChatEnabled: false,
-          messages: [
-            {
-              id: Date.now().toString(),
-              senderId: 'system',
-              senderName: 'システム',
-              senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
-              text: `${hostName}さんがセッションを作成しました。`,
-              timestamp: new Date().toISOString()
-            }
-          ]
-        };
-        
-        set(state => ({
-          teamSessions: [...state.teamSessions, newSession],
-          isTeamSession: true,
-          currentTeamSessionId: sessionId,
-          currentMode: 'focus',
-          timeRemaining: get().focusDuration * 60,
-          isRunning: false
-        }));
-        
-        return sessionId;
+      createTeamSession: async (name, hostId, hostName, hostAvatar) => {
+        try {
+          console.log('[TEAM] Creating team session:', name);
+          
+          const response = await trpcClient.teamSessions.createSession.mutate({
+            name,
+            duration: get().focusDuration,
+            creatorId: hostId,
+          });
+          
+          if (response.success && response.session) {
+            const sessionId = response.session.id;
+            
+            const newSession: TeamSession = {
+              id: sessionId,
+              hostId,
+              name,
+              participants: [
+                {
+                  id: hostId,
+                  name: hostName,
+                  avatar: hostAvatar,
+                  isReady: true,
+                  isActive: true,
+                  joinedAt: new Date().toISOString()
+                }
+              ],
+              currentMode: 'focus',
+              timeRemaining: get().focusDuration * 60,
+              isRunning: false,
+              createdAt: response.session.createdAt,
+              voiceChatEnabled: false,
+              messages: [
+                {
+                  id: Date.now().toString(),
+                  senderId: 'system',
+                  senderName: 'システム',
+                  senderAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop',
+                  text: `${hostName}さんがセッションを作成しました。`,
+                  timestamp: new Date().toISOString()
+                }
+              ]
+            };
+            
+            set(state => ({
+              teamSessions: [...state.teamSessions, newSession],
+              isTeamSession: true,
+              currentTeamSessionId: sessionId,
+              currentMode: 'focus',
+              timeRemaining: get().focusDuration * 60,
+              isRunning: false
+            }));
+            
+            console.log('[TEAM] Team session created:', sessionId);
+            return sessionId;
+          } else {
+            console.error('[TEAM] Failed to create team session:', response.message);
+            return '';
+          }
+        } catch (error) {
+          console.error('[TEAM] Error creating team session:', error);
+          return '';
+        }
       },
       
       joinTeamSession: (sessionId, userId, userName, userAvatar) => {
