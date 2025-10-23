@@ -5,18 +5,14 @@
   "cleanUrls": true,
   "framework": null,
   "functions": {
-    "backend/hono.ts": {
+    "api/**/*.ts": {
       "runtime": "edge"
     }
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/backend/hono"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/"
+      "source": "/api/(.*)",
+      "destination": "/api"
     }
   ]
 }
