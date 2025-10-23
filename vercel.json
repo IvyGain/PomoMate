@@ -4,7 +4,16 @@
   "devCommand": "expo",
   "cleanUrls": true,
   "framework": null,
+  "functions": {
+    "backend/hono.ts": {
+      "runtime": "edge"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/backend/hono"
+    },
     {
       "source": "/:path*",
       "destination": "/"
