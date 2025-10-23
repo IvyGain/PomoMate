@@ -36,20 +36,25 @@ export const useAuthStore = create<AuthState>()(
       
       loginWithGoogle: async (idToken: string) => {
         try {
+          console.log('[AUTH] Starting login with token:', idToken.substring(0, 10) + '...');
           set({ isLoading: true, error: null });
           
+          console.log('[AUTH] Calling backend...');
           const response = await trpcClient.auth.googleLogin.mutate({ idToken });
+          console.log('[AUTH] Backend response:', response);
           
           if (!response.success || !response.user) {
             throw new Error('認証に失敗しました');
           }
           
+          console.log('[AUTH] Setting user in store:', response.user);
           set({ 
             user: response.user, 
             isAuthenticated: true,
             isLoading: false 
           });
           
+          console.log('[AUTH] Login successful, state updated');
           return Promise.resolve();
         } catch (error) {
           console.error('[AUTH] Google login error:', error);

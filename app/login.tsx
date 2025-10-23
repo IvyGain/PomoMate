@@ -80,9 +80,12 @@ export default function LoginScreen() {
 
   const handleDemoLogin = async () => {
     try {
+      console.log('[LOGIN] Starting demo login...');
       await loginWithGoogle('demo-token-123456789');
+      console.log('[LOGIN] Demo login successful');
     } catch (error) {
-      console.error('Demo login error:', error);
+      console.error('[LOGIN] Demo login error:', error);
+      Alert.alert('エラー', 'デモログインに失敗しました。もう一度お試しください。');
     }
   };
 

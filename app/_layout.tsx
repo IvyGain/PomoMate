@@ -92,13 +92,15 @@ export default function RootLayout() {
   useEffect(() => {
     if (!isReady || !loaded) return;
     
+    console.log('[APP] Navigation check:', { isAuthenticated, segments: segments[0], isReady, loaded });
+    
     const inAuthGroup = segments[0] === '(tabs)';
     
     if (!isAuthenticated && inAuthGroup) {
-      // Redirect to login if not authenticated
+      console.log('[APP] Redirecting to login (not authenticated)');
       router.replace('/login');
-    } else if (isAuthenticated && !inAuthGroup && segments[0] !== 'modal') {
-      // Redirect to home if authenticated
+    } else if (isAuthenticated && !inAuthGroup && segments[0] !== 'modal' && segments[0] !== 'privacy' && segments[0] !== 'help') {
+      console.log('[APP] Redirecting to home (authenticated)');
       router.replace('/(tabs)');
     }
   }, [isAuthenticated, segments, isReady, loaded, router]);
