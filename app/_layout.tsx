@@ -14,7 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useUserStore } from "@/store/userStore";
 import { useSocialStore } from "@/store/socialStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { trpc, trpcClient } from "@/lib/trpc";
+import { trpc, trpcReactClient } from "@/lib/trpc";
 import { usePWA } from "@/hooks/usePWA";
 
 export const unstable_settings = {
@@ -108,7 +108,7 @@ export default function RootLayout() {
   }
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+    <trpc.Provider client={trpcReactClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
           <View style={[styles.container, { backgroundColor: theme.background }]}>
