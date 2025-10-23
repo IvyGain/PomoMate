@@ -110,8 +110,8 @@ export default function RootLayout() {
   }
 
   return (
-    <trpc.Provider client={trpcReactClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <trpc.Provider client={trpcReactClient} queryClient={queryClient}>
         <ErrorBoundary>
           <View style={[styles.container, { backgroundColor: theme.background }]}>
             <StatusBar barStyle="light-content" backgroundColor={theme.background} />
@@ -135,8 +135,8 @@ export default function RootLayout() {
             </Stack>
           </View>
         </ErrorBoundary>
-      </QueryClientProvider>
-    </trpc.Provider>
+      </trpc.Provider>
+    </QueryClientProvider>
   );
 }
 
