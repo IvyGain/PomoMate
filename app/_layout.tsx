@@ -2,7 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   StatusBar,
   View,
@@ -14,10 +14,8 @@ import { useAuthStore } from "@/store/authStore";
 import { useUserStore } from "@/store/userStore";
 import { useSocialStore } from "@/store/socialStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { trpc } from "@/lib/trpc";
+import { trpc, trpcReactClient } from "@/lib/trpc";
 import { usePWA } from "@/hooks/usePWA";
-import { httpLink } from "@trpc/client";
-import superjson from "superjson";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -42,24 +40,6 @@ export default function RootLayout() {
   const router = useRouter();
   
   usePWA();
-  
-  const trpcClient = useMemo(() => {
-    const getBaseUrl = () => {
-      if (process.env.EXPO_PUBLIC_RORK_API_BASE_URL) {
-        return process.env.EXPO_PUBLIC_RORK_API_BASE_URL;
-      }
-      return '';
-    };
-    
-    return trpc.createClient({
-      links: [
-        httpLink({
-          url: `${getBaseUrl()}/api/trpc`,
-          transformer: superjson,
-        }),
-      ],
-    });
-  }, []);
   
   // Expose a loading state
   const [isReady, setIsReady] = useState(false);
@@ -131,7 +111,7 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <trpc.Provider client={trpcReactClient} queryClient={queryClient}>
         <ErrorBoundary>
           <View style={[styles.container, { backgroundColor: theme.background }]}>
             <StatusBar barStyle="light-content" backgroundColor={theme.background} />
