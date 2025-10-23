@@ -15,6 +15,7 @@ import { useUserStore } from "@/store/userStore";
 import { useSocialStore } from "@/store/socialStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { trpc, trpcClient } from "@/lib/trpc";
+import { usePWA } from "@/hooks/usePWA";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
@@ -37,6 +38,8 @@ export default function RootLayout() {
   const { loadFriendsFromBackend } = useSocialStore();
   const segments = useSegments();
   const router = useRouter();
+  
+  usePWA();
   
   // Expose a loading state
   const [isReady, setIsReady] = useState(false);
