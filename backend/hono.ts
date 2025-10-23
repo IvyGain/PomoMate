@@ -3,7 +3,6 @@ import { trpcServer } from "@hono/trpc-server";
 import { cors } from "hono/cors";
 import { appRouter } from "./trpc/app-router";
 import { createContext } from "./trpc/create-context";
-import { handle } from "hono/vercel";
 
 const app = new Hono().basePath("/api");
 
@@ -24,4 +23,4 @@ app.get("/", (c) => {
   return c.json({ status: "ok", message: "API is running" });
 });
 
-export default handle(app);
+export default app;
