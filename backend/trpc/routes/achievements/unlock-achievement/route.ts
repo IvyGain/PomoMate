@@ -10,7 +10,7 @@ export const unlockAchievementProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[UNLOCK ACHIEVEMENT] Unlocking achievement ${input.achievementId} for user ${userId}`);
     
     const existingAchievements = db.getAchievements(userId);

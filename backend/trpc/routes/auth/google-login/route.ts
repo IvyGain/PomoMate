@@ -11,7 +11,7 @@ export const googleLoginProcedure = publicProcedure
   .mutation(async ({ input }) => {
     try {
       if (input.idToken.startsWith('demo-token')) {
-        const demoUserId = 'demo-user-' + input.idToken.slice(-8);
+        const demoUserId = 'demo-user-123456789';
         let user = db.getUser(demoUserId);
         
         if (!user) {

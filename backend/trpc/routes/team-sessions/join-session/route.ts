@@ -10,7 +10,7 @@ export const joinTeamSessionProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[JOIN TEAM SESSION] User ${userId} joining session ${input.sessionId}`);
     
     const session = db.getTeamSession(input.sessionId);

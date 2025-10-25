@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpcClient } from '@/lib/trpc';
+import { useAuthStore } from './authStore';
 
 export interface Friend {
   id: string;
@@ -139,7 +140,8 @@ export const useSocialStore = create<SocialState>()(
         const { friends } = get();
         try {
           console.log('[SOCIAL] Removing friend:', friendId);
-          await trpcClient.friends.removeFriend.mutate({ friendId });
+          const userId = useAuthStore.getState().user?.id;
+          await trpcClient.friends.removeFriend.mutate({ userId, friendId });
           
           set({ friends: friends.filter(friend => friend.id !== friendId) });
           
@@ -158,7 +160,8 @@ export const useSocialStore = create<SocialState>()(
       sendFriendRequest: async (friendCode: string) => {
         try {
           console.log('[SOCIAL] Sending friend request to:', friendCode);
-          const response = await trpcClient.friends.addFriend.mutate({ friendCode });
+          const userId = useAuthStore.getState().user?.id;
+          const response = await trpcClient.friends.addFriend.mutate({ userId, friendCode });
           
           if (response.success) {
             get().addNotification({
@@ -223,7 +226,8 @@ export const useSocialStore = create<SocialState>()(
         const { pendingRequests } = get();
         try {
           console.log('[SOCIAL] Rejecting friend request:', requestId);
-          await trpcClient.friends.removeFriend.mutate({ friendId: requestId });
+          const userId = useAuthStore.getState().user?.id;
+          await trpcClient.friends.removeFriend.mutate({ userId, friendId: requestId });
           
           set({
             pendingRequests: pendingRequests.filter(req => req.id !== requestId)
@@ -269,7 +273,8 @@ export const useSocialStore = create<SocialState>()(
       
       loadFriendsFromBackend: async () => {
         try {
-          const response = await trpcClient.friends.getFriends.query();
+          const userId = useAuthStore.getState().user?.id;
+          const response = await trpcClient.friends.getFriends.query({ userId });
           
           if (response.friends) {
             const mappedFriends: Friend[] = response.friends.map(f => ({

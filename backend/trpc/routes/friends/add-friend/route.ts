@@ -10,7 +10,7 @@ export const addFriendProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[ADD FRIEND] User ${userId} adding friend with code ${input.friendCode}`);
     
     const friendUser = db.getUser(input.friendCode);
@@ -49,11 +49,14 @@ export const addFriendProcedure = publicProcedure
       createdAt: new Date().toISOString(),
     });
     
+    const currentUser = db.getUser(userId);
+    
     db.addFriend(friendUser.id, {
       userId: friendUser.id,
       friendId: userId,
-      displayName: 'Demo User',
-      level: 1,
+      displayName: currentUser?.displayName || 'Demo User',
+      photoURL: currentUser?.photoURL,
+      level: currentUser?.level || 1,
       status: 'pending',
       createdAt: new Date().toISOString(),
     });

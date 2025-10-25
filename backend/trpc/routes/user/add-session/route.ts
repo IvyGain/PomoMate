@@ -31,7 +31,7 @@ export const addSessionProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[ADD SESSION] Adding session for user ${userId}:`, input);
     
     let user = db.getUser(userId);

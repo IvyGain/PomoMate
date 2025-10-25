@@ -24,7 +24,7 @@ export const updateProfileProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[UPDATE PROFILE] Updating profile for user ${userId}:`, input);
     
     let user = db.getUser(userId);

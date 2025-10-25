@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { trpcClient } from '@/lib/trpc';
+import { useAuthStore } from './authStore';
 
 export type TimerMode = 'focus' | 'shortBreak' | 'longBreak';
 
@@ -359,10 +360,11 @@ export const useTimerStore = create<TimerState>()(
         try {
           console.log('[TEAM] Creating team session:', name);
           
+          const userId = useAuthStore.getState().user?.id || hostId;
           const response = await trpcClient.teamSessions.createSession.mutate({
             name,
             duration: get().focusDuration,
-            creatorId: hostId,
+            creatorId: userId,
           });
           
           if (response.success && response.session) {

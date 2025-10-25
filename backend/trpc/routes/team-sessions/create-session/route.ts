@@ -12,7 +12,7 @@ export const createTeamSessionProcedure = publicProcedure
   )
   .mutation(async ({ input }) => {
     const sessionId = Math.random().toString(36).substring(2, 10).toUpperCase();
-    const creatorId = input.creatorId || 'demo-user';
+    const creatorId = input.creatorId || 'demo-user-123456789';
     
     console.log(`[CREATE TEAM SESSION] Creating session ${sessionId}:`, input);
     

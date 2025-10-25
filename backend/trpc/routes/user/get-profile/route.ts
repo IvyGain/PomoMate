@@ -9,7 +9,7 @@ export const getProfileProcedure = publicProcedure
     }).optional()
   )
   .query(async ({ input }) => {
-    const userId = input?.userId || 'demo-user';
+    const userId = input?.userId || 'demo-user-123456789';
     
     let user = db.getUser(userId);
     

@@ -10,7 +10,7 @@ export const removeFriendProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[REMOVE FRIEND] User ${userId} removing friend ${input.friendId}`);
     
     db.removeFriend(userId, input.friendId);

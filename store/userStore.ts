@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { achievements } from '@/constants/achievements';
 import { trpcClient } from '@/lib/trpc';
+import { useAuthStore } from './authStore';
 
 interface UserStats {
   level: number;
@@ -363,7 +364,9 @@ export const useUserStore = create<UserState>()(
       syncWithBackend: async () => {
         try {
           const state = get();
+          const userId = useAuthStore.getState().user?.id;
           await trpcClient.user.updateProfile.mutate({
+            userId,
             level: state.level,
             xp: state.xp,
             xpToNextLevel: state.xpToNextLevel,
@@ -389,7 +392,8 @@ export const useUserStore = create<UserState>()(
       // Load from backend
       loadFromBackend: async () => {
         try {
-          const profile = await trpcClient.user.getProfile.query();
+          const userId = useAuthStore.getState().user?.id;
+          const profile = await trpcClient.user.getProfile.query({ userId });
           set({
             level: profile.level,
             xp: profile.xp,

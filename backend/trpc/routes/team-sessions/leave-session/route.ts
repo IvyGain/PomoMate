@@ -10,7 +10,7 @@ export const leaveTeamSessionProcedure = publicProcedure
     })
   )
   .mutation(async ({ input }) => {
-    const userId = input.userId || 'demo-user';
+    const userId = input.userId || 'demo-user-123456789';
     console.log(`[LEAVE TEAM SESSION] User ${userId} leaving session ${input.sessionId}`);
     
     const session = db.getTeamSession(input.sessionId);
