@@ -13,7 +13,7 @@ const getBaseUrl = () => {
 
   if (typeof window !== 'undefined') {
     console.log('[TRPC] Using window.location.origin:', window.location.origin);
-    return window.location.origin;
+    return '';
   }
 
   console.log('[TRPC] No base URL found, using empty string');
