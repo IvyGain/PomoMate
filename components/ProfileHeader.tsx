@@ -61,7 +61,7 @@ export default function ProfileHeader({ showSettings = true }: ProfileHeaderProp
     <View style={styles.container}>
       <View style={styles.profileSection}>
         <View style={styles.profileLeft}>
-          {user.photoURL ? (
+          {user.photoURL && user.photoURL.trim() !== '' ? (
             <Image 
               source={{ uri: user.photoURL }} 
               style={styles.avatar} 
