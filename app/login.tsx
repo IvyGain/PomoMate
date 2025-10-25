@@ -24,9 +24,8 @@ export default function LoginScreen() {
   const [googleLoading, setGoogleLoading] = useState(false);
   
   const redirectUri = makeRedirectUri({
-    scheme: Platform.OS === 'web' ? 'https' : 'pomomate',
-    path: Platform.OS === 'web' ? undefined : 'login',
-    useProxy: Platform.OS === 'web' ? false : true,
+    scheme: 'pomomate',
+    path: 'login',
   });
 
   React.useEffect(() => {
